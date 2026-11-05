@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Island Zen 4.0 · 3D 诊断</title>
+<style>
+body{margin:0;background:#eaf0e9;color:#243b36;font:14px/1.55 system-ui,"Microsoft YaHei",sans-serif}
+main{max-width:860px;margin:28px auto;padding:0 16px}
+h1{font-size:24px}#status{background:#fff;border-radius:14px;padding:16px;white-space:pre-wrap;min-height:240px;box-shadow:0 8px 30px #3452}
+#view{width:100%;height:440px;display:block;background:#a9cdd8;margin-top:18px;border-radius:14px}
+small{color:#567}
+</style>
+<main><h1>海岛禅修 · 真实 3D 发布验收</h1><small>只读测试：CDN、WebGL、23 个 GLB 分块、解压、SHA-256、GLTF 解析与渲染。</small>
+<pre id="status">诊断启动…</pre><canvas id="view"></canvas></main>
+<script>
+const out=document.querySelector('#status'),canvas=document.querySelector('#view');
+const log=(s)=>{out.textContent+='\\n'+s;};
+const set=(s)=>{out.textContent=s;};
+const load=(src)=>new Promise((ok,no)=>{const x=document.createElement('script');x.src=src;x.crossOrigin='anonymous';x.onload=ok;x.onerror=()=>no(Error('Script load failed: '+src));document.head.appendChild(x);});
+(async()=>{
+try{
+ set('1/7 检查 WebGL…');
+ const gl=canvas.getContext('webgl',{antialias:true});
+ log(gl?'PASS：WebGL context 可创建':'FAIL：当前浏览器未提供 WebGL');
+ log('secureContext='+isSecureContext+' · DecompressionStream='+(typeof DecompressionStream));
+ set(out.textContent+'\\n2/7 加载 Three.js…');
+ await load('https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js');
+ log('PASS：Three.js '+THREE.REVISION);
+ set(out.textContent+'\\n3/7 加载 GLTFLoader…');
+ await load('https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/loaders/GLTFLoader.js');
+ log(THREE.GLTFLoader?'PASS：GLTFLoader 可用':'FAIL：GLTFLoader 不存在');
+ set(out.textContent+'\\n4/7 读取 manifest…');
+ const base='https://raw.githubusercontent.com/cyw12344321-a11y/fantasy3d-showcase/main/assets/scene/';
+ const mr=await fetch(base+'manifest.json',{cache:'no-store'});
+ if(!mr.ok)throw Error('manifest HTTP '+mr.status);
+ const m=await mr.json();log('PASS：manifest HTTP '+mr.status+'，分块 '+m.chunks+'，目标字节 '+m.sourceBytes);
+ set(out.textContent+'\\n5/7 顺序读取 23 个模型分块…');
+ const parts=[];
+ for(let i=0;i<m.chunks;i++){
+   const u=base+'scene_'+String(i).padStart(2,'0')+'.b64';
+   const r=await fetch(u,{cache:'no-store'});
+   if(!r.ok)throw Error('chunk '+i+' HTTP '+r.status);
+   const txt=(await r.text()).trim();
+   if(!txt.length)throw Error('chunk '+i+' empty');
+   parts.push(txt);
+   set(out.textContent+'\\nPASS：chunk '+(i+1)+'/'+m.chunks+' · '+txt.length.toLocaleString()+' chars');
+ }
+ log('全部分块读取完成。');
+ set(out.textContent+'\\n6/7 Base64 解码、gzip 解压与 SHA-256…');
+ const b=atob(parts.join('')),bytes=new Uint8Array(b.length);
+ for(let i=0;i<b.length;i++)bytes[i]=b.charCodeAt(i);
+ log('Base64 bytes='+bytes.length);
+ let data;
+ if('DecompressionStream'in window){
+   data=await new Response(new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'))).arrayBuffer();
+ }else throw Error('DecompressionStream unavailable');
+ log('解压后 bytes='+data.byteLength);
+ if(data.byteLength!==m.sourceBytes)throw Error('byte length mismatch');
+ const digest=await crypto.subtle.digest('SHA-256',data);
+ const hash=[...new Uint8Array(digest)].map(x=>x.toString(16).padStart(2,'0')).join('');
+ if(hash!==m.sha256)throw Error('SHA-256 mismatch: '+hash);
+ log('PASS：SHA-256 '+hash);
+ set(out.textContent+'\\n7/7 解析 GLB 并尝试 WebGL 渲染…');
+ const gltf=await new Promise((ok,no)=>new THREE.GLTFLoader().parse(data,'',ok,no));
+ const box=new THREE.Box3().setFromObject(gltf.scene),size=box.getSize(new THREE.Vector3()),center=box.getCenter(new THREE.Vector3());
+ let meshes=0;gltf.scene.traverse(o=>{if(o.isMesh)meshes++;});
+ log('PASS：GLB 解析成功 · meshes='+meshes+' · size='+size.toArray().map(x=>x.toFixed(2)).join(','));
+ if(gl){
+   const renderer=new THREE.WebGLRenderer({canvas:canvas,context:gl,antialias:true});
+   renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.5));renderer.setSize(canvas.clientWidth,canvas.clientHeight,false);
+   renderer.outputEncoding=THREE.sRGBEncoding;renderer.toneMapping=THREE.ACESFilmicToneMapping;
+   const scene=new THREE.Scene();scene.background=new THREE.Color(0xaed7dc);
+   scene.add(gltf.scene);scene.add(new THREE.HemisphereLight(0xffffff,0x59624e,1.6));
+   const sun=new THREE.DirectionalLight(0xffedcf,2.2);sun.position.set(1,2,1);scene.add(sun);
+   const cam=new THREE.PerspectiveCamera(55,canvas.clientWidth/canvas.clientHeight,.01,10000);
+   const max=Math.max(size.x,size.y,size.z);cam.position.copy(center).add(new THREE.Vector3(max*.9,max*.65,max*.9));cam.lookAt(center);
+   renderer.render(scene,cam);log('PASS：WebGL 渲染调用完成');
+ }else log('SKIP：WebGL 不可用，GLB 文件解析仍通过');
+ log('\\nFINAL: '+(gl?'PASS':'PARTIAL')+' · 真实 GLB 资源链路验收结束');
+}catch(e){log('\\nFAIL：'+(e&&e.stack||e));}
+})();
+</script>
