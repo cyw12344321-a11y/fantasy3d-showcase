@@ -1,0 +1,248 @@
+﻿<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>Fantasy3D · AI-Run 3D Asset Store</title>
+<meta name="description" content="Fantasy3D — a 100% AI-operated 3D asset store for indie game developers. GLB models from $0.10, instant download." />
+<style>
+  :root{
+    --gold:#e8c478; --gold2:#f4e3b2; --ink:#0b1020; --panel:rgba(10,16,32,.72); --line:rgba(232,196,120,.35);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{height:100%;overflow:hidden;background:#05070f;color:#fff;font-family:"PingFang SC","Microsoft YaHei",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;}
+  #c{position:fixed;inset:0;display:block;}
+  #loading{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;background:radial-gradient(circle at 50% 40%,#16203c,#05070f 70%);z-index:30;transition:opacity .6s;text-align:center;padding:24px;}
+  .spin{width:46px;height:46px;border:3px solid rgba(232,196,120,.25);border-top-color:var(--gold);border-radius:50%;animation:sp 1s linear infinite;}
+  @keyframes sp{to{transform:rotate(360deg)}}
+  #loading .lt{font-size:15px;letter-spacing:.14em;color:var(--gold2);}
+  #loading .sub{font-size:12px;color:#9fb0d0;max-width:320px;line-height:1.7;}
+  #fallback{display:none;margin-top:6px;}
+  .btn{display:inline-block;padding:13px 26px;border-radius:999px;font-weight:700;font-size:15px;text-decoration:none;letter-spacing:.05em;cursor:pointer;border:1px solid var(--line);}
+  .btn-gold{background:linear-gradient(135deg,#f4e3b2,#d9af5e);color:#241a06;box-shadow:0 8px 30px rgba(217,175,94,.35);}
+  .btn-ghost{background:rgba(255,255,255,.06);color:var(--gold2);border-color:var(--line);}
+  header{position:fixed;top:0;left:0;right:0;z-index:10;display:flex;align-items:flex-start;justify-content:space-between;padding:16px 16px 0;pointer-events:none;}
+  .brand{pointer-events:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 14px;backdrop-filter:blur(8px);}
+  .brand .logo{font-weight:800;letter-spacing:.12em;font-size:16px;color:var(--gold2);}
+  .brand .tag{font-size:11px;color:#aebbd8;margin-top:3px;letter-spacing:.06em;}
+  .langs{pointer-events:auto;display:flex;gap:6px;background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:5px;backdrop-filter:blur(8px);}
+  .langs button{border:0;background:transparent;color:#cdd8f0;font-size:12px;padding:6px 10px;border-radius:999px;cursor:pointer;font-weight:600;}
+  .langs button.on{background:linear-gradient(135deg,#f4e3b2,#d9af5e);color:#241a06;}
+  .hero{position:fixed;left:0;right:0;bottom:0;z-index:10;padding:22px 18px calc(20px + env(safe-area-inset-bottom));display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;background:linear-gradient(to top,rgba(5,7,15,.92),rgba(5,7,15,0) 70%);}
+  .hero h1{font-size:clamp(22px,6vw,38px);line-height:1.15;font-weight:800;text-shadow:0 4px 24px rgba(0,0,0,.6);}
+  .hero h1 .g{background:linear-gradient(135deg,#f7ecc8,#d9af5e);-webkit-background-clip:text;background-clip:text;color:transparent;}
+  .hero p{font-size:clamp(12px,3.4vw,15px);color:#cdd8f0;max-width:560px;line-height:1.6;}
+  .cta{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:4px;}
+  .cta .btn-gold{padding:15px 30px;font-size:16px;}
+  .stats{display:flex;gap:18px;flex-wrap:wrap;justify-content:center;font-size:11px;color:#9fb0d0;margin-top:2px;}
+  .stats b{color:var(--gold2);font-size:14px;display:block;}
+  .hint{position:fixed;top:50%;right:10px;transform:translateY(-50%);z-index:9;font-size:10px;color:rgba(205,216,240,.55);writing-mode:vertical-rl;letter-spacing:.2em;pointer-events:none;}
+  @media (max-width:560px){ .hint{display:none;} .brand .tag{display:none;} }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+
+<div id="loading">
+  <div class="spin"></div>
+  <div class="lt" id="loadTxt">FANTASY3D</div>
+  <div class="sub" id="loadSub">正在召唤浮空岛 · Summoning the floating isle…</div>
+  <div id="fallback">
+    <a class="btn btn-gold" id="fallbackBtn" href="https://fantasy3d-assetstores.onrender.com/store.html" target="_blank" rel="noopener">Enter the Store →</a>
+  </div>
+</div>
+
+<header>
+  <div class="brand">
+    <div class="logo">🏯 FANTASY3D</div>
+    <div class="tag" data-i18n="brandTag">100% AI 运营的 3D 资产商店</div>
+  </div>
+  <div class="langs">
+    <button data-l="zh" class="on">中文</button>
+    <button data-l="en">EN</button>
+    <button data-l="ja">日本</button>
+    <button data-l="es">ES</button>
+  </div>
+</header>
+
+<div class="hint" data-i18n="hint">拖动旋转 · 滚轮缩放</div>
+
+<div class="hero">
+  <h1 data-i18n-html="title">为独立游戏准备的 <span class="g">国风 3D 资产</span><br/>由 AI 团队 7×24 自主经营</h1>
+  <p data-i18n="sub">浮空宫殿、仙松、香炉、角色与怪物……GLB / FBX / OBJ 即买即下载，可直接导入 Unity · Unreal · Cocos。最低价 ¥0.10，PayPal 付款。</p>
+  <div class="cta">
+    <a class="btn btn-gold" href="https://fantasy3d-assetstores.onrender.com/store.html" target="_blank" rel="noopener" data-i18n="ctaStore">🛒 进入商店</a>
+    <a class="btn btn-ghost" href="https://fantasy3d-assetstores.onrender.com/office.html" target="_blank" rel="noopener" data-i18n="ctaOffice">👀 看 AI 团队办公</a>
+  </div>
+  <div class="stats">
+    <div><b>800+</b><span data-i18n="s1">在售 GLB 模型</span></div>
+    <div><b>$0.10–1</b><span data-i18n="s2">亲民定价</span></div>
+    <div><b>7 AI</b><span data-i18n="s3">智能体协作</span></div>
+    <div><b>24/7</b><span data-i18n="s4">自动营业</span></div>
+  </div>
+</div>
+
+<script type="importmap">
+{ "imports": {
+  "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+}}
+</script>
+
+<script type="module">
+let scene, camera, renderer, controls, island, clock;
+const STORE = "https://fantasy3d-assetstores.onrender.com/store.html";
+
+const I18N = {
+  zh:{brandTag:"100% AI 运营的 3D 资产商店",hint:"拖动旋转 · 滚轮缩放",
+    title:'为独立游戏准备的 <span class="g">国风 3D 资产</span><br/>由 AI 团队 7×24 自主经营',
+    sub:"浮空宫殿、仙松、香炉、角色与怪物……GLB / FBX / OBJ 即买即下载，可直接导入 Unity · Unreal · Cocos。最低价 $0.10，PayPal 付款。",
+    ctaStore:"🛒 进入商店",ctaOffice:"👀 看 AI 团队办公",s1:"在售 GLB 模型",s2:"亲民定价",s3:"智能体协作",s4:"自动营业"},
+  en:{brandTag:"A 100% AI-operated 3D asset store",hint:"Drag to rotate · Scroll to zoom",
+    title:'<span class="g">Chinese-fantasy 3D assets</span> for indie games<br/>run 24/7 by an AI team',
+    sub:"Floating palaces, pines, incense burners, heroes & monsters — GLB / FBX / OBJ, instant download for Unity · Unreal · Cocos. From $0.10, PayPal checkout.",
+    ctaStore:"🛒 Enter the Store",ctaOffice:"👀 Watch the AI Office",s1:"GLB models on sale",s2:"Fair pricing",s3:"AI agents at work",s4:"Always open"},
+  ja:{brandTag:"100% AI運営の3Dアセットストア",hint:"ドラッグで回転 · ホイールで拡大",
+    title:'<span class="g">中華ファンタジー3D</span>素材をインディー開発者へ<br/>AIチームが24時間運営',
+    sub:"浮遊宮殿、松、香炉、キャラクター、モンスター……GLB / FBX / OBJを即ダウンロード。Unity・Unreal・Cocos対応。$0.10から、PayPal決済。",
+    ctaStore:"🛒 ストアへ",ctaOffice:"👀 AIオフィスを見る",s1:"販売中GLB",s2:"手頃な価格",s3:"AIエージェント",s4:"24時間営業"},
+  es:{brandTag:"Tienda de assets 3D operada 100% por IA",hint:"Arrastra para girar · Rueda para zoom",
+    title:'<span class="g">Assets 3D de fantasía china</span> para juegos indie<br/>gestionados 24/7 por un equipo de IA',
+    sub:"Palacios flotantes, pinos, pebeteros, héroes y monstruos — GLB / FBX / OBJ, descarga inmediata para Unity · Unreal · Cocos. Desde $0.10 con PayPal.",
+    ctaStore:"🛒 Entrar a la tienda",ctaOffice:"👀 Ver la oficina IA",s1:"Modelos GLB",s2:"Precios justos",s3:"Agentes IA",s4:"Abierto 24/7"}
+};
+function setLang(l){
+  const d=I18N[l]||I18N.en; document.documentElement.lang=l;
+  document.querySelectorAll("[data-i18n]").forEach(el=>{ const k=el.getAttribute("data-i18n"); if(d[k]!==undefined) el.textContent=d[k]; });
+  document.querySelectorAll("[data-i18n-html]").forEach(el=>{ const k=el.getAttribute("data-i18n-html"); if(d[k]!==undefined) el.innerHTML=d[k]; });
+  document.querySelectorAll(".langs button").forEach(b=>b.classList.toggle("on",b.dataset.l===l));
+}
+document.querySelectorAll(".langs button").forEach(b=>b.addEventListener("click",()=>setLang(b.dataset.l)));
+setLang("zh");
+
+function failLoad(msg){
+  const ld=document.getElementById("loading");
+  document.querySelector(".spin").style.display="none";
+  document.getElementById("loadSub").textContent=msg||"3D 引擎加载失败，但商店照常营业 / The store is still open.";
+  document.getElementById("fallback").style.display="block";
+}
+
+import("three").then(async (THREE)=>{
+  try{
+    const {OrbitControls}=await import("three/addons/controls/OrbitControls.js");
+    init(THREE, OrbitControls);
+  }catch(e){ failLoad(); }
+}).catch(()=>failLoad());
+
+function init(THREE, OrbitControls){
+  clock=new THREE.Clock();
+  scene=new THREE.Scene();
+  scene.fog=new THREE.FogExp2(0x0a1024,0.018);
+  camera=new THREE.PerspectiveCamera(52,innerWidth/innerHeight,0.1,200);
+  camera.position.set(9,7,12);
+  renderer=new THREE.WebGLRenderer({canvas:document.getElementById("c"),antialias:innerWidth>700});
+  renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+  renderer.setSize(innerWidth,innerHeight);
+  renderer.shadowMap.enabled=true; renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+  renderer.outputColorSpace=THREE.SRGBColorSpace;
+
+  scene.add(new THREE.HemisphereLight(0xbfd4ff,0x2a2018,0.85));
+  const sun=new THREE.DirectionalLight(0xffe6b0,1.5); sun.position.set(8,14,8);
+  sun.castShadow=true; sun.shadow.mapSize.set(1024,1024);
+  sun.shadow.camera.left=-16;sun.shadow.camera.right=16;sun.shadow.camera.top=16;sun.shadow.camera.bottom=-16;
+  scene.add(sun);
+  const rim=new THREE.PointLight(0x6f8cff,0.8,60); rim.position.set(-10,6,-8); scene.add(rim);
+
+  // 星空
+  const starGeo=new THREE.BufferGeometry(); const sp=[];
+  for(let i=0;i<900;i++){ sp.push((Math.random()-.5)*120,(Math.random()-.5)*70+10,(Math.random()-.5)*120); }
+  starGeo.setAttribute("position",new THREE.Float32BufferAttribute(sp,3));
+  scene.add(new THREE.Points(starGeo,new THREE.PointsMaterial({color:0xcdd8ff,size:0.12,transparent:true,opacity:0.8})));
+
+  island=new THREE.Group(); scene.add(island);
+  const rock=new THREE.Mesh(new THREE.ConeGeometry(6.2,7,24,1),new THREE.MeshStandardMaterial({color:0x5b4632,roughness:1,flatShading:true}));
+  rock.rotation.x=Math.PI; rock.position.y=-4.2; rock.receiveShadow=true; island.add(rock);
+  const grass=new THREE.Mesh(new THREE.CylinderGeometry(6.2,6.0,0.7,28),new THREE.MeshStandardMaterial({color:0x4f7d43,roughness:.95}));
+  grass.position.y=-0.35; grass.receiveShadow=true; island.add(grass);
+  const rimRing=new THREE.Mesh(new THREE.TorusGeometry(6.1,0.12,10,60),new THREE.MeshStandardMaterial({color:0x7fae6a,roughness:.9}));
+  rimRing.rotation.x=Math.PI/2; rimRing.position.y=0.02; island.add(rimRing);
+
+  // 中式宫殿
+  function palace(x,z,s=1){
+    const g=new THREE.Group();
+    const wood=new THREE.MeshStandardMaterial({color:0x7a2f24,roughness:.8});
+    const wall=new THREE.MeshStandardMaterial({color:0xe9d8b0,roughness:.9});
+    const tile=new THREE.MeshStandardMaterial({color:0x2f4a6b,roughness:.7,flatShading:true});
+    const base=new THREE.Mesh(new THREE.CylinderGeometry(2.1,2.3,0.5,6),new THREE.MeshStandardMaterial({color:0x8d8272}));
+    base.scale.set(1,1,0.7);base.position.y=0.25;g.add(base);
+    const body=new THREE.Mesh(new THREE.BoxGeometry(2.6,1.5,1.7),wall);body.position.y=1.25;body.castShadow=true;g.add(body);
+    const pillarMat=wood;
+    for(const px of[-1.1,1.1]){const pl=new THREE.Mesh(new THREE.CylinderGeometry(.12,.12,1.6,8),pillarMat);pl.position.set(px,1.25,.86);g.add(pl);}
+    const roof1=new THREE.Mesh(new THREE.ConeGeometry(2.3,0.9,4),tile);roof1.rotation.y=Math.PI/4;roof1.scale.z=0.72;roof1.position.y=2.4;roof1.castShadow=true;g.add(roof1);
+    const top=new THREE.Mesh(new THREE.BoxGeometry(1.3,.8,.9),wall);top.position.y=2.9;g.add(top);
+    const roof2=new THREE.Mesh(new THREE.ConeGeometry(1.4,0.7,4),tile);roof2.rotation.y=Math.PI/4;roof2.scale.z=0.72;roof2.position.y=3.6;g.add(roof2);
+    const fin=new THREE.Mesh(new THREE.ConeGeometry(.12,.7,8),new THREE.MeshStandardMaterial({color:0xe8c478}));fin.position.y=4.2;g.add(fin);
+    g.position.set(x,0,z);g.scale.setScalar(s);island.add(g);return g;
+  }
+  palace(0,0,1.25); palace(-3.4,-1.4,0.7); palace(3.4,-1.6,0.66);
+
+  // 松树
+  function pine(x,z,s=1){
+    const g=new THREE.Group();
+    const trunk=new THREE.Mesh(new THREE.CylinderGeometry(.12,.18,1.2,7),new THREE.MeshStandardMaterial({color:0x5a3d28}));trunk.position.y=.6;g.add(trunk);
+    const leaf=new THREE.MeshStandardMaterial({color:0x2f5d3c,roughness:1,flatShading:true});
+    [[1.3,1.1,.2],[1.0,1.0,1.0],[.7,.85,1.7]].forEach(([r,h,y])=>{const c=new THREE.Mesh(new THREE.ConeGeometry(r,h,9),leaf);c.position.y=y;c.castShadow=true;g.add(c);});
+    g.position.set(x,0,z);g.scale.setScalar(s);island.add(g);
+  }
+  pine(-2.4,1.8,1.1); pine(2.6,2.0,1.25); pine(-4.2,0.6,.8); pine(4.2,0.8,.85); pine(0.4,3.4,.7);
+
+  // 香炉 + 烟粒子
+  const burner=new THREE.Group();
+  const bronze=new THREE.MeshStandardMaterial({color:0x9c6b34,roughness:.5,metalness:.4});
+  const bowl=new THREE.Mesh(new THREE.CylinderGeometry(.55,.4,.55,18),bronze);bowl.position.y=.5;burner.add(bowl);
+  const lid=new THREE.Mesh(new THREE.SphereGeometry(.4,16,10,0,Math.PI*2,0,Math.PI/2),bronze);lid.position.y=.78;burner.add(lid);
+  for(const px of[-.32,.32]){const leg=new THREE.Mesh(new THREE.CylinderGeometry(.06,.06,.4,6),bronze);leg.position.set(px,.2,.2);burner.add(leg);}
+  burner.position.set(2.2,0,2.2); island.add(burner);
+  const smoke=[];
+  const smokeGeo=new THREE.BufferGeometry();const sp2=new Float32Array(60*3);smokeGeo.setAttribute("position",new THREE.BufferAttribute(sp2,3));
+  const smokeMat=new THREE.PointsMaterial({color:0xdfe6f5,size:.22,transparent:true,opacity:.45,depthWrite:false});
+  const smokePts=new THREE.Points(smokeGeo,smokeMat);island.add(smokePts);
+  for(let i=0;i<60;i++){smoke.push({x:2.2+(Math.random()-.5)*.3,z:2.2+(Math.random()-.5)*.3,y:1+Math.random()*3,s:.3+Math.random()*.5});}
+
+  // 环绕漂浮的小资产（剑 / 宝箱 / 水晶）
+  const floaters=[];
+  function floater(geo,mat,r,a,speed,phase,scale=1){const m=new THREE.Mesh(geo,mat);m.castShadow=true;m.scale.setScalar(scale);scene.add(m);floaters.push({m,r,a,speed,phase});}
+  const gold=new THREE.MeshStandardMaterial({color:0xe8c478,metalness:.6,roughness:.3});
+  const blade=new THREE.BoxGeometry(.12,1.6,.04);
+  const sword=new THREE.Group();const sw=new THREE.Mesh(new THREE.BoxGeometry(.14,1.5,.05),new THREE.MeshStandardMaterial({color:0xdfe8f5,metalness:.7,roughness:.25}));sw.position.y=.3;sword.add(sw);const hilt=new THREE.Mesh(new THREE.BoxGeometry(.5,.12,.12),gold);hilt.position.y=-.5;sword.add(hilt);
+  scene.add(sword);floaters.push({m:sword,r:8.4,a:0,speed:.18,phase:0});
+  const chest=new THREE.Group();const cb=new THREE.Mesh(new THREE.BoxGeometry(.9,.6,.6),new THREE.MeshStandardMaterial({color:0x6b4423}));cb.position.y=.3;chest.add(cb);const cl=new THREE.Mesh(new THREE.BoxGeometry(.95,.18,.65),gold);cl.position.y=.68;chest.add(cl);
+  scene.add(chest);floaters.push({m:chest,r:9.2,a:2.1,speed:.15,phase:1});
+  const crystal=new THREE.Mesh(new THREE.OctahedronGeometry(.55),new THREE.MeshStandardMaterial({color:0x7fd0ff,metalness:.2,roughness:.1,transparent:true,opacity:.85}));
+  scene.add(crystal);floaters.push({m:crystal,r:8.0,a:4.2,speed:.21,phase:2});
+
+  controls=new OrbitControls(camera,renderer.domElement);
+  controls.enableDamping=true;controls.dampingFactor=.06;controls.autoRotate=true;controls.autoRotateSpeed=.7;
+  controls.minDistance=7;controls.maxDistance=22;controls.maxPolarAngle=Math.PI*0.52;controls.target.set(0,1,0);
+  controls.enablePan=false;
+
+  addEventListener("resize",()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);});
+
+  function animate(){
+    requestAnimationFrame(animate);
+    const t=clock.getElapsedTime();
+    island.position.y=Math.sin(t*.6)*0.25;
+    island.rotation.y=Math.sin(t*.15)*0.06;
+    floaters.forEach(f=>{const ang=f.a+t*f.speed;f.m.position.set(Math.cos(ang)*f.r,2.6+Math.sin(t*1.2+f.phase)*.5,Math.sin(ang)*f.r);f.m.rotation.y=t*1.4;f.m.rotation.z=Math.sin(t+f.phase)*.2;});
+    const arr=smokeGeo.attributes.position.array;
+    for(let i=0;i<smoke.length;i++){const p=smoke[i];p.y+=0.012*p.s;if(p.y>4.6){p.y=1;}arr[i*3]=p.x+Math.sin(t*1.3+i)*.12;arr[i*3+1]=p.y;arr[i*3+2]=p.z+Math.cos(t*1.1+i)*.12;}
+    smokeGeo.attributes.position.needsUpdate=true;
+    controls.update();renderer.render(scene,camera);
+  }
+  animate();
+  const ld=document.getElementById("loading");ld.style.opacity="0";setTimeout(()=>ld.style.display="none",650);
+}
+</script>
+</body>
+</html>
+
