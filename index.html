@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#e9c79c"><meta name="island-zen-version" content="3.1"><title>海岛禅修 · 沿海自由行 | Island Zen</title>
+<meta name="theme-color" content="#e9c79c"><meta name="island-zen-version" content="4.0"><title>海岛禅修 · 沿海自由行 | Island Zen</title>
 <meta name="description" content="海岛禅修：可以自由行走、打坐、赏海、观日落与体验四季变化的免费浏览器试玩。">
 <style>
 :root{--cream:#fff8e8;--ink:#293c3a;--glass:rgba(250,246,231,.83);--edge:rgba(255,255,255,.78);--gold:#ad7d41}
@@ -21,14 +21,14 @@ header{position:absolute;z-index:4;top:22px;left:26px;display:flex;gap:10px;alig
 </head>
 <body>
 <canvas id="view" aria-label="海岛禅修实时三维游戏画面"></canvas><div id="veil"></div>
-<header class="panel"><div class="seal">☸</div><div class="brand"><strong>海岛禅修</strong><small>ISLAND ZEN · 自由漫游</small></div><span class="badge">浏览器试玩</span></header>
+<header class="panel"><div class="seal">☸</div><div class="brand"><strong>海岛禅修</strong><small>ISLAND ZEN · 自由漫游</small></div><span class="badge">真实 3D 场景</span></header>
 <div id="info" class="panel" aria-live="polite"><b id="seasonLabel">春 · 晴昼</b><span id="clockLabel">四季与昼夜自然流转</span><div class="timebar"><div id="timefill"></div></div></div>
-<div id="controls"><div class="row"><button class="pill" id="goHall">⛩ 去大殿</button><button class="pill" id="goZen">🏠 去禅居</button></div><div class="row"><button class="pill" id="seasons">❀ 换季节</button><button class="pill" id="tod">☀ 看日落</button></div><div class="row"><button class="pill" id="home">⌂ 回到海边</button><button class="pill strong" id="meditate">☯ 静坐</button></div></div>
+<div id="controls"><div class="row"><button class="pill" id="goHall">⛩ 去大殿</button><button class="pill" id="goZen">🏠 去禅居</button></div><div class="row"><button class="pill" id="prayer">🙏 合掌</button><button class="pill" id="bow">🙇 礼佛一拜</button></div><div class="row"><button class="pill" id="seasons">❀ 换季节</button><button class="pill" id="tod">☀ 看日落</button></div><div class="row"><button class="pill" id="home">⌂ 回到海边</button><button class="pill strong" id="meditate">☯ 静坐</button></div></div>
 <div id="joystick" aria-label="移动方向"><div class="j hidden"></div><button class="j" data-key="w">▲</button><div class="j hidden"></div><button class="j" data-key="a">◀</button><div class="j hidden"></div><button class="j" data-key="d">▶</button><div class="j hidden"></div><button class="j" data-key="s">▼</button><div class="j hidden"></div></div>
 <div id="desktopHelp">W A S D / 方向键漫步　·　鼠标拖动旋转视角　·　空格静坐　·　Shift 奔跑</div>
 <div id="tip" class="panel">沿石板路进大殿，左侧是新开放的禅居。走走、听海或静坐。</div>
-<div id="toast" role="status"></div>
-<div id="start"><div class="welcome"><div class="graphic">🏯</div><h1>海岛禅修</h1><h2>一座可以停下来的岛</h2><p>走进佛堂的六十六席禅堂，也能去禅居喝茶、静坐。<br>海风、四季与日升月落，自会缓缓经过。</p><button id="play">进入海岛 ↗</button><footer>永久免费 · 支持电脑与手机 · 此版为独立网页试玩，非 Unity 正式构建</footer></div></div>
+<div id="toast" role="status"></div><div id="loadStatus" class="panel" style="position:absolute;z-index:8;left:50%;top:72px;transform:translateX(-50%);padding:8px 14px;color:#48625c;font-size:12px;max-width:88vw;text-align:center">正在准备真实 3D 场景…</div>
+<div id="start"><div class="welcome"><div class="graphic">🏯</div><h1>海岛禅修</h1><h2>一座可以停下来的岛</h2><p>走进佛堂的六十六席禅堂，也能去禅居喝茶、静坐。<br>海风、四季与日升月落，自会缓缓经过。</p><button id="play" disabled>正在加载场景…</button><footer>永久免费 · 支持电脑与手机 · 浏览器真实 3D 场景 · Unity 工程独立保留</footer></div></div>
 <div id="error"><div><h2>浏览器暂时无法启动三维画面</h2><p>请使用新版 Chrome、Edge 或 Safari 并开启 WebGL。</p></div></div>
 <script>
 // Free no-dependency Canvas2D compatibility path for browsers without WebGL.
@@ -103,293 +103,9 @@ function startIslandZen2D(){
 }
 </script>
 <script>
-(()=>{'use strict';
-const C=document.querySelector('#view'), $=id=>document.getElementById(id);let gl;
-try{gl=C.getContext('webgl',{antialias:true,alpha:false,powerPreference:'high-performance'})||C.getContext('experimental-webgl');if(!gl)throw Error('WebGL unsupported')}catch(e){startIslandZen2D();return}
-const VS=`attribute vec3 aPos;attribute vec3 aNorm;attribute vec3 aCol;attribute float aKind;
-uniform mat4 uVP;uniform float uTime;varying vec3 vColor;varying vec3 vNorm;varying float vDist;varying float vKind;
-void main(){vec3 p=aPos; if(aKind>0.5&&aKind<1.5){p.y+=sin(p.x*.7+uTime*1.25)*.13+cos(p.z*.49-uTime*1.08)*.09;} gl_Position=uVP*vec4(p,1.);vColor=aCol;vNorm=aNorm;vDist=gl_Position.w;vKind=aKind;}`;
-const FS=`precision mediump float;uniform vec3 uSun,uSeaTint,uFog,uGrassTint;uniform float uAmbient,uFogDepth;varying vec3 vColor,vNorm;varying float vDist,vKind;
-void main(){vec3 base=vColor;if(vKind>0.5&&vKind<1.5)base=mix(base,uSeaTint,.75);if(vKind>1.5&&vKind<2.5)base=mix(base,uGrassTint,.58);float light=max(dot(normalize(vNorm),normalize(uSun)),0.)*.56+uAmbient;vec3 rgb=base*light;if(vKind>0.5&&vKind<1.5)rgb+=vec3(.08,.12,.17)*pow(max(0.,dot(normalize(vNorm),normalize(uSun))),6.);float fog=clamp((vDist-23.)/uFogDepth,0.,.94);gl_FragColor=vec4(mix(rgb,uFog,fog),1.);}`;
-function shader(type,s){let o=gl.createShader(type);gl.shaderSource(o,s);gl.compileShader(o);if(!gl.getShaderParameter(o,gl.COMPILE_STATUS))throw Error(gl.getShaderInfoLog(o));return o}
-let prog;try{prog=gl.createProgram();gl.attachShader(prog,shader(gl.VERTEX_SHADER,VS));gl.attachShader(prog,shader(gl.FRAGMENT_SHADER,FS));gl.linkProgram(prog);if(!gl.getProgramParameter(prog,gl.LINK_STATUS))throw Error(gl.getProgramInfoLog(prog));gl.useProgram(prog)}catch(e){startIslandZen2D();return}
-const A={p:gl.getAttribLocation(prog,'aPos'),n:gl.getAttribLocation(prog,'aNorm'),c:gl.getAttribLocation(prog,'aCol'),k:gl.getAttribLocation(prog,'aKind')};const U={vp:gl.getUniformLocation(prog,'uVP'),t:gl.getUniformLocation(prog,'uTime'),sun:gl.getUniformLocation(prog,'uSun'),sea:gl.getUniformLocation(prog,'uSeaTint'),fog:gl.getUniformLocation(prog,'uFog'),grass:gl.getUniformLocation(prog,'uGrassTint'),a:gl.getUniformLocation(prog,'uAmbient'),fd:gl.getUniformLocation(prog,'uFogDepth')};
-const G=[];let S=G;
-const col=(hex)=>[(hex>>16&255)/255,(hex>>8&255)/255,(hex&255)/255],rnd=(n)=>{let x=Math.sin(n*127.1+42.17)*43758.5453;return x-Math.floor(x)};
-function normal(a,b,c){const x=[b[0]-a[0],b[1]-a[1],b[2]-a[2]],y=[c[0]-a[0],c[1]-a[1],c[2]-a[2]],n=[x[1]*y[2]-x[2]*y[1],x[2]*y[0]-x[0]*y[2],x[0]*y[1]-x[1]*y[0]];const l=Math.hypot(...n)||1;return n.map(v=>v/l)}
-function tri(a,b,c,color,kind=0){let n=normal(a,b,c);const t=col(color);for(const p of [a,b,c])S.push(...p,...n,...t,kind)}
-function quad(a,b,c,d,color,kind=0){tri(a,b,c,color,kind);tri(a,c,d,color,kind)}
-function box(x,y,z,w,h,d,color){let a=x-w/2,b=x+w/2,l=y-h/2,t=y+h/2,n=z-d/2,f=z+d/2;quad([a,l,f],[b,l,f],[b,t,f],[a,t,f],color);quad([b,l,n],[a,l,n],[a,t,n],[b,t,n],color);quad([a,l,n],[a,l,f],[a,t,f],[a,t,n],color);quad([b,l,f],[b,l,n],[b,t,n],[b,t,f],color);quad([a,t,f],[b,t,f],[b,t,n],[a,t,n],color);quad([a,l,n],[b,l,n],[b,l,f],[a,l,f],color)}
-function cyl(x,y,z,r,h,color,n=12,r2=r){const top=y+h/2,bot=y-h/2;for(let i=0;i<n;i++){let a=i*Math.PI*2/n,b=(i+1)*Math.PI*2/n,p=[x+r*Math.cos(a),bot,z+r*Math.sin(a)],q=[x+r*Math.cos(b),bot,z+r*Math.sin(b)],v=[x+r2*Math.cos(b),top,z+r2*Math.sin(b)],u=[x+r2*Math.cos(a),top,z+r2*Math.sin(a)];quad(p,u,v,q,color);tri([x,top,z],v,u,color)}}
-function sphere(x,y,z,r,color,rows=5,seg=9){for(let j=0;j<rows;j++){let lat1=-Math.PI/2+Math.PI*j/rows,lat2=-Math.PI/2+Math.PI*(j+1)/rows;for(let i=0;i<seg;i++){let a=i*2*Math.PI/seg,b=(i+1)*2*Math.PI/seg;let p=(la,lo)=>[x+r*Math.cos(la)*Math.cos(lo),y+r*Math.sin(la),z+r*Math.cos(la)*Math.sin(lo)];quad(p(lat1,a),p(lat1,b),p(lat2,b),p(lat2,a),color)}}}
-function cone(x,y,z,r,h,color,n=10){cyl(x,y,z,r,h,color,n,0)}
-function ring(cx,cy,cz,inner,outer,color,seg=48,kind=0){for(let i=0;i<seg;i++){let a=i*2*Math.PI/seg,b=(i+1)*2*Math.PI/seg;quad([cx+outer*Math.cos(a),cy,cz+outer*Math.sin(a)],[cx+inner*Math.cos(a),cy+.005,cz+inner*Math.sin(a)],[cx+inner*Math.cos(b),cy+.005,cz+inner*Math.sin(b)],[cx+outer*Math.cos(b),cy,cz+outer*Math.sin(b)],color,kind)}}
-// 海平面 / Coastal water (vertex displacement in the GPU).
-for(let x=-110;x<110;x+=4){for(let z=-110;z<110;z+=4){const y=-.72;quad([x,y,z],[x,y,z+4],[x+4,y,z+4],[x+4,y,z],0x56b3c5,1)}}
-// 海岛砂质海岸
-cyl(0,-.65,0,26,1.20,0xcaa781,64,26.25);cyl(0,.005,0,24.8,.10,0xf1d6a2,64,24.8);ring(0,.085,0,24.2,24.7,0xf8e8ce,72);ring(0,-.42,0,26.5,27.3,0xc1eee9,72);
-
-// ISLAND_ZEN_SHORE_V31: expanded beach environment (procedural web geometry, not original GLB).
-cyl(0,-.81,0,32.4,1.11,0xc9ac8a,96,32.4);
-ring(0,-.065,0,24.85,27.7,0xf0d4aa,96);ring(0,-.12,0,27.65,29.65,0xe0c49f,96);
-ring(0,-.19,0,29.55,31.8,0xc9ad92,96);ring(0,-.285,0,31.72,32.58,0xb3dbd2,96);
-for(let k=0;k<6;k++){
- const radius=32.35+k*1.28, rr=radius+.35;
- for(let i=0;i<80;i++){
-  const a=i*Math.PI/40,b=(i+1)*Math.PI/40,cr=t=>radius+.12*Math.sin(t*9+k*1.7),dr=t=>rr+.14*Math.sin(t*9+k*1.7);
-  const v=(r,t)=>[Math.cos(t)*r,-.385-.012*k,Math.sin(t)*r];
-  quad(v(cr(a),a),v(dr(a),a),v(dr(b),b),v(cr(b),b),k%2?0xb5e5e2:0xe5f4e4);
- }
-}
-for(let i=0;i<110;i++){
- const a=rnd(i*47+29)*6.2831853,r=24+rnd(i*17+81)*7.4,x=Math.cos(a)*r,z=Math.sin(a)*r,h=r<27?-.012:-.13;
- if(i%5===0)sphere(x,h+.10,z,.11,i%3?0xeddfbd:0xffefd5,3,6);
- else if(i%7===0)sphere(x,h+.11,z,.17,0xa8a393,3,5);
- else sphere(x,h+.07,z,.045,(i%4)?0xf5e2bf:0xd5baa2,3,5);
-}
-for(let i=0;i<18;i++){
- let a=i*2.39996,r=25.1+rnd(i*17)*4.7,x=Math.sin(a)*r,z=Math.cos(a)*r;
- sphere(x,-.03,z,.3+i%3*.08,0x9ca49b,4,7);sphere(x+.21,-.07,z-.1,.16,0xd5bf9e,3,6);
-}
-for(let i=0;i<85;i++){
- const a=rnd(i*8+15)*6.2831853,r=17.8+rnd(i*43+21)*5.4,x=Math.sin(a)*r,z=Math.cos(a)*r;
- if((Math.abs(x)<9&&z<0)||(Math.abs(x+13)<5&&z<6&&z>-12)||(Math.abs(x-13)<5&&z<7&&z>-11))continue;
- cone(x,.30,z,.11,.45,i%4?0x9dab72:0xa4bb80,4);
- if(i%3===0)cone(x+.25,.24,z-.13,.09,.33,0x7eab72,4);
-}
-for(const [x,z] of [[18,15],[-21,5],[7,26],[-6,25]]){
- cyl(x,-.07,z,.79,.035,0x7bb6bb,24);ring(x,-.037,z,.72,1.05,0xd6bea2,24);
- for(let j=0;j<5;j++){const a=j*Math.PI*2/5;sphere(x+Math.sin(a)*1.15,-.005,z+Math.cos(a)*1.15,.13,0xb2a38b,3,6)}
-}
-box(-19,-.03,18,2.5,.14,.25,0x988b72);box(20,-.025,12,1.95,.12,.27,0xb5a17d);
-for(let i=0;i<34;i++){
- let a=i*2.39996,x=Math.sin(a)*(.7+i*.035)*40,z=Math.cos(a)*(.7+i*.035)*40;
- if(Math.hypot(x,z)<35)continue;
- sphere(x,-.37,z,.4+(i%5)*.12,i%3?0x759d99:0x87a99f,3,6);
-}
-window.__ISLAND_ZEN_SHORE__='expanded-beach-v3.1';
-
-// 草地 / Grass coverage behind beach, with 3D clumps
-function turf(x,z,r,color){const n=12;for(let i=0;i<n;i++){let a=i*2*Math.PI/n,b=(i+1)*2*Math.PI/n;tri([x,.066,z],[x+r*Math.cos(b),.063,z+r*Math.sin(b)],[x+r*Math.cos(a),.063,z+r*Math.sin(a)],color,2)}}
-turf(-1,-8,13,0x80a765);turf(-10,-4,7,0x8bad6c);turf(10,-5,6,0x78a162);turf(-1,4,6,0x9cba74);
-// 曲折石子路从沙滩到大殿
-for(let i=0;i<10;i++){let z=10.5-i*1.6,x=Math.sin(i*.44)*.34;box(x,.12,z,3.15,.12,1.22,i%2?0xd0c8a5:0xded9ba)}
-// 大殿石台台阶
-box(0,.52,-9.4,15.8,1,12.9,0xaaa99b);
-for(let i=0;i<3;i++)box(0,.13+i*.17,-2.5-i*.68,7.4,.25,1.04,0xc4bea7);
-box(0,1.045,-9.4,14.8,.12,11.9,0xb49b75); // 殿地板
-// 石栏与底座
-for(let i=-6;i<=6;i+=2){box(i,.82,-15,0.23,.55,.23,0xdbccb0);box(i,.82,-3.9,.23,.55,.23,0xdbccb0)}
-// 开放式中式大殿，正立面朝向 z 正轴
-const red=0x9b4437,wood=0x773c2d,gold=0xc6a464,darkRoof=0x365b59,roofEdge=0xbca271;
-for(const x of [-6.5,-4.4,-2.2,0,2.2,4.4,6.5]){
-  for(const z of [-14.4,-4.5]){cyl(x,3.68,z,.27,5.1,red,10);box(x,6.12,z,.75,.22,.8,gold);box(x,1.04,z,.72,.28,.72,0xa88d68)}
-}
-// 后墙与侧墙（前方开敞）
-box(0,3.3,-15,12.2,4.25,.34,0xcabda1);box(-7,3.3,-9.8,.32,4.25,9.9,0xd0c1a5);box(7,3.3,-9.8,.32,4.25,9.9,0xd0c1a5);
-for(let z=-13;z<=-6;z+=2){box(-6.82,3.5,z,.1,2.7,.7,0x87503a);box(6.82,3.5,z,.1,2.7,.7,0x87503a)}
-// 金枋梁架
-box(0,6.1,-4.5,15.1,.40,.52,gold);box(0,6.1,-14.6,15.1,.40,.52,gold);box(-6.45,6.1,-9.55,.48,.35,10,gold);box(6.45,6.1,-9.55,.48,.35,10,gold);
-// 屋顶双坡+飞檐 / curved roof planes
-function roof(x,z,w,d,y,dy){let xr=w/2,zr=d/2;const ridgeY=y+dy;const corner=y+.53;
-let v1=[x-xr,y,z+zr],v2=[x+xr,y,z+zr],v3=[x+xr,y,z-zr],v4=[x-xr,y,z-zr];
-quad([x-xr,y,z+zr],[x+xr,y,z+zr],[x+w*.33,ridgeY,z],[x-w*.33,ridgeY,z],darkRoof);
-quad(v3,v4,[x-w*.33,ridgeY,z],[x+w*.33,ridgeY,z],0x294e50);
-tri(v4,[x-w*.33,ridgeY,z],v1,0x325a56);tri(v2,[x+w*.33,ridgeY,z],v3,0x335956);
-for(const zz of [z-zr,z+zr]){box(x,y+.1,zz,w+.6,.17,.26,roofEdge);for(const xx of [-1,1])sphere(x+xx*(xr+.22),corner,zz,.24,roofEdge,3,6)}
-box(x,ridgeY+.1,z,w*.67,.23,.27,roofEdge);
-for(let i=0;i<=14;i++){const xx=x-xr+i*w/14;const zf=z+zr-.32;let yy=y+.13;box(xx,yy,zf,.085,.12,.28,0xb0a07a)}
-}
-roof(0,-9.6,17,14,6.48,2.52); // 主殿屋顶
-// 门前匾额
-box(0,5.45,-4.34,4.5,.80,.16,0x4d392c);for(let x of [-1.5,0,1.5])box(x,5.42,-4.21,.48,.37,.08,0xe2c987);
-// 莲台佛像
-cyl(0,1.40,-12.4,2.35,.55,0x9d6242,24);cyl(0,1.71,-12.4,1.95,.22,0xd1a957,24);cyl(0,2.08,-12.4,1.08,.56,0xdbba63,16);
-sphere(0,3.25,-12.4,1.24,0xe0bc64,6,12);sphere(0,4.77,-12.4,.78,0xe4c67e,6,12);cyl(0,5.48,-12.4,.49,.20,0xcfac4c,16);
-for(let i=0;i<16;i++){let a=2*Math.PI*i/16;sphere(1.9*Math.sin(a),4.54+1.9*Math.cos(a),-12.8,.14,0xf2df9c,3,5)}
-// 莲瓣底座
-for(let i=0;i<18;i++){let a=i*Math.PI*2/18;cone(Math.cos(a)*1.50,2.01,-12.4+Math.sin(a)*1.15,.35,.74,0xd9b866,6)}
-// 供桌香炉
-box(0,1.60,-10.15,3.7,.22,1.05,wood);for(const x of [-1.5,1.5])for(const z of [-10.49,-9.85])box(x,1.34,z,.21,.45,.21,wood);cyl(0,1.90,-10.15,.43,.47,0xb98449,9);for(let i=-1;i<=1;i++)cyl(i*.13,2.19,-10.13,.022,.41,0x6d4c38,5);
-// 66个蒲团：与旧大殿的席数一致（本试玩采用重建位置）
-const seats=[];const seatColumns=[-5.35,-3.90,-2.45,2.45,3.90,5.35];
-for(let row=0;row<11;row++)for(let c=0;c<6;c++){
- const x=seatColumns[c],z=-5.50-row*.64;seats.push([x,z]);
- cyl(x,1.17,z,.34,.19,(row+c)%2?0xa36d5b:0xbd8068,12);
- ring(x,1.278,z,.25,.305,(row+c)%2?0xd5b78a:0xc9997d,12);
-}
-window.__ISLAND_ZEN_SEATS__=seats.length;
-// ISLAND_ZEN_V3_UPGRADE: 禅居、回廊、66席禅堂内景（浏览器低多边形重建）。
-// 大殿：花纹地毯、蒲团席区边框、木屏风、经架和长明灯。大厅仍可从前方进入。
-box(0,1.115,-9.4,4.12,.025,9.65,0xa76951);
-for(const edge of [-2.15,2.15])box(edge,1.14,-9.4,.08,.025,9.65,0xd7b774);
-for(let i=0;i<9;i++){let zz=-5.3-i*.99;box(0,1.14,zz,2.9,.025,.045,i%2?0xcfac78:0xe4c999)}
-for(const sx of [-5.8,5.8]){
-  // 木质藏经架及卷轴
-  box(sx,2.09,-13.3,.62,1.85,2.15,0x6e4233);
-  for(let k=0;k<3;k++){box(sx,1.54+k*.56,-13.3,.73,.09,2.2,0x442c29);
-  for(let j=0;j<6;j++)box(sx,1.77+k*.56,-14.1+j*.32,.24,.31,.14,j%3?0xc4a56b:0x90623e)}
-  // 屏风：半透感用镂空的木棂格代替，保持 WebGL 无依赖。
-  box(sx,2.64,-5.12,.15,2.6,1.95,0x805041);
-  for(let h=0;h<4;h++)box(sx,1.65+h*.46,-5.12,.17,.052,2.08,0xd4b98a);
-  for(let k=-2;k<=2;k++)box(sx,2.63,-5.12+k*.39,.18,2.18,.048,0xcda87e);
-}
-// 红绸吊灯、供花、莲台前的长明灯
-for(const xx of [-5.6,-2.8,2.8,5.6])for(const zz of [-5.3,-13.1]){
-  cyl(xx,5.62,zz,.025,1.25,0xa78355,5);cyl(xx,4.92,zz,.23,.52,0xf1cc8a,8);
-  cyl(xx,5.24,zz,.28,.10,0xc68b5a,8);cone(xx,4.59,zz,.14,.27,0xc37650,8);
-}
-for(const xx of [-2.75,2.75]){
- cyl(xx,1.30,-11.74,.27,.36,0xa1794c,10);cyl(xx,1.54,-11.74,.15,.15,0xf2c369,9);
- cyl(xx,1.82,-11.74,.045,.44,0xffdf8c,6);
-}
-for(const xx of [-1.5,1.5]){
- cyl(xx,1.82,-10.1,.32,.27,0xc5aa6c,12);cyl(xx,2.00,-10.1,.21,.09,0xede1bd,12);
- for(let k=0;k<5;k++){let aa=k*6.283/5;sphere(xx+Math.cos(aa)*.18,2.2,-10.1+Math.sin(aa)*.18,.14,k%2?0xf4e1c7:0xebad97,4,6)}
-}
-// 前门斗拱与台阶，增强大殿细节。
-for(let i=-6;i<=6;i++){
-  box(i*1.12,5.89,-4.30,.11,.55,.63,0xcaa568);
-  box(i*1.12,5.53,-4.19,.47,.11,.82,0x9f5440);
-}
-for(let i=0;i<22;i++){let z=-16.5+i*.67;box(0,8.06-Math.abs(i-10.5)*.12,z,13.6,.07,.08,i%2?0x426e67:0x345a58)}
-
-// 海岸禅居：独立、敞门、可进入的小屋，不是假装导入的 V5 原始高精模型。
-function zenHouse(cx,cz,w,d,variant){
- const y=.50,front=cz+d/2,back=cz-d/2;
- box(cx,.29,cz,w+1.0,.34,d+.7,0xb4a78e);box(cx,.48,cz,w,.13,d,0xc8ae86);
- // 四围墙，朝向沙滩的中间留门；内部可看见茶案与卧榻。
- box(cx,1.89,back,w,2.90,.21,0xddccad);
- for(const side of [-1,1])box(cx+side*w/2,1.89,cz,.18,2.9,d,0xd4bea1);
- for(const side of [-1,1])box(cx+side*(w*.35),1.89,front,w*.3,2.9,.20,0xd9c3a2);
- box(cx,3.42,front,w+.8,.21,.32,0xa77951);
- for(const side of [-1,1]){
-  cyl(cx+side*w*.46,1.97,front+.14,.18,3.25,0x914f42,9);
-  box(cx+side*w*.20,1.85,front+.125,.055,2.8,.08,0xb48560);
-  // 纸窗木格
-  box(cx+side*w*.35,2.12,front+.24,w*.20,1.12,.06,0xf2e1ba);
-  for(let j=0;j<3;j++)box(cx+side*w*.35,1.60+j*.49,front+.29,w*.21,.055,.05,0x916442);
- }
- // 深色双坡飞檐，顶端仍保留中式风格
- const e=w/2+.50,q=d/2+.49,h=3.55,rh=4.72;
- quad([cx-e,h,cz+q],[cx+e,h,cz+q],[cx+e*.52,rh,cz],[cx-e*.52,rh,cz],0x416961);
- quad([cx+e,h,cz-q],[cx-e,h,cz-q],[cx-e*.52,rh,cz],[cx+e*.52,rh,cz],0x305b56);
- for(const zz of [cz-q,cz+q]){
-  box(cx,h+.025,zz,w+1.30,.13,.20,0xc8a46e);
-  for(const side of [-1,1])sphere(cx+side*(e+.07),h+.14,zz,.19,0xd3b37c,3,6);
- }
- box(cx,rh+.03,cz,w*.51,.16,.16,0xd3b47f);
- for(let j=0;j<11;j++){
-  let x=cx-w*.46+j*w*.092;box(x,h+.13,front+.25,.05,.13,.33,0xa78d62);
- }
- // 房间内部：竹席、矮案、杯盏、书架、卧榻、蒲团和香炉
- box(cx,.61,cz,w*.71,.035,d*.56,0xb8a880);
- box(cx,1.00,cz-.32,1.7,.13,.82,0x866443);
- for(const s of [-1,1])for(const k of [-1,1])box(cx+s*.65,.82,cz-.32+k*.26,.13,.42,.12,0x764a38);
- cyl(cx-.40,1.15,cz-.32,.16,.14,0xe4ca99,10);cyl(cx+.23,1.16,cz-.27,.12,.12,0xbba57b,9);
- box(cx-w*.29,.78,cz-d*.22,.85,.28,1.8,0x8b6a52);box(cx-w*.29,.95,cz-d*.22,.73,.13,1.6,0xcbbb99);
- box(cx+w*.33,1.50,cz-d*.26,.26,1.70,1.35,0x765442);
- for(let j=0;j<4;j++)box(cx+w*.33,1.12+j*.27,cz-d*.27,.35,.035,1.38,0xcbae77);
- for(let j=0;j<4;j++)box(cx+w*.33,1.22+j*.26,cz-d*.52,.33,.20,.1,0xd9ba8c);
- for(const side of [-1,1])cyl(cx+side*.70,.67,cz+d*.19,.32,.15,variant?0x9b7753:0xb38560,12);
- // 门前小台阶和庭院石板
- for(let k=0;k<3;k++)box(cx,.20+k*.06,front+.6+k*.50,w*.37,.12,.45,k%2?0xc3b59a:0xd4c7a9);
-}
-zenHouse(-13.25,1.2,6.15,5.85,0); // 禅居
-zenHouse(13.10,1.0,5.75,5.55,1); // 茶寮
-// 回廊与赏海廊架，茶座和庭院石景。
-for(const sx of [-1,1]){
- let cx=sx*10.0;
- for(let k=0;k<4;k++){let z=6.5+k*1.30;
-  box(cx,.19,z,1.6,.10,1.12,0xd4c4a5);
- }
- for(let k=0;k<4;k++)cyl(cx+sx*1.75,1.28,6.3+k*1.35,.10,2.33,0x90634a,8);
- box(cx+sx*1.75,2.57,8.37,.20,.18,5.80,0xb99064);
-}
-for(const xx of [-12.6,12.4]){
- cyl(xx,.42,8.9,.78,.29,0xd2c2a3,14);
- cyl(xx,.71,8.9,.43,.30,0xaf7d56,12);
- cyl(xx,1.07,8.9,.20,.22,0xd6ae74,10);
-}
-// 禅居院落：庭竹、小溪石桥、盆景。
-for(let i=0;i<12;i++){
- let x=-18.1+(i%4)*.48,z=4.4+Math.floor(i/4)*.42;
- cyl(x,1.05+(i%3)*.18,z,.047,1.90+(i%3)*.36,0x7a9c63,6);
- for(let j=0;j<3;j++)sphere(x+.12,1.55+j*.29,z,.17,0x6e9f75,3,5);
-}
-for(const x of [-10.7,10.3]){
- cyl(x,.45,-2.2,.56,.51,0xa7947b,10);cyl(x,.76,-2.2,.45,.18,0x9d7651,10);
- cyl(x,1.18,-2.2,.08,.67,0x735c42,7);sphere(x,1.57,-2.2,.48,0x6f9872,4,8);
-}
-
-// 海边静坐台 / meditation spot at shore
-cyl(8,.15,11,1.55,.25,0xd9cda8,14);cyl(8,.38,11,.64,.13,0xb98065,12);
-// 岛上石灯
-function lamp(x,z){cyl(x,.6,z,.26,1.25,0x929487,8);box(x,1.28,z,.84,.15,.83,0x86877b);box(x,1.70,z,.74,.70,.72,0xffd9a1);box(x,2.06,z,1.05,.20,1.02,0x696d63);cone(x,2.27,z,.62,.38,0x657268,8)}
-for(const [x,z] of [[-8,-3],[8,-3],[-10,6],[10,5],[-6,12],[6,13]])lamp(x,z);
-// 树冠 / island trees
-function tree(x,z,s=1,type=0){cyl(x,1.2*s,z,.18*s,2.4*s,0x826c4d,8,.27*s);
-const clr=[0x5a936f,0x6a9771,0x56886b,0x7ca578][type%4];for(const [dx,dy,dz,r] of [[0,3.35,0,1.15],[.65,2.95,.1,.87],[-.68,2.85,.28,.95],[0,3.3,-.58,.92]])sphere(x+dx*s,dy*s,z+dz*s,r*s,clr,4,7)}
-const trees=[[-17,-8,1.45],[-18,-2,1.05],[-17,5,1.15],[-13,12,.90],[-8,-17,1.0],[11,-17,1.2],[16,-11,1.35],[18,-5,1.1],[18,5,1.35],[13,13,.9],[-17,15,.82],[17,12,.75]];trees.forEach((v,i)=>tree(...v,i));
-// 草簇、碎石、海边野花，固定种子构造
-for(let i=0;i<390;i++){let a=rnd(i*3+1)*Math.PI*2,r=Math.sqrt(rnd(i*3+3))*22.4,x=Math.cos(a)*r,z=Math.sin(a)*r;if(x>-9&&x<9&&z>-17&&z<-3)continue;
-if(i%10===0){cyl(x,.16,z,.16+rnd(i)*.18,.21,0xaaa590,6)}else if(i%8===0){sphere(x,.28,z,.08,i%16?0xf7ddcb:0xf9efac,3,5);cyl(x,.17,z,.018,.23,0x638961,4)}else{cone(x,.19,z,.12,.25,i%2?0x79a96e:0x91b67a,4)}}
-// 远岛、海上礁石
-for(let i=0;i<9;i++){let a=i*2.399,r=39+i*4;let x=Math.sin(a)*r,z=Math.cos(a)*r;cone(x,-.35,z,3+i%3,4.5+(i%4),0x688f84,9);sphere(x,2.2+(i%4),z,1.65+(i%3)*.2,0x6d9d78,4,8)}
-// 沙滩扇贝、贝壳
-for(let i=0;i<75;i++){let a=rnd(i*5+2)*Math.PI*2,r=17+rnd(i*5+3)*6.8;let x=Math.sin(a)*r,z=Math.cos(a)*r;sphere(x,.11,z,.08,i%2?0xece2c5:0xf6e8d5,3,6)}
-// 禅修角色动态构建
-function createMonk(x,y,z,face,sit,now){let out=[];const old=S;S=out;const bob=sit?0:Math.sin(now*9)*.045;const bodyColor=0xe2b870,skin=0xf5d6a9;const yy=y+bob;const angle=face;
-const sx=(dx,dz)=>[x+dx*Math.cos(angle)-dz*Math.sin(angle),z+dx*Math.sin(angle)+dz*Math.cos(angle)];
-function b(dx,hy,dz,w,h,d,color){let p=sx(dx,dz);box(p[0],yy+hy,p[1],w,h,d,color)}
-function c(dx,hy,dz,r,h,color){let p=sx(dx,dz);cyl(p[0],yy+hy,p[1],r,h,color,9)}
-function sp(dx,hy,dz,r,color){let p=sx(dx,dz);sphere(p[0],yy+hy,p[1],r,color,4,7)}
-if(sit){c(0,.43,0,.45,.36,0xbd8f58);sp(0,1.12,0,.37,skin);c(0,.77,0,.37,.55,bodyColor);c(-.35,.42,.25,.20,.35,bodyColor);c(.35,.42,.25,.2,.35,bodyColor)}
-else{c(0,.76,0,.34,1.05,bodyColor);c(-.17,.22,0,.16,.45,0xdcb075);c(.17,.22,0,.16,.45,0xdcb075);c(-.41,1.11,0,.10,.52,skin);c(.41,1.11,0,.10,.52,skin);sp(0,1.58,0,.32,skin);sp(-.1,1.62,.27,.045,0x3c3932);sp(.1,1.62,.27,.045,0x3c3932)}
-S=old;return out}
-// GPU storage
-function makeBuffer(arr){let b=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,b);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(arr),gl.STATIC_DRAW);return {buffer:b,count:arr.length/10}}
-const staticBuffer=makeBuffer(G),actorBuffer=gl.createBuffer();
-function useBuffer(buffer,count){gl.bindBuffer(gl.ARRAY_BUFFER,buffer);for(const [a,size,offset] of [[A.p,3,0],[A.n,3,12],[A.c,3,24],[A.k,1,36]]){gl.enableVertexAttribArray(a);gl.vertexAttribPointer(a,size,gl.FLOAT,false,40,offset)}gl.drawArrays(gl.TRIANGLES,0,count)}
-const clamp=(v,l,h)=>Math.max(l,Math.min(h,v)),lerp=(a,b,t)=>a*(1-t)+b*t;
-function normalize(a){let l=Math.hypot(...a)||1;return a.map(v=>v/l)}function cross(a,b){return [a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]]}function dot(a,b){return a[0]*b[0]+a[1]*b[1]+a[2]*b[2]}
-function lookAt(e,t){let z=normalize(e.map((v,i)=>v-t[i])),x=normalize(cross([0,1,0],z)),y=cross(z,x);return [x[0],y[0],z[0],0,x[1],y[1],z[1],0,x[2],y[2],z[2],0,-dot(x,e),-dot(y,e),-dot(z,e),1]}
-function perspective(fov,aspect,n,f){let t=1/Math.tan(fov/2);return [t/aspect,0,0,0,0,t,0,0,0,0,(f+n)/(n-f),-1,0,0,(2*f*n)/(n-f),0]}
-function multiply(a,b){let r=new Array(16).fill(0);for(let c=0;c<4;c++)for(let j=0;j<4;j++)for(let k=0;k<4;k++)r[c*4+j]+=a[k*4+j]*b[c*4+k];return r}
-const cc=x=>x/255,hex3=h=>col(h),mix3=(a,b,t)=>a.map((v,i)=>lerp(v,b[i],t));
-const seasons=[{n:'春',sea:0x54b9c9,grass:0x91b779,fog:0xb7dbe3},{n:'夏',sea:0x2799c1,grass:0x65a977,fog:0x9fdae4},{n:'秋',sea:0x427fa2,grass:0xb8a76c,fog:0xe0c69a},{n:'冬',sea:0x577e9e,grass:0xb5c6bd,fog:0xb7c8da}];
-const state={x:0,z:18,dir:0,rot:0,sit:false,seasonOffset:0,dayOffset:0,started:false,steps:0},KEY={};let prev=0,clock=0,toastTimer;
-function message(s){$('toast').textContent=s;$('toast').classList.add('on');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').classList.remove('on'),2200)}
-function seasonNow(){return (((Math.floor(Date.now()/7200000)+state.seasonOffset)%4)+4)%4}
-function phaseNow(){let x=((Date.now()%5400000)/5400000+state.dayOffset+1)%1;return x}
-function phases(p){if(p<.7333)return ['晴昼',p/.7333];if(p<.8222)return ['夕阳',1];if(p<.9333)return ['夜晚',1];return ['黎明',1]}
-function updateUI(){let s=seasons[seasonNow()],p=phaseNow(),q=phases(p);$('seasonLabel').textContent=s.n+' · '+q[0];$('clockLabel').textContent='2小时一季 · 90分钟昼夜 · 夜晚约10分钟';$('timefill').style.width=(p*100).toFixed(1)+'%';$('meditate').textContent=state.sit?'↗ 起身':'☯ 静坐';$('meditate').classList.toggle('on',state.sit)}
-function height(x,z){if(Math.abs(x)<7.7&&z<-4.4&&z>-16)return 1.10;if(Math.abs(x+13.25)<3.08&&Math.abs(z-1.2)<2.95)return .56;if(Math.abs(x-13.10)<2.87&&Math.abs(z-1.0)<2.80)return .56;return 0.15}
-function sit(){state.sit=!state.sit;if(state.sit){const found=seats.filter(v=>Math.hypot(v[0]-state.x,v[1]-state.z)<1.25).sort((a,b)=>Math.hypot(a[0]-state.x,a[1]-state.z)-Math.hypot(b[0]-state.x,b[1]-state.z));if(found.length){state.x=found[0][0];state.z=found[0][1];message('轻轻坐下，静观呼吸');}else{message('坐下听海，什么都不必做');}}else message('起身，继续散步');updateUI()}
-function move(dt){if(!state.started||state.sit)return;let ax=(KEY.a||KEY.ArrowLeft?-1:0)+(KEY.d||KEY.ArrowRight?1:0),az=(KEY.w||KEY.ArrowUp?-1:0)+(KEY.s||KEY.ArrowDown?1:0);let k=Math.hypot(ax,az);if(!k)return;const sp=(KEY.Shift?5.9:3.15)*dt,ca=Math.cos(state.rot),sa=Math.sin(state.rot);ax/=k;az/=k;let dx=ax*ca+az*sa,dz=az*ca-ax*sa;let xx=state.x+dx*sp,zz=state.z+dz*sp;if(Math.hypot(xx,zz)<29.5){state.x=xx;state.z=zz;state.dir=Math.atan2(-dx,dz);state.steps+=sp}}
-function sunlight(p){let dawn=p>.9333?(p-.9333)/.0667:0,dusk=p>.7333&&p<.8222?(p-.7333)/.0889:0,night=p>=.8222&&p<.9333;
-let daylight=night?.14: p>.9333?lerp(.18,1,dawn):p>.7333?lerp(1,.22,dusk):1;return {bright:daylight,night,orange:p>.7333&&p<.835};}
-let lastHour=-1;
-function frame(ts){try{let dt=Math.min((ts-prev)/1000,.05)||.016;prev=ts;clock+=dt;move(dt);let p=phaseNow(),season=seasons[seasonNow()],day=sunlight(p);
-let sky=hex3(season.fog),noct=[.045,.080,.145],warm=[.91,.59,.38];let fog=day.night?mix3(sky,noct,.88):day.orange?mix3(sky,warm,.53):p>.9333?mix3(sky,noct,(1-day.bright)*.65):sky;
-let scale=Math.min(devicePixelRatio||1,1.75),w=Math.max(2,Math.floor(innerWidth*scale)),h=Math.max(2,Math.floor(innerHeight*scale));if(C.width!==w||C.height!==h){C.width=w;C.height=h;gl.viewport(0,0,w,h)}
-let r=state.rot,dx=Math.sin(r),dz=Math.cos(r),ey=[state.x+dx*17,10.5+Math.min(5,(w/h-1)*1),state.z+dz*17],tar=[state.x,1.45,state.z-2];const proj=perspective(Math.PI/3,w/h,.12,230),vp=multiply(proj,lookAt(ey,tar));
-gl.clearColor(...fog,1);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);gl.enable(gl.DEPTH_TEST);gl.enable(gl.CULL_FACE);gl.cullFace(gl.BACK);gl.disable(gl.BLEND);gl.uniformMatrix4fv(U.vp,false,new Float32Array(vp));gl.uniform1f(U.t,clock);gl.uniform3fv(U.sun,new Float32Array(normalize([.43,day.bright+.25,.49])));gl.uniform3fv(U.sea,new Float32Array(hex3(season.sea)));gl.uniform3fv(U.grass,new Float32Array(hex3(season.grass)));gl.uniform3fv(U.fog,new Float32Array(fog));gl.uniform1f(U.a,.42+day.bright*.43);gl.uniform1f(U.fd,75);useBuffer(staticBuffer.buffer,staticBuffer.count);
-let actor=createMonk(state.x,height(state.x,state.z),state.z,state.dir,state.sit,clock);gl.bindBuffer(gl.ARRAY_BUFFER,actorBuffer);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(actor),gl.DYNAMIC_DRAW);useBuffer(actorBuffer,actor.length/10);
-if(lastHour!==Math.floor(ts/2000)){updateUI();lastHour=Math.floor(ts/2000)}
-}catch(e){console.error('Render loop:',e);$('tip').textContent='游戏画面遇到问题，请刷新后重试。'} requestAnimationFrame(frame)}
-$('play').addEventListener('click',()=>{state.started=true;$('start').style.display='none';message('欢迎来到海岛。沿石板路可以走进佛堂。');});
-$('seasons').addEventListener('click',()=>{state.seasonOffset++;message('四季轮转 · '+seasons[seasonNow()].n);updateUI()});
-$('tod').addEventListener('click',()=>{let p=phaseNow();let target=p<.78?.78:p<.88?.88:p<.96?.96:.20;state.dayOffset=((state.dayOffset+target-p)%1+1)%1;message('时间流转 · '+phases(phaseNow())[0]);updateUI()});
-$('home').addEventListener('click',()=>{state.x=0;state.z=18;state.sit=false;state.rot=0;message('又回到了海边');updateUI()});
-$('meditate').addEventListener('click',sit);
-$('goHall').addEventListener('click',()=>{state.x=0;state.z=-3.2;state.dir=0;state.rot=0;state.sit=false;message('抵达大殿 · 六十六席禅堂');updateUI()});
-$('goZen').addEventListener('click',()=>{state.x=-13.25;state.z=5.0;state.dir=0;state.rot=0;state.sit=false;message('抵达禅居 · 可进入小院静坐');updateUI()});
-addEventListener('keydown',e=>{let k=e.key;if(/^(w|a|s|d|ArrowUp|ArrowDown|ArrowLeft|ArrowRight|Shift| )$/i.test(k)){e.preventDefault();KEY[k.toLowerCase()===' '? 'Space':(k.length===1?k.toLowerCase():k)]=true;if(k===' '&&!e.repeat)sit()}});addEventListener('keyup',e=>{let k=e.key;KEY[k.length===1?k.toLowerCase():k]=false});
-for(let el of document.querySelectorAll('[data-key]')){const k=el.dataset.key;el.addEventListener('pointerdown',e=>{e.preventDefault();el.setPointerCapture(e.pointerId);KEY[k]=true});for(const t of ['pointerup','pointercancel','lostpointercapture'])el.addEventListener(t,()=>{KEY[k]=false})}
-let drag=false,px=0;C.addEventListener('pointerdown',e=>{drag=true;px=e.clientX;try{C.setPointerCapture(e.pointerId)}catch(_){}});C.addEventListener('pointermove',e=>{if(drag){let d=e.clientX-px;state.rot=clamp(state.rot-d*.004,-1.05,1.05);px=e.clientX}});C.addEventListener('pointerup',()=>drag=false);C.addEventListener('pointercancel',()=>drag=false);addEventListener('blur',()=>{drag=false;for(let k in KEY)KEY[k]=false});C.addEventListener('webglcontextlost',e=>{e.preventDefault();$('tip').textContent='显卡画面暂停，请刷新页面继续。'});
-updateUI();requestAnimationFrame(frame);window.__ISLAND_ZEN_READY__=true;window.__ISLAND_ZEN_VERSION__='3.1';
-})();
+window.__ISLAND_ZEN_LEGACY_WEBGL_DISABLED__ = true;
 </script>
-<!-- ISLAND_ZEN_V3_UPGRADE -->
+<!-- Island Zen 4.0: Three.js GLB loader replaces the legacy procedural WebGL renderer. -->
+
+<script src="./app.js"></script>
 </body></html>
