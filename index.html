@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#e9c79c"><meta name="island-zen-version" content="3.0"><title>海岛禅修 · 沿海自由行 | Island Zen</title>
+<meta name="theme-color" content="#e9c79c"><meta name="island-zen-version" content="3.1"><title>海岛禅修 · 沿海自由行 | Island Zen</title>
 <meta name="description" content="海岛禅修：可以自由行走、打坐、赏海、观日落与体验四季变化的免费浏览器试玩。">
 <style>
 :root{--cream:#fff8e8;--ink:#293c3a;--glass:rgba(250,246,231,.83);--edge:rgba(255,255,255,.78);--gold:#ad7d41}
@@ -92,14 +92,14 @@ function startIslandZen2D(){
  $('play').onclick=()=>{state.playing=true;$('start').style.display='none';message('欢迎来到海岛，WASD 或方向键自由漫步。')};
  $('seasons').onclick=()=>{state.season=(state.season+1)%4;message('四季轮转 · '+seasons[season()].n)};
  $('tod').onclick=()=>{let p=phase();state.day=(state.day+(p<.78?.79-p:p<.92?.94-p:1.2-p))%1;message('时间流转 · '+daylight())};
- $('home').onclick=()=>{state.x=0;state.z=9;state.sit=false;$('meditate').textContent='☯ 静坐';$('meditate').classList.remove('on');message('回到海边')};
+ $('home').onclick=()=>{state.x=0;state.z=18;state.sit=false;$('meditate').textContent='☯ 静坐';$('meditate').classList.remove('on');message('回到海边')};
  $('meditate').onclick=toggleSit;
  $('goHall').onclick=()=>{state.x=0;state.z=-3.2;state.sit=false;$('meditate').textContent='☯ 静坐';message('抵达大殿 · 66席禅堂')};
  $('goZen').onclick=()=>{state.x=-13;state.z=4.1;state.sit=false;$('meditate').textContent='☯ 静坐';message('抵达禅居 · 喝茶听海')};
  addEventListener('keydown',e=>{let k=e.key.toLowerCase();if('wasd'.includes(k)||k.startsWith('arrow')||k==='shift'||k===' '){keys.add(k);e.preventDefault();if(k===' '&&!e.repeat)toggleSit()}});
  addEventListener('keyup',e=>keys.delete(e.key.toLowerCase()));addEventListener('blur',()=>keys.clear());
  document.querySelectorAll('[data-key]').forEach(el=>{const k=el.dataset.key;el.onpointerdown=e=>{e.preventDefault();keys.add(k);el.setPointerCapture(e.pointerId)};for(const name of ['pointerup','pointercancel','lostpointercapture'])el.addEventListener(name,()=>keys.delete(k))});
- window.__ISLAND_ZEN_READY__='2d';window.__ISLAND_ZEN_VERSION__='3.0';requestAnimationFrame(frame);
+ window.__ISLAND_ZEN_READY__='2d';window.__ISLAND_ZEN_VERSION__='3.1';requestAnimationFrame(frame);
 }
 </script>
 <script>
@@ -128,6 +128,47 @@ function ring(cx,cy,cz,inner,outer,color,seg=48,kind=0){for(let i=0;i<seg;i++){l
 for(let x=-110;x<110;x+=4){for(let z=-110;z<110;z+=4){const y=-.72;quad([x,y,z],[x,y,z+4],[x+4,y,z+4],[x+4,y,z],0x56b3c5,1)}}
 // 海岛砂质海岸
 cyl(0,-.65,0,26,1.20,0xcaa781,64,26.25);cyl(0,.005,0,24.8,.10,0xf1d6a2,64,24.8);ring(0,.085,0,24.2,24.7,0xf8e8ce,72);ring(0,-.42,0,26.5,27.3,0xc1eee9,72);
+
+// ISLAND_ZEN_SHORE_V31: expanded beach environment (procedural web geometry, not original GLB).
+cyl(0,-.81,0,32.4,1.11,0xc9ac8a,96,32.4);
+ring(0,-.065,0,24.85,27.7,0xf0d4aa,96);ring(0,-.12,0,27.65,29.65,0xe0c49f,96);
+ring(0,-.19,0,29.55,31.8,0xc9ad92,96);ring(0,-.285,0,31.72,32.58,0xb3dbd2,96);
+for(let k=0;k<6;k++){
+ const radius=32.35+k*1.28, rr=radius+.35;
+ for(let i=0;i<80;i++){
+  const a=i*Math.PI/40,b=(i+1)*Math.PI/40,cr=t=>radius+.12*Math.sin(t*9+k*1.7),dr=t=>rr+.14*Math.sin(t*9+k*1.7);
+  const v=(r,t)=>[Math.cos(t)*r,-.385-.012*k,Math.sin(t)*r];
+  quad(v(cr(a),a),v(dr(a),a),v(dr(b),b),v(cr(b),b),k%2?0xb5e5e2:0xe5f4e4);
+ }
+}
+for(let i=0;i<110;i++){
+ const a=rnd(i*47+29)*6.2831853,r=24+rnd(i*17+81)*7.4,x=Math.cos(a)*r,z=Math.sin(a)*r,h=r<27?-.012:-.13;
+ if(i%5===0)sphere(x,h+.10,z,.11,i%3?0xeddfbd:0xffefd5,3,6);
+ else if(i%7===0)sphere(x,h+.11,z,.17,0xa8a393,3,5);
+ else sphere(x,h+.07,z,.045,(i%4)?0xf5e2bf:0xd5baa2,3,5);
+}
+for(let i=0;i<18;i++){
+ let a=i*2.39996,r=25.1+rnd(i*17)*4.7,x=Math.sin(a)*r,z=Math.cos(a)*r;
+ sphere(x,-.03,z,.3+i%3*.08,0x9ca49b,4,7);sphere(x+.21,-.07,z-.1,.16,0xd5bf9e,3,6);
+}
+for(let i=0;i<85;i++){
+ const a=rnd(i*8+15)*6.2831853,r=17.8+rnd(i*43+21)*5.4,x=Math.sin(a)*r,z=Math.cos(a)*r;
+ if((Math.abs(x)<9&&z<0)||(Math.abs(x+13)<5&&z<6&&z>-12)||(Math.abs(x-13)<5&&z<7&&z>-11))continue;
+ cone(x,.30,z,.11,.45,i%4?0x9dab72:0xa4bb80,4);
+ if(i%3===0)cone(x+.25,.24,z-.13,.09,.33,0x7eab72,4);
+}
+for(const [x,z] of [[18,15],[-21,5],[7,26],[-6,25]]){
+ cyl(x,-.07,z,.79,.035,0x7bb6bb,24);ring(x,-.037,z,.72,1.05,0xd6bea2,24);
+ for(let j=0;j<5;j++){const a=j*Math.PI*2/5;sphere(x+Math.sin(a)*1.15,-.005,z+Math.cos(a)*1.15,.13,0xb2a38b,3,6)}
+}
+box(-19,-.03,18,2.5,.14,.25,0x988b72);box(20,-.025,12,1.95,.12,.27,0xb5a17d);
+for(let i=0;i<34;i++){
+ let a=i*2.39996,x=Math.sin(a)*(.7+i*.035)*40,z=Math.cos(a)*(.7+i*.035)*40;
+ if(Math.hypot(x,z)<35)continue;
+ sphere(x,-.37,z,.4+(i%5)*.12,i%3?0x759d99:0x87a99f,3,6);
+}
+window.__ISLAND_ZEN_SHORE__='expanded-beach-v3.1';
+
 // 草地 / Grass coverage behind beach, with 3D clumps
 function turf(x,z,r,color){const n=12;for(let i=0;i<n;i++){let a=i*2*Math.PI/n,b=(i+1)*2*Math.PI/n;tri([x,.066,z],[x+r*Math.cos(b),.063,z+r*Math.sin(b)],[x+r*Math.cos(a),.063,z+r*Math.sin(a)],color,2)}}
 turf(-1,-8,13,0x80a765);turf(-10,-4,7,0x8bad6c);turf(10,-5,6,0x78a162);turf(-1,4,6,0x9cba74);
@@ -317,7 +358,7 @@ function perspective(fov,aspect,n,f){let t=1/Math.tan(fov/2);return [t/aspect,0,
 function multiply(a,b){let r=new Array(16).fill(0);for(let c=0;c<4;c++)for(let j=0;j<4;j++)for(let k=0;k<4;k++)r[c*4+j]+=a[k*4+j]*b[c*4+k];return r}
 const cc=x=>x/255,hex3=h=>col(h),mix3=(a,b,t)=>a.map((v,i)=>lerp(v,b[i],t));
 const seasons=[{n:'春',sea:0x54b9c9,grass:0x91b779,fog:0xb7dbe3},{n:'夏',sea:0x2799c1,grass:0x65a977,fog:0x9fdae4},{n:'秋',sea:0x427fa2,grass:0xb8a76c,fog:0xe0c69a},{n:'冬',sea:0x577e9e,grass:0xb5c6bd,fog:0xb7c8da}];
-const state={x:0,z:8.5,dir:0,rot:0,sit:false,seasonOffset:0,dayOffset:0,started:false,steps:0},KEY={};let prev=0,clock=0,toastTimer;
+const state={x:0,z:18,dir:0,rot:0,sit:false,seasonOffset:0,dayOffset:0,started:false,steps:0},KEY={};let prev=0,clock=0,toastTimer;
 function message(s){$('toast').textContent=s;$('toast').classList.add('on');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').classList.remove('on'),2200)}
 function seasonNow(){return (((Math.floor(Date.now()/7200000)+state.seasonOffset)%4)+4)%4}
 function phaseNow(){let x=((Date.now()%5400000)/5400000+state.dayOffset+1)%1;return x}
@@ -325,7 +366,7 @@ function phases(p){if(p<.7333)return ['晴昼',p/.7333];if(p<.8222)return ['夕�
 function updateUI(){let s=seasons[seasonNow()],p=phaseNow(),q=phases(p);$('seasonLabel').textContent=s.n+' · '+q[0];$('clockLabel').textContent='2小时一季 · 90分钟昼夜 · 夜晚约10分钟';$('timefill').style.width=(p*100).toFixed(1)+'%';$('meditate').textContent=state.sit?'↗ 起身':'☯ 静坐';$('meditate').classList.toggle('on',state.sit)}
 function height(x,z){if(Math.abs(x)<7.7&&z<-4.4&&z>-16)return 1.10;if(Math.abs(x+13.25)<3.08&&Math.abs(z-1.2)<2.95)return .56;if(Math.abs(x-13.10)<2.87&&Math.abs(z-1.0)<2.80)return .56;return 0.15}
 function sit(){state.sit=!state.sit;if(state.sit){const found=seats.filter(v=>Math.hypot(v[0]-state.x,v[1]-state.z)<1.25).sort((a,b)=>Math.hypot(a[0]-state.x,a[1]-state.z)-Math.hypot(b[0]-state.x,b[1]-state.z));if(found.length){state.x=found[0][0];state.z=found[0][1];message('轻轻坐下，静观呼吸');}else{message('坐下听海，什么都不必做');}}else message('起身，继续散步');updateUI()}
-function move(dt){if(!state.started||state.sit)return;let ax=(KEY.a||KEY.ArrowLeft?-1:0)+(KEY.d||KEY.ArrowRight?1:0),az=(KEY.w||KEY.ArrowUp?-1:0)+(KEY.s||KEY.ArrowDown?1:0);let k=Math.hypot(ax,az);if(!k)return;const sp=(KEY.Shift?5.9:3.15)*dt,ca=Math.cos(state.rot),sa=Math.sin(state.rot);ax/=k;az/=k;let dx=ax*ca+az*sa,dz=az*ca-ax*sa;let xx=state.x+dx*sp,zz=state.z+dz*sp;if(Math.hypot(xx,zz)<23.55){state.x=xx;state.z=zz;state.dir=Math.atan2(-dx,dz);state.steps+=sp}}
+function move(dt){if(!state.started||state.sit)return;let ax=(KEY.a||KEY.ArrowLeft?-1:0)+(KEY.d||KEY.ArrowRight?1:0),az=(KEY.w||KEY.ArrowUp?-1:0)+(KEY.s||KEY.ArrowDown?1:0);let k=Math.hypot(ax,az);if(!k)return;const sp=(KEY.Shift?5.9:3.15)*dt,ca=Math.cos(state.rot),sa=Math.sin(state.rot);ax/=k;az/=k;let dx=ax*ca+az*sa,dz=az*ca-ax*sa;let xx=state.x+dx*sp,zz=state.z+dz*sp;if(Math.hypot(xx,zz)<29.5){state.x=xx;state.z=zz;state.dir=Math.atan2(-dx,dz);state.steps+=sp}}
 function sunlight(p){let dawn=p>.9333?(p-.9333)/.0667:0,dusk=p>.7333&&p<.8222?(p-.7333)/.0889:0,night=p>=.8222&&p<.9333;
 let daylight=night?.14: p>.9333?lerp(.18,1,dawn):p>.7333?lerp(1,.22,dusk):1;return {bright:daylight,night,orange:p>.7333&&p<.835};}
 let lastHour=-1;
@@ -340,14 +381,14 @@ if(lastHour!==Math.floor(ts/2000)){updateUI();lastHour=Math.floor(ts/2000)}
 $('play').addEventListener('click',()=>{state.started=true;$('start').style.display='none';message('欢迎来到海岛。沿石板路可以走进佛堂。');});
 $('seasons').addEventListener('click',()=>{state.seasonOffset++;message('四季轮转 · '+seasons[seasonNow()].n);updateUI()});
 $('tod').addEventListener('click',()=>{let p=phaseNow();let target=p<.78?.78:p<.88?.88:p<.96?.96:.20;state.dayOffset=((state.dayOffset+target-p)%1+1)%1;message('时间流转 · '+phases(phaseNow())[0]);updateUI()});
-$('home').addEventListener('click',()=>{state.x=0;state.z=8.5;state.sit=false;state.rot=0;message('又回到了海边');updateUI()});
+$('home').addEventListener('click',()=>{state.x=0;state.z=18;state.sit=false;state.rot=0;message('又回到了海边');updateUI()});
 $('meditate').addEventListener('click',sit);
 $('goHall').addEventListener('click',()=>{state.x=0;state.z=-3.2;state.dir=0;state.rot=0;state.sit=false;message('抵达大殿 · 六十六席禅堂');updateUI()});
 $('goZen').addEventListener('click',()=>{state.x=-13.25;state.z=5.0;state.dir=0;state.rot=0;state.sit=false;message('抵达禅居 · 可进入小院静坐');updateUI()});
 addEventListener('keydown',e=>{let k=e.key;if(/^(w|a|s|d|ArrowUp|ArrowDown|ArrowLeft|ArrowRight|Shift| )$/i.test(k)){e.preventDefault();KEY[k.toLowerCase()===' '? 'Space':(k.length===1?k.toLowerCase():k)]=true;if(k===' '&&!e.repeat)sit()}});addEventListener('keyup',e=>{let k=e.key;KEY[k.length===1?k.toLowerCase():k]=false});
 for(let el of document.querySelectorAll('[data-key]')){const k=el.dataset.key;el.addEventListener('pointerdown',e=>{e.preventDefault();el.setPointerCapture(e.pointerId);KEY[k]=true});for(const t of ['pointerup','pointercancel','lostpointercapture'])el.addEventListener(t,()=>{KEY[k]=false})}
 let drag=false,px=0;C.addEventListener('pointerdown',e=>{drag=true;px=e.clientX;try{C.setPointerCapture(e.pointerId)}catch(_){}});C.addEventListener('pointermove',e=>{if(drag){let d=e.clientX-px;state.rot=clamp(state.rot-d*.004,-1.05,1.05);px=e.clientX}});C.addEventListener('pointerup',()=>drag=false);C.addEventListener('pointercancel',()=>drag=false);addEventListener('blur',()=>{drag=false;for(let k in KEY)KEY[k]=false});C.addEventListener('webglcontextlost',e=>{e.preventDefault();$('tip').textContent='显卡画面暂停，请刷新页面继续。'});
-updateUI();requestAnimationFrame(frame);window.__ISLAND_ZEN_READY__=true;window.__ISLAND_ZEN_VERSION__='3.0';
+updateUI();requestAnimationFrame(frame);window.__ISLAND_ZEN_READY__=true;window.__ISLAND_ZEN_VERSION__='3.1';
 })();
 </script>
 <!-- ISLAND_ZEN_V3_UPGRADE -->
