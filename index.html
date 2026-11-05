@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#e9c79c"><title>海岛禅修 · 沿海自由行 | Island Zen</title>
+<meta name="theme-color" content="#e9c79c"><meta name="island-zen-version" content="3.0"><title>海岛禅修 · 沿海自由行 | Island Zen</title>
 <meta name="description" content="海岛禅修：可以自由行走、打坐、赏海、观日落与体验四季变化的免费浏览器试玩。">
 <style>
 :root{--cream:#fff8e8;--ink:#293c3a;--glass:rgba(250,246,231,.83);--edge:rgba(255,255,255,.78);--gold:#ad7d41}
@@ -23,12 +23,12 @@ header{position:absolute;z-index:4;top:22px;left:26px;display:flex;gap:10px;alig
 <canvas id="view" aria-label="海岛禅修实时三维游戏画面"></canvas><div id="veil"></div>
 <header class="panel"><div class="seal">☸</div><div class="brand"><strong>海岛禅修</strong><small>ISLAND ZEN · 自由漫游</small></div><span class="badge">浏览器试玩</span></header>
 <div id="info" class="panel" aria-live="polite"><b id="seasonLabel">春 · 晴昼</b><span id="clockLabel">四季与昼夜自然流转</span><div class="timebar"><div id="timefill"></div></div></div>
-<div id="controls"><div class="row"><button class="pill" id="seasons">❀ 换季节</button><button class="pill" id="tod">☀ 看日落</button></div><div class="row"><button class="pill" id="home">⌂ 回到海边</button><button class="pill strong" id="meditate">☯ 静坐</button></div></div>
+<div id="controls"><div class="row"><button class="pill" id="goHall">⛩ 去大殿</button><button class="pill" id="goZen">🏠 去禅居</button></div><div class="row"><button class="pill" id="seasons">❀ 换季节</button><button class="pill" id="tod">☀ 看日落</button></div><div class="row"><button class="pill" id="home">⌂ 回到海边</button><button class="pill strong" id="meditate">☯ 静坐</button></div></div>
 <div id="joystick" aria-label="移动方向"><div class="j hidden"></div><button class="j" data-key="w">▲</button><div class="j hidden"></div><button class="j" data-key="a">◀</button><div class="j hidden"></div><button class="j" data-key="d">▶</button><div class="j hidden"></div><button class="j" data-key="s">▼</button><div class="j hidden"></div></div>
 <div id="desktopHelp">W A S D / 方向键漫步　·　鼠标拖动旋转视角　·　空格静坐　·　Shift 奔跑</div>
-<div id="tip" class="panel">没有任务与终点。走走、看看海，或者坐下听风。</div>
+<div id="tip" class="panel">沿石板路进大殿，左侧是新开放的禅居。走走、听海或静坐。</div>
 <div id="toast" role="status"></div>
-<div id="start"><div class="welcome"><div class="graphic">🏯</div><h1>海岛禅修</h1><h2>一座可以停下来的岛</h2><p>沿着沙滩漫步，走进佛堂，在蒲团上静坐。<br>春夏秋冬与日升月落，自会缓缓经过。</p><button id="play">进入海岛 ↗</button><footer>永久免费 · 支持电脑与手机 · 此版为独立网页试玩，非 Unity 正式构建</footer></div></div>
+<div id="start"><div class="welcome"><div class="graphic">🏯</div><h1>海岛禅修</h1><h2>一座可以停下来的岛</h2><p>走进佛堂的六十六席禅堂，也能去禅居喝茶、静坐。<br>海风、四季与日升月落，自会缓缓经过。</p><button id="play">进入海岛 ↗</button><footer>永久免费 · 支持电脑与手机 · 此版为独立网页试玩，非 Unity 正式构建</footer></div></div>
 <div id="error"><div><h2>浏览器暂时无法启动三维画面</h2><p>请使用新版 Chrome、Edge 或 Safari 并开启 WebGL。</p></div></div>
 <script>
 // Free no-dependency Canvas2D compatibility path for browsers without WebGL.
@@ -72,6 +72,12 @@ function startIslandZen2D(){
   poly([[cx-tw*.57,ty+th*.05],[cx+tw*.57,ty+th*.05],[cx+tw*.28,ty-th*.28],[cx-tw*.28,ty-th*.28]],color('#355b58',bright*.84+.16));poly([[cx-tw*.33,ty-th*.24],[cx+tw*.33,ty-th*.24],[cx+tw*.19,ty-th*.44],[cx-tw*.19,ty-th*.44]],color('#496c61',bright*.86+.14));
   rounded(cx-tw*.19,ty-th*.31,tw*.38,th*.07,3,'#be9a5d');oval(cx,ty+th*.23,R*.045,R*.06,'#d8af65');oval(cx,ty+th*.13,R*.025,R*.04,'#e8c17e');
   for(let i=-3;i<=3;i++){let xx=cx+i*tw*.1;oval(xx,ty+th*.45,7*sc*.7,3*sc*.6,color('#aa8356',bright*.9+.1))}
+  // 禅居与茶亭：兼容画面也保持主要场景位置。
+  rounded(cx-R*.80,ty+th*.30,R*.21,th*.22,3,color('#ecd4b0',bright*.82+.18));
+  poly([[cx-R*.84,ty+th*.30],[cx-R*.57,ty+th*.30],[cx-R*.65,ty+th*.10],[cx-R*.77,ty+th*.10]],color('#355b58',bright*.85+.15));
+  rounded(cx+R*.56,ty+th*.31,R*.18,th*.19,3,color('#dfc3a1',bright*.82+.18));
+  poly([[cx+R*.53,ty+th*.31],[cx+R*.77,ty+th*.31],[cx+R*.70,ty+th*.14],[cx+R*.60,ty+th*.14]],color('#46675d',bright*.85+.15));
+  ctx.fillStyle=color('#6d5c43',bright*.7+.3);ctx.font='bold '+Math.max(10,Math.floor(R*.043))+'px sans-serif';ctx.fillText('禅居',cx-R*.78,ty+th*.52);
   // Character worldspace + subtle trail and meditation visual.
   const mx=cx+state.x*sc,my=cy+state.z*sc*.79;drawMonk(mx,my,t/1000,state.sit);
   if(state.sit){ctx.strokeStyle='#f2e3b3aa';ctx.lineWidth=2;ctx.beginPath();ctx.arc(mx,my,22+Math.sin(t*.002)*2,0,Math.PI*2);ctx.stroke()}
@@ -88,10 +94,12 @@ function startIslandZen2D(){
  $('tod').onclick=()=>{let p=phase();state.day=(state.day+(p<.78?.79-p:p<.92?.94-p:1.2-p))%1;message('时间流转 · '+daylight())};
  $('home').onclick=()=>{state.x=0;state.z=9;state.sit=false;$('meditate').textContent='☯ 静坐';$('meditate').classList.remove('on');message('回到海边')};
  $('meditate').onclick=toggleSit;
+ $('goHall').onclick=()=>{state.x=0;state.z=-3.2;state.sit=false;$('meditate').textContent='☯ 静坐';message('抵达大殿 · 66席禅堂')};
+ $('goZen').onclick=()=>{state.x=-13;state.z=4.1;state.sit=false;$('meditate').textContent='☯ 静坐';message('抵达禅居 · 喝茶听海')};
  addEventListener('keydown',e=>{let k=e.key.toLowerCase();if('wasd'.includes(k)||k.startsWith('arrow')||k==='shift'||k===' '){keys.add(k);e.preventDefault();if(k===' '&&!e.repeat)toggleSit()}});
  addEventListener('keyup',e=>keys.delete(e.key.toLowerCase()));addEventListener('blur',()=>keys.clear());
  document.querySelectorAll('[data-key]').forEach(el=>{const k=el.dataset.key;el.onpointerdown=e=>{e.preventDefault();keys.add(k);el.setPointerCapture(e.pointerId)};for(const name of ['pointerup','pointercancel','lostpointercapture'])el.addEventListener(name,()=>keys.delete(k))});
- window.__ISLAND_ZEN_READY__='2d';requestAnimationFrame(frame);
+ window.__ISLAND_ZEN_READY__='2d';window.__ISLAND_ZEN_VERSION__='3.0';requestAnimationFrame(frame);
 }
 </script>
 <script>
@@ -163,7 +171,116 @@ for(let i=0;i<18;i++){let a=i*Math.PI*2/18;cone(Math.cos(a)*1.50,2.01,-12.4+Math
 // 供桌香炉
 box(0,1.60,-10.15,3.7,.22,1.05,wood);for(const x of [-1.5,1.5])for(const z of [-10.49,-9.85])box(x,1.34,z,.21,.45,.21,wood);cyl(0,1.90,-10.15,.43,.47,0xb98449,9);for(let i=-1;i<=1;i++)cyl(i*.13,2.19,-10.13,.022,.41,0x6d4c38,5);
 // 66个蒲团：与旧大殿的席数一致（本试玩采用重建位置）
-const seats=[];for(let row=0;row<6;row++){for(let c=0;c<11;c++){const x=(c-5)*1.03,z=-5.8-row*.85;if(Math.abs(x)<1.55&&row>=4)continue;seats.push([x,z]);cyl(x,1.19,z,.36,.18,(row+c)%2?0x96634f:0xb67860,12)}}
+const seats=[];const seatColumns=[-5.35,-3.90,-2.45,2.45,3.90,5.35];
+for(let row=0;row<11;row++)for(let c=0;c<6;c++){
+ const x=seatColumns[c],z=-5.50-row*.64;seats.push([x,z]);
+ cyl(x,1.17,z,.34,.19,(row+c)%2?0xa36d5b:0xbd8068,12);
+ ring(x,1.278,z,.25,.305,(row+c)%2?0xd5b78a:0xc9997d,12);
+}
+window.__ISLAND_ZEN_SEATS__=seats.length;
+// ISLAND_ZEN_V3_UPGRADE: 禅居、回廊、66席禅堂内景（浏览器低多边形重建）。
+// 大殿：花纹地毯、蒲团席区边框、木屏风、经架和长明灯。大厅仍可从前方进入。
+box(0,1.115,-9.4,4.12,.025,9.65,0xa76951);
+for(const edge of [-2.15,2.15])box(edge,1.14,-9.4,.08,.025,9.65,0xd7b774);
+for(let i=0;i<9;i++){let zz=-5.3-i*.99;box(0,1.14,zz,2.9,.025,.045,i%2?0xcfac78:0xe4c999)}
+for(const sx of [-5.8,5.8]){
+  // 木质藏经架及卷轴
+  box(sx,2.09,-13.3,.62,1.85,2.15,0x6e4233);
+  for(let k=0;k<3;k++){box(sx,1.54+k*.56,-13.3,.73,.09,2.2,0x442c29);
+  for(let j=0;j<6;j++)box(sx,1.77+k*.56,-14.1+j*.32,.24,.31,.14,j%3?0xc4a56b:0x90623e)}
+  // 屏风：半透感用镂空的木棂格代替，保持 WebGL 无依赖。
+  box(sx,2.64,-5.12,.15,2.6,1.95,0x805041);
+  for(let h=0;h<4;h++)box(sx,1.65+h*.46,-5.12,.17,.052,2.08,0xd4b98a);
+  for(let k=-2;k<=2;k++)box(sx,2.63,-5.12+k*.39,.18,2.18,.048,0xcda87e);
+}
+// 红绸吊灯、供花、莲台前的长明灯
+for(const xx of [-5.6,-2.8,2.8,5.6])for(const zz of [-5.3,-13.1]){
+  cyl(xx,5.62,zz,.025,1.25,0xa78355,5);cyl(xx,4.92,zz,.23,.52,0xf1cc8a,8);
+  cyl(xx,5.24,zz,.28,.10,0xc68b5a,8);cone(xx,4.59,zz,.14,.27,0xc37650,8);
+}
+for(const xx of [-2.75,2.75]){
+ cyl(xx,1.30,-11.74,.27,.36,0xa1794c,10);cyl(xx,1.54,-11.74,.15,.15,0xf2c369,9);
+ cyl(xx,1.82,-11.74,.045,.44,0xffdf8c,6);
+}
+for(const xx of [-1.5,1.5]){
+ cyl(xx,1.82,-10.1,.32,.27,0xc5aa6c,12);cyl(xx,2.00,-10.1,.21,.09,0xede1bd,12);
+ for(let k=0;k<5;k++){let aa=k*6.283/5;sphere(xx+Math.cos(aa)*.18,2.2,-10.1+Math.sin(aa)*.18,.14,k%2?0xf4e1c7:0xebad97,4,6)}
+}
+// 前门斗拱与台阶，增强大殿细节。
+for(let i=-6;i<=6;i++){
+  box(i*1.12,5.89,-4.30,.11,.55,.63,0xcaa568);
+  box(i*1.12,5.53,-4.19,.47,.11,.82,0x9f5440);
+}
+for(let i=0;i<22;i++){let z=-16.5+i*.67;box(0,8.06-Math.abs(i-10.5)*.12,z,13.6,.07,.08,i%2?0x426e67:0x345a58)}
+
+// 海岸禅居：独立、敞门、可进入的小屋，不是假装导入的 V5 原始高精模型。
+function zenHouse(cx,cz,w,d,variant){
+ const y=.50,front=cz+d/2,back=cz-d/2;
+ box(cx,.29,cz,w+1.0,.34,d+.7,0xb4a78e);box(cx,.48,cz,w,.13,d,0xc8ae86);
+ // 四围墙，朝向沙滩的中间留门；内部可看见茶案与卧榻。
+ box(cx,1.89,back,w,2.90,.21,0xddccad);
+ for(const side of [-1,1])box(cx+side*w/2,1.89,cz,.18,2.9,d,0xd4bea1);
+ for(const side of [-1,1])box(cx+side*(w*.35),1.89,front,w*.3,2.9,.20,0xd9c3a2);
+ box(cx,3.42,front,w+.8,.21,.32,0xa77951);
+ for(const side of [-1,1]){
+  cyl(cx+side*w*.46,1.97,front+.14,.18,3.25,0x914f42,9);
+  box(cx+side*w*.20,1.85,front+.125,.055,2.8,.08,0xb48560);
+  // 纸窗木格
+  box(cx+side*w*.35,2.12,front+.24,w*.20,1.12,.06,0xf2e1ba);
+  for(let j=0;j<3;j++)box(cx+side*w*.35,1.60+j*.49,front+.29,w*.21,.055,.05,0x916442);
+ }
+ // 深色双坡飞檐，顶端仍保留中式风格
+ const e=w/2+.50,q=d/2+.49,h=3.55,rh=4.72;
+ quad([cx-e,h,cz+q],[cx+e,h,cz+q],[cx+e*.52,rh,cz],[cx-e*.52,rh,cz],0x416961);
+ quad([cx+e,h,cz-q],[cx-e,h,cz-q],[cx-e*.52,rh,cz],[cx+e*.52,rh,cz],0x305b56);
+ for(const zz of [cz-q,cz+q]){
+  box(cx,h+.025,zz,w+1.30,.13,.20,0xc8a46e);
+  for(const side of [-1,1])sphere(cx+side*(e+.07),h+.14,zz,.19,0xd3b37c,3,6);
+ }
+ box(cx,rh+.03,cz,w*.51,.16,.16,0xd3b47f);
+ for(let j=0;j<11;j++){
+  let x=cx-w*.46+j*w*.092;box(x,h+.13,front+.25,.05,.13,.33,0xa78d62);
+ }
+ // 房间内部：竹席、矮案、杯盏、书架、卧榻、蒲团和香炉
+ box(cx,.61,cz,w*.71,.035,d*.56,0xb8a880);
+ box(cx,1.00,cz-.32,1.7,.13,.82,0x866443);
+ for(const s of [-1,1])for(const k of [-1,1])box(cx+s*.65,.82,cz-.32+k*.26,.13,.42,.12,0x764a38);
+ cyl(cx-.40,1.15,cz-.32,.16,.14,0xe4ca99,10);cyl(cx+.23,1.16,cz-.27,.12,.12,0xbba57b,9);
+ box(cx-w*.29,.78,cz-d*.22,.85,.28,1.8,0x8b6a52);box(cx-w*.29,.95,cz-d*.22,.73,.13,1.6,0xcbbb99);
+ box(cx+w*.33,1.50,cz-d*.26,.26,1.70,1.35,0x765442);
+ for(let j=0;j<4;j++)box(cx+w*.33,1.12+j*.27,cz-d*.27,.35,.035,1.38,0xcbae77);
+ for(let j=0;j<4;j++)box(cx+w*.33,1.22+j*.26,cz-d*.52,.33,.20,.1,0xd9ba8c);
+ for(const side of [-1,1])cyl(cx+side*.70,.67,cz+d*.19,.32,.15,variant?0x9b7753:0xb38560,12);
+ // 门前小台阶和庭院石板
+ for(let k=0;k<3;k++)box(cx,.20+k*.06,front+.6+k*.50,w*.37,.12,.45,k%2?0xc3b59a:0xd4c7a9);
+}
+zenHouse(-13.25,1.2,6.15,5.85,0); // 禅居
+zenHouse(13.10,1.0,5.75,5.55,1); // 茶寮
+// 回廊与赏海廊架，茶座和庭院石景。
+for(const sx of [-1,1]){
+ let cx=sx*10.0;
+ for(let k=0;k<4;k++){let z=6.5+k*1.30;
+  box(cx,.19,z,1.6,.10,1.12,0xd4c4a5);
+ }
+ for(let k=0;k<4;k++)cyl(cx+sx*1.75,1.28,6.3+k*1.35,.10,2.33,0x90634a,8);
+ box(cx+sx*1.75,2.57,8.37,.20,.18,5.80,0xb99064);
+}
+for(const xx of [-12.6,12.4]){
+ cyl(xx,.42,8.9,.78,.29,0xd2c2a3,14);
+ cyl(xx,.71,8.9,.43,.30,0xaf7d56,12);
+ cyl(xx,1.07,8.9,.20,.22,0xd6ae74,10);
+}
+// 禅居院落：庭竹、小溪石桥、盆景。
+for(let i=0;i<12;i++){
+ let x=-18.1+(i%4)*.48,z=4.4+Math.floor(i/4)*.42;
+ cyl(x,1.05+(i%3)*.18,z,.047,1.90+(i%3)*.36,0x7a9c63,6);
+ for(let j=0;j<3;j++)sphere(x+.12,1.55+j*.29,z,.17,0x6e9f75,3,5);
+}
+for(const x of [-10.7,10.3]){
+ cyl(x,.45,-2.2,.56,.51,0xa7947b,10);cyl(x,.76,-2.2,.45,.18,0x9d7651,10);
+ cyl(x,1.18,-2.2,.08,.67,0x735c42,7);sphere(x,1.57,-2.2,.48,0x6f9872,4,8);
+}
+
 // 海边静坐台 / meditation spot at shore
 cyl(8,.15,11,1.55,.25,0xd9cda8,14);cyl(8,.38,11,.64,.13,0xb98065,12);
 // 岛上石灯
@@ -206,7 +323,7 @@ function seasonNow(){return (((Math.floor(Date.now()/7200000)+state.seasonOffset
 function phaseNow(){let x=((Date.now()%5400000)/5400000+state.dayOffset+1)%1;return x}
 function phases(p){if(p<.7333)return ['晴昼',p/.7333];if(p<.8222)return ['夕阳',1];if(p<.9333)return ['夜晚',1];return ['黎明',1]}
 function updateUI(){let s=seasons[seasonNow()],p=phaseNow(),q=phases(p);$('seasonLabel').textContent=s.n+' · '+q[0];$('clockLabel').textContent='2小时一季 · 90分钟昼夜 · 夜晚约10分钟';$('timefill').style.width=(p*100).toFixed(1)+'%';$('meditate').textContent=state.sit?'↗ 起身':'☯ 静坐';$('meditate').classList.toggle('on',state.sit)}
-function height(x,z){let temple=Math.abs(x)<7.7&&z<-4.4&&z>-16;if(temple)return 1.10;return 0.15}
+function height(x,z){if(Math.abs(x)<7.7&&z<-4.4&&z>-16)return 1.10;if(Math.abs(x+13.25)<3.08&&Math.abs(z-1.2)<2.95)return .56;if(Math.abs(x-13.10)<2.87&&Math.abs(z-1.0)<2.80)return .56;return 0.15}
 function sit(){state.sit=!state.sit;if(state.sit){const found=seats.filter(v=>Math.hypot(v[0]-state.x,v[1]-state.z)<1.25).sort((a,b)=>Math.hypot(a[0]-state.x,a[1]-state.z)-Math.hypot(b[0]-state.x,b[1]-state.z));if(found.length){state.x=found[0][0];state.z=found[0][1];message('轻轻坐下，静观呼吸');}else{message('坐下听海，什么都不必做');}}else message('起身，继续散步');updateUI()}
 function move(dt){if(!state.started||state.sit)return;let ax=(KEY.a||KEY.ArrowLeft?-1:0)+(KEY.d||KEY.ArrowRight?1:0),az=(KEY.w||KEY.ArrowUp?-1:0)+(KEY.s||KEY.ArrowDown?1:0);let k=Math.hypot(ax,az);if(!k)return;const sp=(KEY.Shift?5.9:3.15)*dt,ca=Math.cos(state.rot),sa=Math.sin(state.rot);ax/=k;az/=k;let dx=ax*ca+az*sa,dz=az*ca-ax*sa;let xx=state.x+dx*sp,zz=state.z+dz*sp;if(Math.hypot(xx,zz)<23.55){state.x=xx;state.z=zz;state.dir=Math.atan2(-dx,dz);state.steps+=sp}}
 function sunlight(p){let dawn=p>.9333?(p-.9333)/.0667:0,dusk=p>.7333&&p<.8222?(p-.7333)/.0889:0,night=p>=.8222&&p<.9333;
@@ -225,10 +342,13 @@ $('seasons').addEventListener('click',()=>{state.seasonOffset++;message('四季�
 $('tod').addEventListener('click',()=>{let p=phaseNow();let target=p<.78?.78:p<.88?.88:p<.96?.96:.20;state.dayOffset=((state.dayOffset+target-p)%1+1)%1;message('时间流转 · '+phases(phaseNow())[0]);updateUI()});
 $('home').addEventListener('click',()=>{state.x=0;state.z=8.5;state.sit=false;state.rot=0;message('又回到了海边');updateUI()});
 $('meditate').addEventListener('click',sit);
+$('goHall').addEventListener('click',()=>{state.x=0;state.z=-3.2;state.dir=0;state.rot=0;state.sit=false;message('抵达大殿 · 六十六席禅堂');updateUI()});
+$('goZen').addEventListener('click',()=>{state.x=-13.25;state.z=5.0;state.dir=0;state.rot=0;state.sit=false;message('抵达禅居 · 可进入小院静坐');updateUI()});
 addEventListener('keydown',e=>{let k=e.key;if(/^(w|a|s|d|ArrowUp|ArrowDown|ArrowLeft|ArrowRight|Shift| )$/i.test(k)){e.preventDefault();KEY[k.toLowerCase()===' '? 'Space':(k.length===1?k.toLowerCase():k)]=true;if(k===' '&&!e.repeat)sit()}});addEventListener('keyup',e=>{let k=e.key;KEY[k.length===1?k.toLowerCase():k]=false});
 for(let el of document.querySelectorAll('[data-key]')){const k=el.dataset.key;el.addEventListener('pointerdown',e=>{e.preventDefault();el.setPointerCapture(e.pointerId);KEY[k]=true});for(const t of ['pointerup','pointercancel','lostpointercapture'])el.addEventListener(t,()=>{KEY[k]=false})}
 let drag=false,px=0;C.addEventListener('pointerdown',e=>{drag=true;px=e.clientX;try{C.setPointerCapture(e.pointerId)}catch(_){}});C.addEventListener('pointermove',e=>{if(drag){let d=e.clientX-px;state.rot=clamp(state.rot-d*.004,-1.05,1.05);px=e.clientX}});C.addEventListener('pointerup',()=>drag=false);C.addEventListener('pointercancel',()=>drag=false);addEventListener('blur',()=>{drag=false;for(let k in KEY)KEY[k]=false});C.addEventListener('webglcontextlost',e=>{e.preventDefault();$('tip').textContent='显卡画面暂停，请刷新页面继续。'});
-updateUI();requestAnimationFrame(frame);window.__ISLAND_ZEN_READY__=true;
+updateUI();requestAnimationFrame(frame);window.__ISLAND_ZEN_READY__=true;window.__ISLAND_ZEN_VERSION__='3.0';
 })();
 </script>
+<!-- ISLAND_ZEN_V3_UPGRADE -->
 </body></html>
