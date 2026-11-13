@@ -52,7 +52,7 @@ async function getScene(){
   while(true){
    const i=next++;
    if(i>=m.chunks)return;
-   const name='scene_'+String(i).padStart(2,'0')+'.b64';
+   const name='scene_'+String(i).padStart(2,'0')+'.txt';
    parts[i]=(await fetchTextWithTimeout(assetBase+name,45000,'force-cache')).trim();
    loaded++;
    status('正在下载真实岛屿模型 '+loaded+'/'+m.chunks+'…');
