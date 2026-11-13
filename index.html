@@ -107,5 +107,23 @@ window.__ISLAND_ZEN_LEGACY_WEBGL_DISABLED__ = true;
 </script>
 <!-- Island Zen 4.0: Three.js GLB loader replaces the legacy procedural WebGL renderer. -->
 
-<script src="./app.js?v=20261114b"></script>
+<script src="./app.js?v=20261114c"></script>
+<script>
+(function(){
+  var startedAt=Date.now();
+  var watchdog=setInterval(function(){
+    if(window.__ISLAND_ZEN_READY__||window.__ISLAND_ZEN_FALLBACK_STARTED__){clearInterval(watchdog);return;}
+    if(Date.now()-startedAt<22000)return;
+    clearInterval(watchdog);
+    window.__ISLAND_ZEN_FORCE_FALLBACK__=true;
+    var play=document.getElementById('play'),load=document.getElementById('loadStatus');
+    if(play){play.disabled=false;play.textContent='进入海岛（兼容画面）';}
+    if(load)load.textContent='真实 3D 暂不可用，已启用免外部依赖的兼容模式';
+    if(window.startIslandZen2D&&!window.__ISLAND_ZEN_FALLBACK_STARTED__){
+      window.__ISLAND_ZEN_FALLBACK_STARTED__=true;
+      try{window.startIslandZen2D();}catch(e){if(load)load.textContent='兼容模式启动失败：'+(e&&e.message||e);}
+    }else if(!window.startIslandZen2D&&load){load.textContent='游戏脚本未能启动，请稍后重试';}
+  },1000);
+})();
+</script>
 </body></html>
