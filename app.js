@@ -8,7 +8,7 @@ let T,renderer,scene,camera,root,player,avatar,standing,seated,torso,armL,armR,l
 let yaw=Math.PI,pitch=.28,distance=8.5,drag=false,px=0,py=0,last=0,lastUI=0,lastWave=0;
 const DAY=5400,SEASON=7200,names=['春','夏','秋','冬'];
 const palettes=[0xaed7dc,0x91c9dc,0xd6b8a0,0xc7d8e1];
-function status(s){if(load)load.textContent=s;}
+function status(s){window.__ISLAND_ZEN_LAST_PROGRESS_AT__=Date.now();if(load)load.textContent=s;}
 function say(s){const e=$('toast');if(e){e.textContent=s;e.classList.add('on');setTimeout(()=>e.classList.remove('on'),2200);}}
 function script(src,timeoutMs=8000){return new Promise((ok,no)=>{const el=document.createElement('script');let settled=false;const finish=(fn,v)=>{if(settled)return;settled=true;clearTimeout(timer);fn(v);};const timer=setTimeout(()=>{el.remove();finish(no,Error('脚本加载超时：'+src));},timeoutMs);el.src=src;el.crossOrigin='anonymous';el.onload=()=>finish(ok);el.onerror=()=>finish(no,Error('脚本加载失败：'+src));document.head.appendChild(el);});}
 async function ensureThree(){
