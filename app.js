@@ -46,19 +46,14 @@ async function getScene(){
  const manifestText=await fetchTextWithTimeout(assetBase+'manifest.json',15000,'no-store');
  const m=JSON.parse(manifestText);
  if(m.encoding!=='gzip+base64'||!m.chunks)throw Error('场景清单格式错误');
- const parts=new Array(m.chunks);
- let next=0,loaded=0;
- async function worker(){
-  while(true){
-   const i=next++;
-   if(i>=m.chunks)return;
-   const name='scene_'+String(i).padStart(2,'0')+'.txt';
-   parts[i]=(await fetchTextWithTimeout(assetBase+name,45000,'force-cache')).trim();
-   loaded++;
-   status('正在下载真实岛屿模型 '+loaded+'/'+m.chunks+'…');
-  }
- }
- await Promise.all(Array.from({length:Math.min(6,m.chunks)},()=>worker()));
+ const packCount=5,parts=new Array(packCount);
+ let loaded=0;
+ await Promise.all(Array.from({length:packCount},async(_,i)=>{
+  const name='scene_pack_'+String(i).padStart(2,'0')+'.txt';
+  parts[i]=(await fetchTextWithTimeout(assetBase+name,90000,'force-cache')).trim();
+  loaded++;
+  status('正在下载真实岛屿模型资源包 '+loaded+'/'+packCount+'…');
+ }));
  const b=atob(parts.join(''));
  const c=new Uint8Array(b.length);
  for(let i=0;i<b.length;i++)c[i]=b.charCodeAt(i);
