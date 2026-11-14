@@ -1,0 +1,20 @@
+name: Prepare verified temple peer rendering
+on:
+  push:
+    branches: [prepare-temple-peer-render-20261115]
+permissions:
+  contents: write
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Apply verified display patch
+        run: |
+          test "$(git hash-object temple-client.js)" = bdfab4250b6c61304136f8c8fd3dcb551d224da6
+          git apply --whitespace=nowarn tools/peer-render-tested.patch
+          test "$(git hash-object temple-client.js)" = cc1e76b476c0f78541568014f5a5b1430c2e8d89
+          node --check temple-client.js
+          git add -- temple-client.js
+          git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" commit -m "Prepare tested temple peer rendering bundle"
+          git push origin HEAD:refs/heads/temple-peer-render-tested-20261115
