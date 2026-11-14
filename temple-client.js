@@ -107376,13 +107376,209 @@ window.TempleNavigation={PLAYER_MOTION,templeJumpHeight,templeRestFits,islandLan
         else {if(kind==='woodfish'){stats.practice++;stats.merit+=8;}else{stats.offerings++;stats.incense++;stats.merit+=5;}persist();updateStats();toast(kind==='woodfish'?t('木鱼修行圆满 · 功德 +8'):t('敬香圆满 · 香火 +1 · 功德 +5'));}
         audio&&audio.bell('complete');$('prayer-status').hidden=true;
       },onNotice:message=>toast(t(message)) });
+    // Crowd figures share geometry and draw calls. The nearest visible guests keep their
+    // original scanned outfits; the remaining figures keep their own colors, motion and gear.
+    function createRemoteCrowd() {
+      const batches = new Map();
+      const material = new T.MeshLambertMaterial({vertexColors: true});
+      const transform = new T.Object3D(), limb = new T.Object3D();
+      const torsoMatrix = new T.Matrix4(), worldMatrix = new T.Matrix4(), outputMatrix = new T.Matrix4();
+      const armTop = new T.Vector3(), elbow = new T.Vector3(), palm = new T.Vector3(), direction = new T.Vector3();
+      const up = new T.Vector3(0, 1, 0), light = new T.Color();
+      const root = new T.Group(); root.name = 'Instanced crowd'; world.scene.add(root);
+      function geometryWithParts(parts) {
+        const positions=[], normals=[], colors=[];
+        for (const [geo,color,x,y,z,sx,sy,sz,rx=0,ry=0,rz=0] of parts) {
+          transform.position.set(x,y,z);transform.rotation.set(rx,ry,rz);transform.scale.set(sx,sy,sz);transform.updateMatrix();
+          const g=geo.index?geo.toNonIndexed():geo;
+          g.applyMatrix4(transform.matrix);const p=g.getAttribute('position'),n=g.getAttribute('normal');
+          light.set(color);
+          for(let i=0;i<p.count;i++){positions.push(p.getX(i),p.getY(i),p.getZ(i));normals.push(n.getX(i),n.getY(i),n.getZ(i));colors.push(light.r,light.g,light.b);}
+          if(g!==geo)g.dispose();geo.dispose();
+        }
+        const g=new T.BufferGeometry();
+        g.setAttribute('position',new T.Float32BufferAttribute(positions,3));
+        g.setAttribute('normal',new T.Float32BufferAttribute(normals,3));
+        g.setAttribute('color',new T.Float32BufferAttribute(colors,3));return g;
+      }
+      const white=0xffffff,sphere=()=>new T.SphereGeometry(1,10,7), cylinder=(a,b,h,n=10)=>new T.CylinderGeometry(a,b,h,n);
+      const ball=(color,x,y,z,sx,sy,sz)=>[sphere(),color,x,y,z,sx,sy,sz];
+      function batch(key,capacity,parts) {
+        const mesh=new T.InstancedMesh(geometryWithParts(parts),material,capacity);
+        mesh.name='Crowd '+key;mesh.count=0;mesh.frustumCulled=false;
+        mesh.instanceMatrix.setUsage(T.DynamicDrawUsage);mesh.setColorAt(0,light.set(white));mesh.instanceColor.setUsage(T.DynamicDrawUsage);
+        root.add(mesh);batches.set(key,mesh);
+      }
+      batch('head',50,[ball(white,0,0,0,.332,.348,.31),
+        ...[-1,1].flatMap(s=>[ball(white,s*.32,-.02,0,.059,.079,.052),ball(0x382d28,s*.107,-.018,.29,.02,.027,.016)]),
+        ball(white,0,-.068,.303,.046,.04,.039),ball(0x8b6253,0,-.12,.287,.041,.009,.008)]);
+      batch('robe',50,[[cylinder(.266,.337,.64,14),white,0,.31,0,1,1,1],
+        ball(white,0,.58,0,.28,.12,.23)]);
+      batch('sash',50,[[cylinder(.326,.332,.052,14),white,0,.095,0,1,1,1],
+        [new T.BoxGeometry(.091,.50,.033),white,.018,.374,.28,1,1,1,0,0,-.44]]);
+      batch('sleeve',200,[[cylinder(.093,.105,1),white,0,0,0,1,1,1]]);
+      batch('hands',100,[ball(white,0,0,0,1,1,1)]);
+      batch('legs',100,[[cylinder(.089,.084,1),white,0,0,0,1,1,1]]);
+      batch('shoes',100,[ball(white,0,0,0,.103,.065,.17)]);
+      batch('round',160,[ball(white,0,0,0,1,1,1)]);
+      batch('box',100,[[new T.BoxGeometry(1,1,1),white,0,0,0,1,1,1]]);
+      batch('stick',150,[[cylinder(1,1,1,6),white,0,0,0,1,1,1]]);
+      const part=(key,color,matrix)=>{const mesh=batches.get(key),i=mesh.count++;mesh.setMatrixAt(i,matrix);mesh.setColorAt(i,color);};
+      function put(key,color,base,x,y,z,sx=1,sy=1,sz=1,rx=0,ry=0,rz=0) {
+        transform.position.set(x,y,z);transform.scale.set(sx,sy,sz);transform.rotation.set(rx,ry,rz);transform.updateMatrix();
+        part(key,color,outputMatrix.multiplyMatrices(base,transform.matrix));
+      }
+      function segment(key,color,base,a,b,scale=1) {
+        direction.subVectors(b,a);const length=direction.length();if(length<1e-5)return;
+        limb.position.copy(a).lerp(b,.5);limb.quaternion.setFromUnitVectors(up,direction.multiplyScalar(1/length));
+        limb.scale.set(scale,length,scale);limb.updateMatrix();part(key,color,outputMatrix.multiplyMatrices(base,limb.matrix));
+      }
+      const skinDefault=new T.Color('#d8a476'),shoeBrown=new T.Color('#68594b'),shoeIndigo=new T.Color('#404764');
+      const gold=new T.Color('#d8ad59'),wood=new T.Color('#8c603c'),jade=new T.Color('#648b72'),paper=new T.Color('#ded0a5');
+      const cloudTrim=new T.Color('#f5dfa0');
+      const smooth=x=>{x=Math.min(1,Math.max(0,x));return x*x*(3-2*x);};
+      let figures=0;
+      return {
+        begin(){figures=0;for(const mesh of batches.values())mesh.count=0;},
+        draw(r,clock,seatHeight,jumpHeight){
+          figures++;const a=r.action,c=r.colors,phase=r.phase,wave=Math.sin((clock+phase)*(a==='run'?13.2:8.8));
+          const t=a==='pray'?r.progress:0;
+          const kneel=a==='woodfish'?1:smooth((t-.18)/.18)*(1-smooth((t-.70)/.18));
+          const bow=smooth((t-.30)/.18)*(1-smooth((t-.65)/.20));
+          const join=a==='greet'?1:a==='incense'?.9:smooth(t/.16)*(1-smooth((t-.87)/.13));
+          const sitting=['sit','read','tea'].includes(a),stride=a==='walk'||a==='run'?wave:0;
+          const hip=sitting?seatHeight:.46-.215*kneel+Math.abs(stride)*.024;
+          const lean=bow*1.18+(a==='run'?.12:a==='woodfish'?.10:join*.03);
+          transform.position.copy(r.anchor.position);transform.position.y+=jumpHeight;transform.quaternion.copy(r.anchor.quaternion);
+          if(r.lieBlend){transform.rotateX(-Math.PI*.5*smooth(r.lieBlend));transform.position.y+=.34*smooth(r.lieBlend);}
+          transform.scale.setScalar(1);transform.updateMatrix();worldMatrix.copy(transform.matrix);
+          transform.position.set(0,hip,0);transform.rotation.set(lean,0,stride*.025);transform.updateMatrix();
+          torsoMatrix.multiplyMatrices(worldMatrix,transform.matrix);
+          put('robe',c.robe,torsoMatrix,0,0,0);put('sash',c.sash,torsoMatrix,0,0,0);
+          if(r.appearance.outfitId==='cloud'||r.appearance.outfitId==='golden')put('box',cloudTrim,torsoMatrix,-.103,.38,.274,.035,.42,.038,0,0,-.44);
+          put('head',c.skin||skinDefault,torsoMatrix,0,.974,0,1,1,1,join*.07);
+          r.headWorld.set(0,.974,0).applyMatrix4(torsoMatrix);
+          const gear=r.appearance.gear||{};
+          if(gear.neck==='gold'||r.appearance.goldBeads||gear.neck==='sandal')put('round',gear.neck==='gold'||r.appearance.goldBeads?gold:wood,torsoMatrix,0,.54,.222,.21,.066,.048);
+          if(gear.waist==='pouch'||gear.waist==='jade')put('round',gear.waist==='jade'?jade:wood,torsoMatrix,.20,.13,.220,.078,.10,.046);
+          for(const side of [-1,1]){
+            const swing=side*stride;
+            armTop.set(side*.25,.55,.01);
+            elbow.set(side*(.31-.09*join),.30+.06*join,.015+.21*join+.07*swing);
+            palm.set(side*(.32-.286*join),.12+.395*join,.032+.30*join+.16*swing);
+            if(bow){palm.y-=.18*bow;palm.z+=.26*bow;}
+            if(sitting){elbow.set(side*.26,.29,.17);palm.set(side*(a==='sit'?.22:.15),a==='sit'?.14:.39,.32);}
+            if(a==='tea'&&side===1){palm.y+=.13*(1+Math.sin(clock*1.8));}
+            if(a==='woodfish'&&side===1){palm.set(.2,.50+.17*Math.cos(clock*7),.44);}
+            segment('sleeve',c.robe,torsoMatrix,armTop,elbow);segment('sleeve',c.robe,torsoMatrix,elbow,palm,.86);
+            put('hands',c.skin,torsoMatrix,palm.x,palm.y,palm.z,.058-.026*join,.077,.049);
+            if(a==='woodfish'&&side===1){put('stick',wood,torsoMatrix,palm.x,palm.y,palm.z+.17,.018,.34,.018,Math.PI/2);put('round',wood,torsoMatrix,palm.x,palm.y,palm.z+.33,.072,.065,.075);}
+            if(a==='tea'&&side===1)put('round',jade,torsoMatrix,palm.x,palm.y+.032,palm.z+.035,.054,.058,.054);
+            if(a==='incense'&&side===1&&r.progress<.63)put('stick',gold,torsoMatrix,.015,palm.y+.23,palm.z,.012,.52,.012);
+            const angle=sitting?-1.04:kneel*1.05+swing*(a==='run'?.69:.42)-(a==='jump'?.28:0);
+            armTop.set(side*.135,hip+.015,0);
+            palm.set(side*.135,Math.max(.07,hip-.39*Math.cos(angle)),.045-.36*Math.sin(angle));
+            segment('legs',c.robe,worldMatrix,armTop,palm);put('shoes',gear.feet==='indigo'?shoeIndigo:shoeBrown,worldMatrix,palm.x,palm.y,palm.z+.032);
+          }
+          if(a==='read')put('box',paper,torsoMatrix,0,.40,.38,.38,.028,.24,-.22);
+        },
+        end(){for(const mesh of batches.values()){mesh.visible=mesh.count>0;if(mesh.visible){mesh.instanceMatrix.needsUpdate=true;mesh.instanceColor.needsUpdate=true;}}},
+        stats(){return {figures,draws:[...batches.values()].filter(m=>m.count>0).length};},
+        dispose(){for(const m of batches.values()){m.geometry.dispose();m.dispose();}material.dispose();root.removeFromParent();}
+      };
+    }
+    let crowd=null,nextDetailCheck=0,detailCount=0,nextRemoteLabels=0;
+    const remoteView=new T.Frustum(), remoteVP=new T.Matrix4(), remoteBounds=new T.Sphere(new T.Vector3(),1.75);
+    function mayShowRemote(r){
+      remoteBounds.center.copy(r.anchor.position);remoteBounds.center.y+=.75;
+      return remoteView.intersectsSphere(remoteBounds);
+    }
+    function setRemoteDetail(r,detailed){
+      if(detailed===!!r.detail)return;
+      if(detailed){
+        r.detail=TempleActors.create(T,{...r.appearance,gear:{...r.appearance.gear}});
+        r.anchor.add(r.detail.root);
+      }else{
+        r.detail.root.removeFromParent();r.detail.dispose?.();r.detail=null;
+      }
+    }
+    function chooseRemoteDetail(now) {
+      remoteView.setFromProjectionMatrix(remoteVP.multiplyMatrices(camera.projectionMatrix,camera.matrixWorldInverse));
+      if(now<nextDetailCheck)return;
+      nextDetailCheck=now+500;
+      const people=[...remotes.values()], crowded=people.length>6;
+      const cameraDistance=r=>camera.position.distanceToSquared(r.anchor.position);
+      const candidates=crowded?people.filter(r=>mayShowRemote(r)&&cameraDistance(r)<196).sort((a,b)=>
+        (cameraDistance(a)*(a.detail?.78:1))-(cameraDistance(b)*(b.detail?.78:1))):people;
+      const selected=new Set(crowded?candidates.slice(0,2):candidates);
+      detailCount=selected.size;
+      for(const r of people)setRemoteDetail(r,selected.has(r));
+    }
+    function updateRemoteAppearance(r,p){
+      const a=r.appearance,colors=r.colors;
+      const changed=['outfitId','robe','sash','skin','goldBeads'].some(k=>p[k]!==a[k])||
+        ['feet','neck','waist'].some(k=>p.gear?.[k]!==a.gear?.[k]);
+      if(!changed)return;
+      for(const k of ['outfitId','robe','sash','skin','goldBeads'])if(p[k]!==undefined)a[k]=p[k];
+      if(p.gear)a.gear={...p.gear};
+      for(const k of ['robe','sash','skin'])if(typeof a[k]==='string')colors[k].set(a[k]);
+      r.detail?.setAppearance?.(a);
+    }
     function addRemote(p){
       if(!p||p.id===network?.status.id||remotes.has(p.id))return;
-      const x=p.x??0,z=p.z??7.5,y=groundHeight(x,z),actor=TempleActors.create(T,p);actor.root.position.set(x,y,z);world.scene.add(actor.root);
+      const x=p.x??0,z=p.z??7.5,y=groundHeight(x,z),anchor=new T.Group();
+      anchor.position.set(x,y,z);anchor.rotation.y=p.yaw??Math.PI;world.scene.add(anchor);
       const label=document.createElement('div');label.className='remote-name';label.textContent=p.name||t('香客');$('speech-layer').appendChild(label);
-      remotes.set(p.id,{actor,label,target:new T.Vector3(x,y,z),yaw:p.yaw??Math.PI,action:p.action||'idle',progress:p.progress||0,speech:null,inserted:false});
+      const colors={robe:new T.Color(p.robe||'#939e98'),sash:new T.Color(p.sash||'#d5b963'),skin:new T.Color(p.skin||'#d8a476')};
+      const r={anchor,detail:null,appearance:{...p,gear:{...p.gear}},colors,headWorld:new T.Vector3(),phase:remotes.size*.71,
+        label,from:new T.Vector3(x,y,z),fromYaw:p.yaw??Math.PI,motionStart:0,motionMs:0,missingSince:null,target:new T.Vector3(x,y,z),yaw:p.yaw??Math.PI,action:p.action||'idle',progress:p.progress||0,speech:null,inserted:false};
+      remotes.set(p.id,r);nextDetailCheck=0;
     }
-    function removeRemote(id){const r=remotes.get(id);if(!r)return;r.actor.root.removeFromParent();r.actor.dispose?.();r.label.remove();r.speech?.element.remove();remotes.delete(id);}
+    function removeRemote(id){
+      const r=remotes.get(id);if(!r)return;
+      setRemoteDetail(r,false);r.anchor.removeFromParent();r.label.remove();r.speech?.element.remove();remotes.delete(id);nextDetailCheck=0;
+      if(!remotes.size&&crowd){crowd.dispose();crowd=null;}
+    }
+    let remoteRoom=null;
+    function updateRemote(r,p,now){
+      r.missingSince=null;
+      updateRemoteAppearance(r,p);
+      const name=p.name||t('guest');if(r.label.textContent!==name)r.label.textContent=name;
+      if(p.x!==r.target.x||p.z!==r.target.z||p.yaw!==r.yaw){
+        // Blend from the last displayed transform. Repeated snapshots at the
+        // same destination must never rewind or restart an ongoing stride.
+        r.from.copy(r.anchor.position);r.fromYaw=r.anchor.rotation.y;
+        const elapsed=now-(r.lastPacket??(now-300));
+        r.target.set(p.x,groundHeight(p.x,p.z),p.z);r.yaw=p.yaw;r.motionStart=now;
+        r.motionMs=Math.min(500,Math.max(120,elapsed));
+        if(Math.hypot(r.from.x-p.x,r.from.z-p.z)>6||
+           !navigation.templeCanTravel(r.from.x,r.from.z,p.x,p.z))r.motionMs=0;
+      }
+      r.lastPacket=now;r.action=p.action;r.progress=p.progress;r.receivedAt=clock;
+    }
+    function syncRemoteRoster(players,room,ownId){
+      const now=performance.now();
+      if(remoteRoom!==null&&room!==remoteRoom){
+        for(const id of [...remotes.keys()])removeRemote(id);
+      }
+      remoteRoom=room;
+      const live=new Set(players.filter(p=>p.id!==ownId).map(p=>p.id));
+      const missing=[...remotes].filter(([id])=>!live.has(id));
+      // Room snapshots may omit a peer for one poll. Keep the visible model
+      // across that gap, but yield its slot immediately to a real replacement.
+      let excess=live.size+missing.length-49;
+      missing.sort((a,b)=>(a[1].missingSince??now)-(b[1].missingSince??now));
+      for(const [id,r] of missing){
+        if(excess>0){removeRemote(id);excess--;continue;}
+        if(r.missingSince===null)r.missingSince=now;
+        else if(now-r.missingSince>=850)removeRemote(id);
+      }
+      for(const p of players){
+        if(p.id===ownId)continue;
+        if(!remotes.has(p.id))addRemote(p);
+        const r=remotes.get(p.id);if(r)updateRemote(r,p,now);
+      }
+    }
     function reconcilePosition(confirmed,preserve){
       if(!confirmed||![confirmed.x,confirmed.z,confirmed.yaw].every(Number.isFinite))return;
       const position=player.root.position;
@@ -107398,15 +107594,13 @@ window.TempleNavigation={PLAYER_MOTION,templeJumpHeight,templeRestFits,islandLan
           // A network welcome resets server-owned activities, not the keyboard.
           // Keyup, blur and pause remain authoritative for physical input.
           prayer=null;rituals.cancel();roomActivities?.reset({notifyStop:false});motion?.reset({keepRun:msg.resumedPosition});$('prayer-status').hidden=true;document.body.classList.remove('praying');
-          for(const id of remotes.keys())removeRemote(id);
           const own=msg.players.find(p=>p.id===msg.id);reconcilePosition(own,msg.resumedPosition);
           if(msg.stats){stats={...stats,...msg.stats};persist();updateStats();}
-          msg.players.forEach(addRemote);
+          syncRemoteRoster(msg.players,msg.room,msg.id);
           $('save-status').textContent=t('累计功德已保存');
           if(msg.reconnected)toast(t('已恢复连接，累计功德已保留'),5);
         },
-        onJoined:msg=>addRemote(msg.player),onLeft:msg=>removeRemote(msg.id),
-        onSnapshot:msg=>msg.players.forEach(p=>{const r=remotes.get(p.id);if(r){r.actor.setAppearance?.(p);r.label.textContent=p.name||t('guest');r.target.set(p.x,groundHeight(p.x,p.z),p.z);r.yaw=p.yaw;r.action=p.action;r.progress=p.progress;r.receivedAt=clock;}}),
+        onSnapshot:msg=>syncRemoteRoster(msg.players,network.status.room,network.status.id),
         onChat:msg=>{if(msg.id===network.status.id)return;const r=remotes.get(msg.id);if(!r)return;r.speech?.element.remove();const el=document.createElement('div');el.className='speech remote-speech';el.textContent=msg.text;$('speech-layer').appendChild(el);r.speech={element:el,expires:performance.now()+8000};},
         onPresence:()=>{},
         onSeats:seats=>{roomActivities?.setOccupancy(seats.filter(s=>s.sessionId!==network?.status.id));if(!roomActivities?.active&&!network?.status.seatReleasePending&&seats.some(s=>s.sessionId===network?.status.id))network?.releaseSeat();},
@@ -107861,27 +108055,60 @@ window.TempleNavigation={PLAYER_MOTION,templeJumpHeight,templeRestFits,islandLan
       exterior?.focusShadows(camera.position);
       world.landscape?.updateView(camera.position);
       for(const npc of npcs)npc.root.visible=camera.position.distanceToSquared(npc.root.position)<2025;
+      camera.updateMatrixWorld();
+      chooseRemoteDetail(now);
+      const refreshRemoteLabels=remotes.size<=6||now>=nextRemoteLabels;
+      if(refreshRemoteLabels)nextRemoteLabels=now+100;
+      crowd?.begin();
       for(const r of remotes.values()){
-        if(navigation.templeCanTravel(r.actor.root.position.x,r.actor.root.position.z,r.target.x,r.target.z))r.actor.root.position.lerp(r.target,Math.min(1,dt*14));else r.actor.root.position.copy(r.target);r.actor.root.rotation.y+=Math.atan2(Math.sin(r.yaw-r.actor.root.rotation.y),Math.cos(r.yaw-r.actor.root.rotation.y))*Math.min(1,dt*14);
-        r.actor.root.position.y=groundHeight(r.actor.root.position.x,r.actor.root.position.z);
-        r.actor.hideProps();
-        // Snapshots announce lying/idle but do not transmit the recline blend.
+        const root=r.anchor,position=root.position;
+        const motionT=r.motionMs?Math.min(1,Math.max(0,(now-r.motionStart)/r.motionMs)):1;
+        if(position.x!==r.target.x||position.z!==r.target.z){
+          position.lerpVectors(r.from,r.target,motionT);
+          position.y=groundHeight(position.x,position.z);
+        }
+        root.rotation.y=r.fromYaw+Math.atan2(Math.sin(r.yaw-r.fromYaw),Math.cos(r.yaw-r.fromYaw))*motionT;
         const lieStep=dt/navigation.PLAYER_MOTION.transitionSeconds;
         if(r.action==='lie')r.lieBlend=Math.min(1,(r.lieBlend||0)+lieStep);
         else r.lieBlend=r.action==='idle'?Math.max(0,(r.lieBlend||0)-lieStep):0;
-        if(r.action==='woodfish'||r.action==='incense')r.actor.ritualPose(r.progress*(r.action==='woodfish'?7.2:5.8),r.action,r.progress);
-        else if(r.action==='read'||r.action==='tea'){const seat=layout.seats.find(s=>Math.hypot(s.position[0]-r.target.x,s.position[2]-r.target.z)<.56);r.actor.loungePose(clock,r.action,r.progress,{seatHeight:seat?.seatHeight??.16});}
-        else if(r.lieBlend>0)window.TemplePlayerMotion.applySupinePose(r.actor,clock,r.lieBlend);
-        else if(['run','jump','sit','greet'].includes(r.action)){r.actor.freePose(clock,r.action);if(r.action==='jump')r.actor.root.position.y+=navigation.templeJumpHeight(Math.min(1,r.progress+(clock-(r.receivedAt??clock))/navigation.PLAYER_MOTION.jumpSeconds));}
-        else r.actor.pose(clock,r.action==='walk',r.action==='pray'?r.progress:null);
         if(r.action==='incense'&&r.progress>.63&&!r.inserted){rituals.insertIncense(navigation.templeIndoorArea(r.target.x,r.target.z)==='tea'?world.rituals.wealthIncense.burner:undefined);r.inserted=true;}if(r.action!=='incense')r.inserted=false;
-        const headPosition=r.actor.head.getWorldPosition(remoteHead);projected.copy(headPosition);projected.y+=.48;projected.project(camera);headPosition.y+=.25;
-        r.label.style.left=`${(projected.x*.5+.5)*innerWidth}px`;r.label.style.top=`${(-projected.y*.5+.5)*innerHeight}px`;
-        if(clock>=(r.nextVisibilityCheck||0)){r.nextVisibilityCheck=clock+.15;r.occluded=!!exterior?.state.ready&&exterior.clearDistance(camera.position,headPosition,.08)<camera.position.distanceTo(headPosition)-.12;}
-        const labelVisible=projected.z<=1&&projected.z>=-1&&Math.abs(projected.x)<.96&&Math.abs(projected.y)<.76&&camera.position.distanceTo(headPosition)<26&&!r.occluded;
+        if(r.speech&&now>r.speech.expires){r.speech.element.remove();r.speech=null;}
+        const visible=mayShowRemote(r), actor=r.detail;
+        root.visible=visible;
+        if(!visible){r.label.hidden=true;if(r.speech)r.speech.element.hidden=true;continue;}
+        const jumpHeight=r.action==='jump'?navigation.templeJumpHeight(Math.min(1,r.progress+(clock-(r.receivedAt??clock))/navigation.PLAYER_MOTION.jumpSeconds)):0;
+        const lounging=r.action==='read'||r.action==='tea';
+        const seat=lounging?layout.seats.find(s=>Math.hypot(s.position[0]-r.target.x,s.position[2]-r.target.z)<.56):null;
+        // A freshly created scanned actor deliberately hides its procedural
+        // meshes until textures arrive. Keep a colored figure on screen until
+        // its actual drawable outfit is ready, including after a reconnect.
+        const drawnDetail=actor&&!!actor.root.userData.outfitAsset;
+        if(actor){
+          actor.root.visible=!!drawnDetail;
+          if(!drawnDetail&&now>=(r.pendingRetryAt??0)){r.pendingRetryAt=now+750;actor.pose(0,false);}
+        }
+        if(drawnDetail){
+          actor.root.position.y=jumpHeight;actor.hideProps();
+          if(r.action==='woodfish'||r.action==='incense')actor.ritualPose(r.progress*(r.action==='woodfish'?7.2:5.8),r.action,r.progress);
+          else if(lounging)actor.loungePose(clock,r.action,r.progress,{seatHeight:seat?.seatHeight??.16});
+          else if(r.lieBlend>0)window.TemplePlayerMotion.applySupinePose(actor,clock,r.lieBlend);
+          else if(['run','jump','sit','greet'].includes(r.action))actor.freePose(clock,r.action);
+          else actor.pose(clock,r.action==='walk',r.action==='pray'?r.progress:null);
+          actor.head.getWorldPosition(r.headWorld);
+        }else{
+          if(!crowd){crowd=createRemoteCrowd();crowd.begin();}
+          crowd.draw(r,clock,seat?.seatHeight??.18,jumpHeight);
+        }
+        if(!refreshRemoteLabels)continue;
+        const headPosition=remoteHead.copy(r.headWorld);projected.copy(headPosition);projected.y+=.48;projected.project(camera);headPosition.y+=.25;
+        let labelVisible=projected.z<=1&&projected.z>=-1&&Math.abs(projected.x)<.96&&Math.abs(projected.y)<.76&&camera.position.distanceToSquared(headPosition)<676;
+        if(labelVisible&&clock>=(r.nextVisibilityCheck||0)){r.nextVisibilityCheck=clock+.20;r.occluded=!!exterior?.state.ready&&exterior.clearDistance(camera.position,headPosition,.08)<camera.position.distanceTo(headPosition)-.12;}
+        labelVisible=labelVisible&&!r.occluded;
+        if(labelVisible){r.label.style.left=`${(projected.x*.5+.5)*innerWidth}px`;r.label.style.top=`${(-projected.y*.5+.5)*innerHeight}px`;}
         r.label.hidden=!labelVisible||!!r.speech;
-        if(r.speech){r.speech.element.hidden=!labelVisible;r.speech.element.style.left=r.label.style.left;r.speech.element.style.top=r.label.style.top;if(performance.now()>r.speech.expires){r.speech.element.remove();r.speech=null;}}
+        if(r.speech){r.speech.element.hidden=!labelVisible;r.speech.element.style.left=r.label.style.left;r.speech.element.style.top=r.label.style.top;}
       }
+      crowd?.end();
       if (toastUntil && clock > toastUntil) { $('toast').classList.remove('visible'); toastUntil = 0; }
       beadReward.update(now);
       if(pageVisible&&!paused)profilePanel?.tick(dt);
@@ -107911,7 +108138,7 @@ window.TempleNavigation={PLAYER_MOTION,templeJumpHeight,templeRestFits,islandLan
       prayer: prayer ? { progress: +(prayer.time / PRAYER_DURATION).toFixed(3), mat: prayer.mat.id } : null,
       ritual:rituals.active?{kind:rituals.active.kind,stage:rituals.active.stage,progress:rituals.progress,strikes:rituals.active.strikes}:null,
       insertedIncense:rituals.inserted,
-      network:network?{...network.status,remotes:[...remotes].map(([id,r])=>({id,x:r.target.x,z:r.target.z,action:r.action,progress:r.progress,speech:r.speech?.element.textContent||null}))}:null,
+      network:network?{...network.status,crowd:{detailed:detailCount,...(crowd?.stats()||{figures:0,draws:0})},remotes:[...remotes].map(([id,r])=>({id,x:r.target.x,z:r.target.z,action:r.action,progress:r.progress,speech:r.speech?.element.textContent||null}))}:null,
       nearest: nearest ? { id: nearest.id, npc: nearest.npc } : null,
       mats: world.mats.map(m => ({ id: m.id, x: m.x, z: m.z, npc: m.npc })),
       obstacles: world.obstacles.map(o => ({ ...o })),
