@@ -66,8 +66,13 @@
 .practice-dialog[data-wardrobe=true] .practice-outfit h4{font-size:14px;color:#f1e3c3}
 .practice-dialog[data-wardrobe=true] .practice-outfit p{font-size:11px;color:#c8b99f}
 .practice-dialog[data-wardrobe=true] .practice-outfit.is-equipped p{color:#eadaad}
-.practice-dialog[data-wardrobe=true] .practice-outfit .practice-try{position:absolute;inset:0;z-index:1;width:100%;height:100%;padding:0;border:0;margin:0;border-radius:11px;font-size:0;background:transparent}
-.practice-dialog[data-wardrobe=true] .practice-outfit .practice-equip{display:none}
+.practice-dialog[data-wardrobe=true] .practice-outfit .practice-try,
+.practice-dialog[data-wardrobe=true] .practice-outfit .practice-equip{display:block;width:100%;min-height:44px;line-height:1.3;padding:6px 8px;border-radius:9px;font-size:13px}
+.practice-dialog[data-wardrobe=true] .practice-outfit .practice-try{position:static;margin:auto 0 0}
+.practice-dialog[data-wardrobe=true] .practice-outfit .practice-equip{position:relative;margin:5px 0 0;background:#e6c996;color:#362819}
+.practice-dialog[data-wardrobe=true] .practice-outfit .practice-equip:disabled{background:#494035;color:#d3c6ae}
+.practice-dialog .practice-message:not(:empty){position:sticky;bottom:0;z-index:3;padding:8px 12px;border-radius:8px;background:#30231d;color:#f2ddb1;font-size:13px}
+.practice-dialog .practice-message:empty{display:none}
 .practice-dialog[data-wardrobe=true] .practice-note{display:none}
 .practice-dialog[data-wardrobe=true] .wardrobe-petals{margin:14px 0 0;color:#c4b18a}
 .wardrobe-gift{flex-wrap:wrap;justify-content:center}

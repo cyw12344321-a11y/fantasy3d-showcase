@@ -105858,6 +105858,8 @@ window.TempleNavigation={PLAYER_MOTION,templeJumpHeight,templeRestFits,islandLan
  const DICT={'zh-CN':{},'zh-TW':{},en:{}};for(const [key,cn,tw,en]of ROWS){DICT['zh-CN'][key]=cn;DICT['zh-TW'][key]=tw;DICT.en[key]=en;}
  Object.assign(DICT,window.TempleLocaleBundles?.profile);
  const catalogLabels=[
+  ['outfitSaved','已保存穿戴：{item}','已儲存穿戴：{item}','Outfit saved: {item}','着用を保存しました：{item}','착용 저장됨: {item}'],
+  ['nameSaved','法号已保存：{name}','法號已儲存：{name}','Name saved: {name}','法名を保存しました：{name}','법명 저장됨: {name}'],
   ['robes','僧衣','僧衣','Robes','僧衣','승복'],['feet','布履','布履','Shoes','履物','신발'],['neck','颈饰','頸飾','Necklaces','首飾り','목 장식'],['waist','腰饰','腰飾','Belt charms','腰飾り','허리 장식'],
   ['vermilion','绛云袈裟','絳雲袈裟','Vermilion robe','紅雲の袈裟','진홍 가사'],['original','素布鞋','素布鞋','Plain cloth shoes','素布の靴','소박한 천신'],['hemp','蒲编草履','蒲編草履','Woven rush sandals','蒲編みの草履','부들 짚신'],['indigo','靛青云纹鞋','靛青雲紋鞋','Indigo cloud shoes','藍雲文の靴','쪽빛 구름무늬 신'],
   ['sandal','檀木念珠','檀木念珠','Sandalwood beads','白檀の念珠','백단 염주'],['gold','金色念珠','金色念珠','Golden prayer beads','金の念珠','금빛 염주'],['pouch','莲纹香囊','蓮紋香囊','Lotus sachet','蓮文の香袋','연꽃 향낭'],['jade','青玉环佩','青玉環佩','Jade ring pendant','青玉の環佩','청옥 고리 장식'],
@@ -105933,6 +105935,9 @@ window.TempleNavigation={PLAYER_MOTION,templeJumpHeight,templeRestFits,islandLan
     const name=create('h4'),hint=create('p'),badge=create('span','wardrobe-new');
     const tryOn=control('practice-try',()=>showMirror(item)),button=control('practice-equip',()=>wearItem(item));
     button.dataset.equip=key;tryOn.dataset.preview=key;badge.hidden=true;
+    card.addEventListener('click',event=>{
+      if(wardrobeOnly&&!event.target.closest('button'))showMirror(item);
+    });
     card.append(preview,name,hint,tryOn,button,badge);cards.append(card);return{item,card,name,hint,button,tryOn,badge};
   });
   function worn(){return {robes:profile?.equipped||'lotus',...originalGear,neck:profile?.beadsEquipped?'gold':'none',...profile?.gear};}
@@ -105950,6 +105955,8 @@ window.TempleNavigation={PLAYER_MOTION,templeJumpHeight,templeRestFits,islandLan
   }
   function wearItem(item){
     if(!item||!owns(item)||worn()[item.slot]===item.id)return;
+    if(pending||busy)return;
+    if(selected&&selected!==item)showMirror(item,{focus:false});
     if(item.slot==='robes'){equip(item.id);return;}
     command(item.slot,item.id,id=>options.onGear?.(item.slot,id)??false);
   }
@@ -105981,7 +105988,8 @@ window.TempleNavigation={PLAYER_MOTION,templeJumpHeight,templeRestFits,islandLan
     motion.textContent=tr(walking?'stand':'walk');motion.setAttribute('aria-pressed',String(walking));
     for(const button of [left,motion,right])button.disabled=viewState==='error';
     const equipLabel=selected.slot==='robes'?'equip':selected.id==='none'?'unwear':'wearItem';
-    wear.textContent=tr(equipped?'equipped':available?equipLabel:'locked');wear.disabled=!available||equipped||busy||!!pending;
+    const saving=pending?.kind===(selected.slot==='robes'?'equip':selected.slot)&&pending.value===selected.id;
+    wear.textContent=tr(saving?'saving':equipped?'equipped':available?equipLabel:'locked');wear.disabled=!available||equipped||busy||!!pending;
     stageMessage.hidden=viewState==='ready';stageMessage.textContent=tr(viewState==='error'?'previewFailed':'loadingRobe');
   }
   function drawCatalog(){
@@ -105998,7 +106006,10 @@ window.TempleNavigation={PLAYER_MOTION,templeJumpHeight,templeRestFits,islandLan
       hint.textContent=available?tr(equipped?'equipped':'owned'):tr('locked')+' · '+eligibility(item);
       if(wardrobeOnly&&available&&item.slot==='robes')hint.textContent+=' · '+(item.at?tr('threshold',{n:item.at.toLocaleString()}):tr('initial'));
       tryOn.setAttribute('aria-label',[tr('tryOn'),tr(key),hint.textContent,item.id==='gold'&&newGold?tr('newItem'):''].filter(Boolean).join(' · '));tryOn.setAttribute('aria-pressed',String(selected===item));
-      button.textContent=tr(equipped?'equipped':available?'equip':'locked');button.disabled=!available||equipped||!!pending||busy;button.setAttribute('aria-pressed',String(equipped));
+      const saving=pending?.kind===(item.slot==='robes'?'equip':item.slot)&&pending.value===item.id;
+      const action=item.slot==='robes'?'equip':item.id==='none'?'unwear':'wearItem';
+      button.textContent=tr(saving?'saving':equipped?'equipped':available?action:'locked');button.disabled=!available||equipped||!!pending||busy;
+      button.setAttribute('aria-label',button.textContent+' · '+tr(key));button.setAttribute('aria-pressed',String(equipped));
       card.classList.toggle('is-locked',!available);card.classList.toggle('is-equipped',equipped);card.dataset.selected=String(item===selected);
       badge.hidden=item.id!=='gold'||!newGold;badge.textContent=tr('newItem');
     }
@@ -106084,7 +106095,7 @@ window.TempleNavigation={PLAYER_MOTION,templeJumpHeight,templeRestFits,islandLan
     }
     if(typeof Event==='function')document.dispatchEvent?.(new Event('temple-gold-beads-earned'));
   }
-  const form=create('form','practice-rename'),renameHeading=create('h3'),renameHint=create('p'),renameLine=create('div','practice-rename-line'),renameInput=create('input'),renameButton=create('button','practice-rename-submit'),confirmLabel=create('label','practice-confirm'),confirm=create('input'),confirmText=create('span');renameInput.type='text';renameInput.id='practice-rename-input';renameInput.maxLength=4;renameInput.autocomplete='off';renameInput.spellcheck=false;renameInput.setAttribute('aria-describedby','practice-rename-hint');renameHint.id='practice-rename-hint';renameButton.type='submit';confirm.type='checkbox';confirmLabel.append(confirm,confirmText);renameLine.append(renameInput,renameButton);form.append(renameHeading,renameHint,renameLine,confirmLabel);panel.append(form);
+  const form=create('form','practice-rename'),renameHeading=create('h3'),renameHint=create('p'),renameLine=create('div','practice-rename-line'),renameInput=create('input'),renameButton=create('button','practice-rename-submit'),confirmLabel=create('label','practice-confirm'),confirm=create('input'),confirmText=create('span');renameInput.type='text';renameInput.id='practice-rename-input';renameInput.maxLength=4;renameInput.autocomplete='off';renameInput.spellcheck=false;renameInput.setAttribute('aria-describedby','practice-rename-hint');renameHint.id='practice-rename-hint';renameButton.type='submit';confirm.type='checkbox';confirmLabel.append(confirm,confirmText);renameLine.append(renameInput,renameButton);form.append(renameHeading,renameHint,renameLine,confirmLabel);summary.after(form);
   const message=create('p','practice-message');message.setAttribute('role','status');message.setAttribute('aria-live','polite');panel.append(message);host.append(dialog);
   const blessing=create('div','practice-blessing');blessing.hidden=true;blessing.setAttribute('role','status');blessing.setAttribute('aria-live','polite');const blessingTitle=create('span'),blessingDetail=create('strong');blessing.append(blessingTitle,blessingDetail);host.append(blessing);
   function setError(value){pending=null;message.textContent=typeof value==='string'&&value?value:tr('failed');render();}
@@ -106110,7 +106121,14 @@ window.TempleNavigation={PLAYER_MOTION,templeJumpHeight,templeRestFits,islandLan
   const start=new T.Vector3(),end=new T.Vector3(),worldPos=new T.Vector3();
   function beginBlessing(threshold){const reduce=window.matchMedia?.('(prefers-reduced-motion: reduce)').matches||false;active={threshold,time:0,reduce};blessing.hidden=false;glow.visible=!reduce;points.visible=!reduce;if(statue?.getWorldPosition)statue.getWorldPosition(start);else start.set(0,.7,-8);start.y+=2.5;render();}
   function acknowledge(){if(!ackPending.length||ackRetry>0||typeof options.onAcknowledge!=='function')return;const batch=[...new Set(ackPending)];ackPending=[];ackRetry=10;try{const result=options.onAcknowledge(batch);if(result===false){ackPending.push(...batch);return;}if(result&&typeof result.then==='function')result.then(value=>{if(value===false)ackPending.push(...batch);}).catch(()=>ackPending.push(...batch));}catch(_){ackPending.push(...batch);}}
-  function update(nextProfile,nextStats={},nextAppearance={}){const wasWaiting=!profile,previousLook=JSON.stringify(worn());trackGifts(nextProfile);profile=nextProfile&&typeof nextProfile==='object'?nextProfile:null;stats=nextStats||{};appearance=nextAppearance||{};if(selected&&viewer&&previousLook!==JSON.stringify(worn()))refreshViewer();if(wasWaiting&&profile&&!pending)message.textContent='';if(pending&&profile&&((pending.kind==='equip'&&profile.equipped===pending.value)||(pending.kind==='rename'&&profile.dharmaName===pending.value)||(pending.kind==='beads'&&profile.beadsEquipped===pending.value)||(Object.hasOwn(originalGear,pending.kind)&&profile.gear?.[pending.kind]===pending.value))){pending=null;message.textContent='';confirm.checked=false;renameInput.value='';}for(const {at} of OUTFITS){
+  function update(nextProfile,nextStats={},nextAppearance={}){const wasWaiting=!profile,previousLook=JSON.stringify(worn());trackGifts(nextProfile);profile=nextProfile&&typeof nextProfile==='object'?nextProfile:null;stats=nextStats||{};appearance=nextAppearance||{};if(selected&&viewer&&previousLook!==JSON.stringify(worn()))refreshViewer();if(wasWaiting&&profile&&!pending)message.textContent='';if(pending&&profile&&((pending.kind==='equip'&&profile.equipped===pending.value)||(pending.kind==='rename'&&profile.dharmaName===pending.value)||(pending.kind==='beads'&&profile.beadsEquipped===pending.value)||(Object.hasOwn(originalGear,pending.kind)&&profile.gear?.[pending.kind]===pending.value))){const {kind,value}=pending;
+      if(kind==='rename'){
+        message.textContent=tr('nameSaved',{name:profile.dharmaName});confirm.checked=false;renameInput.value='';
+      }else{
+        const item=ITEMS.find(entry=>entry.slot===(kind==='equip'?'robes':kind==='beads'?'neck':kind)&&entry.id===(kind==='beads'?(value?'gold':'none'):value));
+        message.textContent=item?tr('outfitSaved',{item:tr(itemName(item))}):tr('equipped');
+      }
+      pending=null;}for(const {at} of OUTFITS){
       if(at>0&&profile?.blessings?.includes(at)&&!seen.has(at)){seen.add(at);queue.push(at);}
     }
     queue.sort((a,b)=>a-b);render();}
