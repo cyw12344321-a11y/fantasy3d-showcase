@@ -33,7 +33,8 @@ function formatMB(value){return (value/1000000).toFixed(1)+' MB';}
 function say(s){const e=$('toast');if(e){e.textContent=s;e.classList.add('on');setTimeout(()=>e.classList.remove('on'),2200);}}
 function script(src,timeoutMs=8000){return new Promise((ok,no)=>{const el=document.createElement('script');let settled=false;const finish=(fn,v)=>{if(settled)return;settled=true;clearTimeout(timer);fn(v);};const timer=setTimeout(()=>{el.remove();finish(no,Error('脚本加载超时：'+src));},timeoutMs);el.src=src;el.crossOrigin='anonymous';el.onload=()=>finish(ok);el.onerror=()=>finish(no,Error('脚本加载失败：'+src));document.head.appendChild(el);});}
 async function ensureThree(){
- const vendorBase=new URL('/fantasy3d-showcase/vendor/',location.origin).href;
+ const PROJECT_BASE='https://cyw12344321-a11y.github.io/fantasy3d-showcase/';
+ const vendorBase=new URL('vendor/',PROJECT_BASE).href;
  try{
   if(!window.THREE){status('正在加载本地 3D 引擎…',0.5,'加载 Three.js 引擎');await script(vendorBase+'three.min.js',20000);}
   T=window.THREE;
@@ -90,7 +91,7 @@ async function fetchTextWithTimeout(url,timeoutMs=45000,cache='force-cache',onPr
  }finally{if(timer)clearTimeout(timer);}
 }
 async function getScene(){
- const assetBase=new URL('/fantasy3d-showcase/assets/scene/',location.origin).href;
+ const assetBase=new URL('assets/scene/',PROJECT_BASE).href;
  status('正在读取真实场景清单…',1,'读取场景清单');
  const manifestText=await fetchTextWithTimeout(assetBase+'manifest.json',15000,'no-store');
  const m=JSON.parse(manifestText);
