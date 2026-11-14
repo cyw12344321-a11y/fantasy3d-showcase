@@ -1,0 +1,124 @@
+{
+  "version": 3,
+  "encoding": "gzip+base64-blocks",
+  "sourceBytes": 12947228,
+  "sha256": "39543b279a61acba03783401ff5b24fac1ed97f4ff31e09365fe0ac7b3d56963",
+  "totalBytes": 11181796,
+  "chunks": [
+    {
+      "file": "scene_00.txt",
+      "bytes": 500000,
+      "sha256": "a5cdb987d88b4c9b97d23a181d24819e96d8b92d00678473046d01ae37b050d3"
+    },
+    {
+      "file": "scene_01.txt",
+      "bytes": 500000,
+      "sha256": "52a3975f3b0930917e961a6f9c747b85312b7a76c303fba96a48c98d072d4170"
+    },
+    {
+      "file": "scene_02.txt",
+      "bytes": 500000,
+      "sha256": "4d62f333f8b2284bcf4f9c955d96636c0dff55ad8edbe4b00ed5e2c2ee8bd1be"
+    },
+    {
+      "file": "scene_03.txt",
+      "bytes": 500000,
+      "sha256": "c185ae0d4e4c67a9fd66798bcd80317d9ee8e52297b297977c12931a495489e1"
+    },
+    {
+      "file": "scene_04.txt",
+      "bytes": 500000,
+      "sha256": "586a077c13d5b7ecf857e30ef70ecf3bbe7d2148ad75d839f22334d45e73ef50"
+    },
+    {
+      "file": "scene_05.txt",
+      "bytes": 500000,
+      "sha256": "1d85a87bff0c72e8a27c6e7e393f5224a4341e6c932021aa9fc0b5322d6a3543"
+    },
+    {
+      "file": "scene_06.txt",
+      "bytes": 500000,
+      "sha256": "1949013921bea6c06e00711a2e9432bd46998956c9d639bd35f93d76aba4a57a"
+    },
+    {
+      "file": "scene_07.txt",
+      "bytes": 500000,
+      "sha256": "011e338b97ef988147dfea62b303eeaaa559a1d9e84bad4c0fd377c1f708dd4d"
+    },
+    {
+      "file": "scene_08.txt",
+      "bytes": 500000,
+      "sha256": "0a66cc9688e9b4ca37955092aa120cad63e0cfbba5c77cd6884862c95270c26b"
+    },
+    {
+      "file": "scene_09.txt",
+      "bytes": 500000,
+      "sha256": "6e15a3becbbe90f8795f0cbf1e60ea08cdf61a342a718c552be58030886238b9"
+    },
+    {
+      "file": "scene_10.txt",
+      "bytes": 500000,
+      "sha256": "0093f1fa3a84711fd5713c18eef47c22b0dc4c1a6b407bf029fbaa1cca2979ac"
+    },
+    {
+      "file": "scene_11.txt",
+      "bytes": 500000,
+      "sha256": "bd33ac9755ec716a6a3d3953f5ef98654b9d909855471d7ef4dab1d205e4609e"
+    },
+    {
+      "file": "scene_12.txt",
+      "bytes": 500000,
+      "sha256": "a4058ccf0fe0b3134b87ae04bb3b875a4ad4d95b3205b544c921b20d36ed3812"
+    },
+    {
+      "file": "scene_13.txt",
+      "bytes": 500000,
+      "sha256": "8f343ada6298cbb10cc22d97fe307a8033adb236f8d54e4d4032d1a7df5ccce0"
+    },
+    {
+      "file": "scene_14.txt",
+      "bytes": 500000,
+      "sha256": "5fdc55809144b87a87748875692a2abb00b70d78fa69ef3468b31097ae8e655e"
+    },
+    {
+      "file": "scene_15.txt",
+      "bytes": 500000,
+      "sha256": "eda8ce294ab0cdd74246196540f5cdb4946c6c4293a6421a3acdd20c4731affd"
+    },
+    {
+      "file": "scene_16.txt",
+      "bytes": 500000,
+      "sha256": "3700c536ba9dd2acf8fc79240a54e3b1288205d810a1289900e0d7a1712dd8a5"
+    },
+    {
+      "file": "scene_17.txt",
+      "bytes": 500000,
+      "sha256": "b92227ffcbd77230e2a65aadb92f2a66928b385cacbba36ba4470070a6782fb6"
+    },
+    {
+      "file": "scene_18.txt",
+      "bytes": 500000,
+      "sha256": "b6197e80c89fe89320dde925a3b3a24f9e2b18b6002d87513df7e248af280d04"
+    },
+    {
+      "file": "scene_19.txt",
+      "bytes": 500000,
+      "sha256": "eac4164bfe241f20f80f014941b270ec9060f4d866af6e2c76ab5adc0d85ca77"
+    },
+    {
+      "file": "scene_20.txt",
+      "bytes": 500000,
+      "sha256": "6367a8f547e6b3518de7fd99b7e12c4dea5a5c07e6c4f16dd8def6dc2600e536"
+    },
+    {
+      "file": "scene_21.txt",
+      "bytes": 500000,
+      "sha256": "c1555d040b6afd2f92eb04e9b9ffa369b11d309b143b5d00171ac522172f1bd2"
+    },
+    {
+      "file": "scene_22.txt",
+      "bytes": 181796,
+      "sha256": "cd6117d9a58bf27fce7144fa35ee17352ecbd705970b874ffdfd7481f8ab31cb"
+    }
+  ]
+}

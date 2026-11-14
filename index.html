@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#e9c79c"><meta name="island-zen-version" content="4.0"><title>海岛禅修 · 沿海自由行 | Island Zen</title>
+<meta name="theme-color" content="#e9c79c"><meta name="island-zen-version" content="20261115b"><title>海岛禅修 · 沿海自由行 | Island Zen</title>
 <meta name="description" content="海岛禅修：可以自由行走、打坐、赏海、观日落与体验四季变化的免费浏览器试玩。">
 <style>
 :root{--cream:#fff8e8;--ink:#293c3a;--glass:rgba(250,246,231,.83);--edge:rgba(255,255,255,.78);--gold:#ad7d41}
@@ -15,11 +15,15 @@ header{position:absolute;z-index:4;top:22px;left:26px;display:flex;gap:10px;alig
 #joystick{display:none;position:absolute;z-index:5;left:19px;bottom:75px;grid-template-columns:repeat(3,52px);grid-template-rows:repeat(3,52px);gap:4px;touch-action:none}.j{border:1px solid rgba(255,255,255,.6);background:rgba(245,242,218,.6);backdrop-filter:blur(8px);border-radius:15px;color:#355f5d;font-size:18px;touch-action:none}.j:active{background:#d5b879}.j.hidden{visibility:hidden}
 #toast{position:absolute;z-index:10;top:22%;left:50%;transform:translateX(-50%) translateY(-10px);opacity:0;pointer-events:none;padding:13px 22px;border-radius:99px;background:rgba(36,60,58,.9);color:#fff;transition:opacity .3s,transform .3s;text-align:center;max-width:88vw}#toast.on{transform:translateX(-50%) translateY(0);opacity:1}
 #start{position:absolute;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;background:linear-gradient(120deg,rgba(231,234,204,.45),rgba(86,144,164,.26));backdrop-filter:blur(4px)}#start .welcome{max-width:490px;width:calc(100% - 36px);padding:34px 30px 29px;text-align:center;background:rgba(255,248,233,.92);border:1px solid white;border-radius:30px;box-shadow:0 18px 75px #29586d40}#start .graphic{font-size:54px}#start h1{letter-spacing:.27em;font-size:31px;font-weight:500;color:#4b6259;margin:10px 0 2px}#start h2{letter-spacing:.3em;font-size:12px;color:#ae936f;margin:0 0 17px;font-weight:450}#start p{color:#657d74;line-height:1.85;margin:0 0 22px}#play{border:0;border-radius:99px;background:linear-gradient(135deg,#efd3a1,#cca66e);color:#523e26;padding:14px 54px;font-size:16px;font-weight:bold;box-shadow:0 12px 23px #bc9d7770}#start footer{font-size:11px;color:#8a9180;margin-top:15px}
-#loadingPanel{position:absolute;z-index:8;left:50%;top:72px;transform:translateX(-50%);width:min(520px,calc(100vw - 32px));padding:10px 14px;color:#48625c;font-size:12px;text-align:left;pointer-events:none}
-#loadStatus{font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#start .welcome{max-height:calc(100% - 20px);overflow:auto}
+#loadingPanel{margin:0 auto 18px;padding:12px 15px;color:#48625c;font-size:12px;text-align:left;background:#f2f2e7;border-radius:14px}
+#loadChoices{margin-top:10px}#loadChoices button{margin:4px;padding:9px 17px}
+#loadChoices [hidden],#loadChoices[hidden],#play[hidden]{display:none}
+#loadReason{margin-top:7px;color:#765743;overflow-wrap:anywhere}
+#loadStatus{font-weight:650;overflow-wrap:anywhere}
 #progressMeta{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:5px;color:#6b8178;font-size:11px}
 #progressPercent{min-width:34px;font-weight:750;color:#8e6a37}
-#progressDetail{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:right}
+#progressDetail{text-align:right;overflow-wrap:anywhere}
 #progressTrack{height:6px;margin-top:7px;background:rgba(102,128,112,.18);border-radius:999px;overflow:hidden}
 #progressFill{height:100%;width:0%;background:linear-gradient(90deg,#8fb7a0,#d2ad6e);border-radius:inherit;transition:width .2s ease}
 #error{display:none;position:absolute;z-index:50;inset:0;background:#e4ebdf;padding:50px 16px;justify-content:center;align-items:center;text-align:center}
@@ -34,17 +38,31 @@ header{position:absolute;z-index:4;top:22px;left:26px;display:flex;gap:10px;alig
 <div id="joystick" aria-label="移动方向"><div class="j hidden"></div><button class="j" data-key="w">▲</button><div class="j hidden"></div><button class="j" data-key="a">◀</button><div class="j hidden"></div><button class="j" data-key="d">▶</button><div class="j hidden"></div><button class="j" data-key="s">▼</button><div class="j hidden"></div></div>
 <div id="desktopHelp">W A S D / 方向键漫步　·　鼠标拖动旋转视角　·　空格静坐　·　Shift 奔跑</div>
 <div id="tip" class="panel">沿石板路进大殿，左侧是新开放的禅居。走走、听海或静坐。</div>
-<div id="toast" role="status"></div><div id="loadingPanel" class="panel" role="status" aria-live="polite">
-<div id="loadStatus">正在准备真实 3D 场景…</div>
+<div id="toast" role="status"></div>
+<div id="start"><div class="welcome">
+<div class="graphic">🏯</div><h1>海岛禅修</h1><h2>一座可以停下来的岛</h2>
+<p>走进佛堂的六十六席禅堂，也能去禅居喝茶、静坐。<br>海风、四季与日升月落，自会缓缓经过。</p>
+<div id="loadingPanel">
+<div id="loadStatus" role="status">正在准备真实 3D 场景…</div>
 <div id="progressMeta"><span id="progressPercent">0%</span><span id="progressDetail">初始化 3D 引擎</span></div>
-<div id="progressTrack" role="progressbar" aria-label="真实 3D 场景加载进度" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div id="progressFill"></div></div>
+<div id="progressTrack" role="progressbar" aria-label="3D 场景加载进度" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div id="progressFill"></div></div>
+<div id="loadReason" role="status" hidden></div>
 </div>
-<div id="start"><div class="welcome"><div class="graphic">🏯</div><h1>海岛禅修</h1><h2>一座可以停下来的岛</h2><p>走进佛堂的六十六席禅堂，也能去禅居喝茶、静坐。<br>海风、四季与日升月落，自会缓缓经过。</p><button id="play" disabled>正在加载场景…</button><footer>永久免费 · 支持电脑与手机 · 浏览器真实 3D 场景 · Unity 工程独立保留</footer></div></div>
-<div id="error"><div><h2>浏览器暂时无法启动三维画面</h2><p>请使用新版 Chrome、Edge 或 Safari 并开启 WebGL。</p></div></div>
+<button id="play" disabled>正在加载场景…</button>
+<div id="loadChoices" hidden>
+<button class="pill strong" id="retry3D" type="button">重试 3D</button>
+<button class="pill" id="play2D" type="button">进入 2D 兼容模式</button>
+</div>
+<footer>永久免费 · 支持电脑与手机 · 浏览器真实 3D 场景 · Unity 工程独立保留</footer></div></div>
+<div id="error"><div><h2>浏览器未能启动画面</h2><p>可重试加载，或用手机系统浏览器打开。</p><button class="pill" type="button" onclick="location.reload()">重新加载</button></div></div>
 <script>
 // Free no-dependency Canvas2D compatibility path for browsers without WebGL.
 function startIslandZen2D(){
  'use strict';
+ if(window.__ISLAND_ZEN_FALLBACK_STARTED__ || window.__ISLAND_ZEN_READY__==='glb')return;
+ window.__ISLAND_ZEN_FALLBACK_STARTED__=true;
+ window.__ISLAND_ZEN_FORCE_FALLBACK__=true;
+ window.dispatchEvent(new Event('island-zen-cancel-3d'));
  const old=document.getElementById('view'),canvas=document.createElement('canvas');canvas.id='view';canvas.setAttribute('aria-label','海岛禅修兼容画面');old.replaceWith(canvas);
  const ctx=canvas.getContext('2d',{alpha:false});if(!ctx){document.getElementById('error').style.display='flex';return;}
  const $=id=>document.getElementById(id), seasons=[{n:'春',water:'#74c7c6',grass:'#a5bf86',flower:'#f3bed0'},{n:'夏',water:'#41bbd4',grass:'#80ae66',flower:'#f9d9a0'},{n:'秋',water:'#5aa9b0',grass:'#b0a06a',flower:'#e6bb86'},{n:'冬',water:'#85aab7',grass:'#bbc5af',flower:'#fafbff'}];
@@ -59,7 +77,7 @@ function startIslandZen2D(){
  function color(h,b){let v=hexRGB(h);return `rgb(${v.map(x=>Math.round(x*b)).join(',')})`}
  function oval(x,y,rx,ry,fill){ctx.fillStyle=fill;ctx.beginPath();ctx.ellipse(x,y,rx,ry,0,0,2*Math.PI);ctx.fill()}
  function line(x1,y1,x2,y2,stroke,w=1){ctx.strokeStyle=stroke;ctx.lineWidth=w;ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke()}
- function rounded(x,y,w,h,r,fill){ctx.fillStyle=fill;ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.fill()}
+ function rounded(x,y,w,h,r,fill){ctx.fillStyle=fill;if(!ctx.roundRect){ctx.fillRect(x,y,w,h);return;}ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.fill()}
  function poly(points,fill){ctx.fillStyle=fill;ctx.beginPath();points.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.closePath();ctx.fill()}
  function drawMonk(x,y,t,sit){ctx.save();ctx.translate(x,y);const bob=sit?0:Math.sin(t*7)*1.5;ctx.translate(0,bob);oval(0,12,14,5,'#52625455');ctx.strokeStyle='#f4ce7b';ctx.lineWidth=3;ctx.beginPath();ctx.ellipse(0,-16,12,4,0,0,Math.PI*2);ctx.stroke();if(sit){oval(0,5,18,9,'#b36e39');oval(0,-6,11,12,'#d6a16c')}else{poly([[-9,10],[9,10],[12,-4],[-12,-4]],'#af7044');oval(0,-5,10,13,'#d7a070')}oval(0,-21,10,10,'#f2d5af');ctx.fillStyle='#63462d';ctx.fillRect(-5,-22,2,1.5);ctx.fillRect(3,-22,2,1.5);ctx.restore()}
  function drawTree(x,y,s){oval(x+3*s,y+7*s,16*s,5*s,'#54735b44');line(x,y,x+2*s,y-26*s,'#75674c',5*s);for(let [dx,dy,r] of [[-10,-29,12],[10,-35,13],[0,-44,14],[16,-22,10]])oval(x+dx*s,y+dy*s,r*s,r*.8*s,['#659873','#82ab84','#a1b981','#6b9877'][Math.abs(dx)%4]);}
@@ -110,35 +128,76 @@ function startIslandZen2D(){
  addEventListener('keydown',e=>{let k=e.key.toLowerCase();if('wasd'.includes(k)||k.startsWith('arrow')||k==='shift'||k===' '){keys.add(k);e.preventDefault();if(k===' '&&!e.repeat)toggleSit()}});
  addEventListener('keyup',e=>keys.delete(e.key.toLowerCase()));addEventListener('blur',()=>keys.clear());
  document.querySelectorAll('[data-key]').forEach(el=>{const k=el.dataset.key;el.onpointerdown=e=>{e.preventDefault();keys.add(k);el.setPointerCapture(e.pointerId)};for(const name of ['pointerup','pointercancel','lostpointercapture'])el.addEventListener(name,()=>keys.delete(k))});
- window.__ISLAND_ZEN_READY__='2d';window.__ISLAND_ZEN_VERSION__='3.1';requestAnimationFrame(frame);
+ window.__ISLAND_ZEN_READY__='2d';window.__ISLAND_ZEN_VERSION__='3.1';$('play').disabled=false;$('play').onclick();requestAnimationFrame(frame);
 }
 </script>
 <script>
-window.__ISLAND_ZEN_LEGACY_WEBGL_DISABLED__ = true;
-</script>
-<!-- Island Zen 4.0: Three.js GLB loader replaces the legacy procedural WebGL renderer. -->
-
-<script src="./app.js?v=20261115a"></script>
-<script>
 (function(){
-  var startedAt=Date.now(),lastProgress=startedAt;
-  var watchdog=setInterval(function(){
-    if(window.__ISLAND_ZEN_READY__||window.__ISLAND_ZEN_FALLBACK_STARTED__){clearInterval(watchdog);return;}
-    var now=Date.now(),reported=window.__ISLAND_ZEN_LAST_PROGRESS_AT__||startedAt;
-    if(reported>lastProgress)lastProgress=reported;
-    if(now-startedAt<600000&&now-lastProgress<180000)return;
-    clearInterval(watchdog);
-    window.__ISLAND_ZEN_FORCE_FALLBACK__=true;
-    var play=document.getElementById('play'),load=document.getElementById('loadStatus');
-    if(play){play.disabled=false;play.textContent='进入海岛（兼容画面）';}
-    var track=document.getElementById('progressTrack'),meta=document.getElementById('progressMeta');
-    if(track)track.style.display='none';if(meta)meta.style.display='none';
-    if(load)load.textContent='3D资源超过10分钟或连续3分钟没有进展，已自动启用可玩兼容模式；错误：'+(window.__ISLAND_ZEN_ERROR__||'资源加载超时');
-    if(window.startIslandZen2D&&!window.__ISLAND_ZEN_FALLBACK_STARTED__){
-      window.__ISLAND_ZEN_FALLBACK_STARTED__=true;
-      try{window.startIslandZen2D();}catch(e){if(load)load.textContent='兼容模式启动失败：'+(e&&e.message||e);}
-    }else if(!window.startIslandZen2D&&load){load.textContent='游戏脚本未能启动，请稍后重试';}
+  const element=id=>document.getElementById(id);
+  const choices=element('loadChoices'),reason=element('loadReason'),play=element('play');
+  const startedAt=Date.now();
+  let failed=false;
+
+  function setChoices(visible,message){
+    choices.hidden=!visible;
+    reason.hidden=!visible;
+    reason.textContent=message;
+  }
+
+  window.showIslandZenLoadError=function(message){
+    if(window.__ISLAND_ZEN_READY__ || window.__ISLAND_ZEN_FORCE_FALLBACK__)return;
+    failed=true;
+    window.__ISLAND_ZEN_ERROR__=String(message);
+    element('loadStatus').textContent='3D 场景加载中断';
+    play.hidden=true;
+    setChoices(true,String(message));
+  };
+
+  element('retry3D').onclick=()=>location.reload();
+  element('play2D').onclick=()=>{
+    if(window.__ISLAND_ZEN_READY__)return;
+    startIslandZen2D();
+  };
+
+  // Listen before either deferred script loads so network and evaluation failures are visible.
+  window.addEventListener('error',function(event){
+    const target=event.target;
+    if(target && (target.id==='sceneScript' || target.id==='gameScript')){
+      window.showIslandZenLoadError(target.id==='gameScript'?'游戏程序下载失败':'场景加载程序下载失败');
+    }else if(event.filename && /\/(app|scene-loader)\.js(?:[?#]|$)/.test(event.filename)){
+      window.showIslandZenLoadError('游戏程序出错：'+event.message);
+    }
+  },true);
+
+  // Slow connections can finish in their own time. Only the player chooses whether to leave 3D.
+  const monitor=setInterval(()=>{
+    if(window.__ISLAND_ZEN_READY__){
+      clearInterval(monitor);
+      setChoices(false,'');
+      return;
+    }
+    if(failed){clearInterval(monitor);return;}
+    const idle=Date.now()-(window.__ISLAND_ZEN_LAST_PROGRESS_AT__ || startedAt);
+    const slow=idle>=30000;
+    if(choices.hidden===slow){
+      setChoices(slow,slow?'正在等待响应，可继续等待。':'');
+    }
   },1000);
-})();;
+})();
 </script>
+<script>
+if (window.isSecureContext && 'serviceWorker' in navigator) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('./sw.js').then(function () {
+      if (typeof window.DecompressionStream !== 'function') {
+        return navigator.serviceWorker.ready.then(function (registration) {
+          registration.active.postMessage({type:'island-zen-cache-pako'});
+        });
+      }
+    }).catch(function () { /* Offline storage is optional. */ });
+  }, {once:true});
+}
+</script>
+<script id="sceneScript" defer src="./scene-loader.js?v=20261115b"></script>
+<script id="gameScript" defer src="./app.js?v=20261115b"></script>
 </body></html>
