@@ -30,7 +30,13 @@ def download(root, name, spec):
     if target.is_file() and target.stat().st_size == size:
         if sha256(target.read_bytes()).hexdigest() == digest:
             return
-    path = "/" if name == "index.html" else "/" + quote(name, safe="/")
+    # Pin generated HTML itself. Edge-injected scripts can vary between regions.
+    if name in {"index.html", "about.html", "privacy.html"}:
+        data = (LOCKFILE.parent / "public-pages" / name).read_bytes()
+        verify(data, digest, name)
+        target.write_bytes(data)
+        return
+    path = "/" + quote(name, safe="/")
     part = target.with_name(target.name + ".partial")
     try:
         subprocess.run([
@@ -56,8 +62,14 @@ def main():
     with ThreadPoolExecutor(max_workers=8) as pool:
         tasks = [pool.submit(download, root, name, spec)
                  for name, spec in manifest["files"].items()]
+        failures = []
         for task in tasks:
-            task.result()
+            try:
+                task.result()
+            except Exception as error:
+                failures.append(str(error))
+        if failures:
+            raise RuntimeError("\n".join(failures))
     for name, (digest, members) in manifest["merged"].items():
         data = b"".join(artifact_path(root, member).read_bytes() for member in members)
         verify(data, digest, name)
