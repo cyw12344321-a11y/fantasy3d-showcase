@@ -105421,7 +105421,7 @@ window.TempleNavigation={PLAYER_MOTION,templeJumpHeight,templeRestFits,islandLan
   const ACTIONS = new Set(['idle', 'walk', 'run', 'jump', 'sit', 'lie', 'greet', 'pray', 'woodfish', 'incense', 'read', 'tea']);
   const RITUALS = new Set(['pray', 'woodfish', 'incense']);
   const VISITOR_KEY = 'quiet-temple-visitor-v1';
-  const SAVE_KEY = 'quiet-temple-v1';
+  const SAVE_KEY = window.TEMPLE_CONFIG?.multiplayer ? 'quiet-temple-rooms-v1' : 'quiet-temple-v1';
   const record = value => value !== null && typeof value === 'object' && !Array.isArray(value);
   const finite = Number.isFinite;
   const text = (value, maximum) => typeof value === 'string' ? Array.from(value).slice(0, maximum).join('') : '';
@@ -105544,7 +105544,7 @@ window.TempleNavigation={PLAYER_MOTION,templeJumpHeight,templeRestFits,islandLan
       const controller = new AbortController(); this._controller = controller;
       const timeout = setTimeout(() => controller.abort(), 8000);
       try {
-        const response = await fetch(route, { method: 'POST', credentials: 'same-origin', cache: 'no-store',
+        const response = await fetch(new URL(route, window.TEMPLE_CONFIG.roomOrigin), { method: 'POST', credentials: 'omit', cache: 'no-store',
           headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data), signal: controller.signal });
         const raw = await response.text();
         if (raw.length > 200000) throw new Error('服务器消息过大');
@@ -105760,8 +105760,8 @@ window.TempleNavigation={PLAYER_MOTION,templeJumpHeight,templeRestFits,islandLan
       this._controller?.abort(); this._controller = null; this._inFlight = false;
       this._session = null; this._resumeSession = null; this._operations = []; this._players.clear();
       this._status.connected = false; this._status.connecting = false; this._status.id = null; this._status.pendingComplete = false;
-      if (previous && typeof navigator?.sendBeacon === 'function') {
-        try { navigator.sendBeacon('/api/leave', new Blob([JSON.stringify(previous)], { type: 'application/json' })); } catch (_) { /* Expiry is the fallback. */ }
+      if (previous) {
+        fetch(new URL('/api/leave', window.TEMPLE_CONFIG.roomOrigin), {method:'POST', credentials:'omit', keepalive:true, headers:{'Content-Type':'application/json'}, body:JSON.stringify(previous)}).catch(()=>{});
       }
       this._statusChanged();
     }
@@ -107302,7 +107302,7 @@ window.TempleNavigation={PLAYER_MOTION,templeJumpHeight,templeRestFits,islandLan
     function setOverview(value){overview=value;refreshViewButton();}
     refreshViewButton();document.querySelector('.top-actions').prepend(overviewButton);
     overviewButton.addEventListener('click',()=>{setOverview((overview+1)%(ambience?.coastalLookout?4:3));keys.clear();dragging=null;});
-    const SAVE_KEY = 'quiet-temple-v1';
+    const SAVE_KEY = window.TEMPLE_CONFIG?.multiplayer ? 'quiet-temple-rooms-v1' : 'quiet-temple-v1';
     let saveAvailable = true;
     let stats = { merit: 0, count: 0, incense: 0, practice: 0, offerings: 0 };
     try {
@@ -107916,7 +107916,7 @@ window.TempleNavigation={PLAYER_MOTION,templeJumpHeight,templeRestFits,islandLan
  function setup(){
   const game=document.getElementById('game'),motion=document.getElementById('motion-controls');let menu=document.getElementById('temple-menu');
   if(!game||!motion||game.classList.contains('clean-hud'))return;
-  if(!menu){menu=document.createElement('details');menu.id='temple-menu';menu.innerHTML='<summary aria-label="游戏菜单">☰</summary><div><a href="https://yinian-quiet-temple.cyw12344321.chatgpt.site/">进入原站联机佛堂</a></div>';document.querySelector('.top-actions').append(menu);}
+  if(!menu){menu=document.createElement('details');menu.id='temple-menu';menu.innerHTML='<summary aria-label="游戏菜单">☰</summary><div><a href="https://yinian-quiet-temple.cyw12344321.chatgpt.site/">进入原站联机佛堂</a></div>';const switchMode=menu.querySelector('a');const welcomeMode=document.getElementById('temple-mode-link');switchMode.href=welcomeMode.href;switchMode.target='_top';switchMode.textContent=welcomeMode.textContent;document.querySelector('.top-actions').append(menu);}
   game.classList.add('clean-hud');
   const input=window.TempleTouchInput={x:0,y:0},top=document.querySelector('.top-actions'),content=menu.querySelector(':scope > div');
   const names=document.createElement('button');names.id='player-text-toggle';names.className='icon-button';names.type='button';names.textContent='◉';top.insertBefore(names,menu);
