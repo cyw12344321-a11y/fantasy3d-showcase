@@ -6,7 +6,7 @@ const edits=[["const catalogLabels=[","const catalogLabels=[\n  ['outfitSaved','
 for(const [original,replacement,count] of edits){
  const n=source.split(original).length-1;
  if(n!==count)throw Error('unexpected source match count: '+n);
- source=source.split(original).join(replacement);
+ source=source.split(original).join(replacement.replace(/\r?\n/g, '\r\n'));
 }
 const sha=createHash('sha256').update(source).digest('hex').slice(0,20);
 if(sha!=='fdc038f269476cce3333')throw Error('unexpected output hash: '+sha);
