@@ -1,10 +1,12 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="zh-CN" class="wide">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="x5-orientation" content="landscape">
+  <meta name="screen-orientation" content="landscape">
   <meta name="theme-color" content="#211b14">
-  <title>一念静心佛堂｜免费海岛佛堂小游戏</title>
+  <title>一念·静心佛堂｜横屏漫游</title>
   <meta name="description" content="进入三维佛堂，操控小沙弥自由走动、合掌礼拜。">
   <meta property="og:title" content="一念静心佛堂">
   <meta property="og:description" content="和小沙弥一起，来佛堂歇一歇。">
@@ -35,7 +37,7 @@
 <body>
   <main id="stage">
     <iframe id="temple-game" title="一念·静心佛堂" allow="fullscreen; autoplay" allowfullscreen></iframe>
-    <button id="rotate-screen" type="button" aria-pressed="false" aria-label="切换横屏模式">横屏玩</button>
+    <button id="rotate-screen" type="button" aria-pressed="true" aria-label="切换屏幕方向">回竖屏</button>
   </main>
   <noscript>请启用 JavaScript 后进入三维佛堂。</noscript>
   <script>
@@ -50,7 +52,7 @@
         button.setAttribute('aria-pressed', String(enabled));
         button.textContent = enabled ? '回竖屏' : '横屏玩';
       }
-      showWide(game.searchParams.get('screen') === 'landscape');
+      showWide(game.searchParams.get('screen') !== 'portrait');
       game.searchParams.delete('screen');
       button.addEventListener('click', function () {
         showWide(button.getAttribute('aria-pressed') !== 'true');

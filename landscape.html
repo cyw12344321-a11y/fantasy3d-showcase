@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="zh-CN" class="wide">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="x5-orientation" content="landscape">
+  <meta name="screen-orientation" content="landscape">
+  <meta name="theme-color" content="#211b14">
+  <title>一念·静心佛堂｜横屏漫游</title>
+  <meta name="description" content="进入三维佛堂，操控小沙弥自由走动、合掌礼拜。">
+  <meta property="og:title" content="一念静心佛堂">
+  <meta property="og:description" content="和小沙弥一起，来佛堂歇一歇。">
+  <meta property="og:image" content="https://cyw12344321-a11y.github.io/fantasy3d-showcase/media/temple-share-gallery.jpg">
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; overflow: hidden; background: #211b14; }
+    #stage { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+    #temple-game { display: block; width: 100%; height: 100%; border: 0; }
+    #rotate-screen { display: none; }
+    @media (orientation: portrait) {
+      .wide #stage {
+        left: 100%; width: 100vh; height: 100vw;
+        width: 100dvh; height: 100dvw;
+        transform-origin: top left; transform: rotate(90deg);
+      }
+      #rotate-screen {
+        display: block; position: absolute; left: 50%; top: 6px;
+        top: max(6px, env(safe-area-inset-top)); transform: translateX(-50%);
+        min-height: 40px; padding: 4px 12px; border-radius: 18px;
+        border: 1px solid #e3d5b5; background: #382f25; color: #fff3d6;
+        font: 600 14px/1.2 system-ui, sans-serif; touch-action: manipulation;
+      }
+      .wide #rotate-screen { top: 6px; }
+    }
+  </style>
+</head>
+<body>
+  <main id="stage">
+    <iframe id="temple-game" title="一念·静心佛堂" allow="fullscreen; autoplay" allowfullscreen></iframe>
+    <button id="rotate-screen" type="button" aria-pressed="true" aria-label="切换屏幕方向">回竖屏</button>
+  </main>
+  <noscript>请启用 JavaScript 后进入三维佛堂。</noscript>
+  <script>
+    (function () {
+      var frame = document.getElementById('temple-game');
+      var button = document.getElementById('rotate-screen');
+      var game = new URL('play.html', location.href);
+      game.search = location.search;
+      game.hash = location.hash;
+      function showWide(enabled) {
+        document.documentElement.classList.toggle('wide', enabled);
+        button.setAttribute('aria-pressed', String(enabled));
+        button.textContent = enabled ? '回竖屏' : '横屏玩';
+      }
+      showWide(game.searchParams.get('screen') !== 'portrait');
+      game.searchParams.delete('screen');
+      button.addEventListener('click', function () {
+        showWide(button.getAttribute('aria-pressed') !== 'true');
+        frame.focus();
+      });
+      // Links to the original multiplayer site and game guide open as full pages.
+      frame.addEventListener('load', function () {
+        var doc = frame.contentDocument;
+        if (doc && doc.head && !doc.querySelector('base[target]')) {
+          var base = doc.createElement('base');
+          base.target = '_top';
+          doc.head.appendChild(base);
+        }
+      });
+      frame.src = game.href;
+    }());
+  </script>
+</body>
+</html>
