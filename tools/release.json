@@ -1,0 +1,924 @@
+{
+ "release": "v40",
+ "files": {
+  "about.html": [
+   "",
+   "4189adf028be928414eb12c1a91de3bd2ded9ba1380b93e73ea7a82143df4e80",
+   10034
+  ],
+  "ambience.css": [
+   "?v=3163bcfd778d577ae7e6",
+   "3163bcfd778d577ae7e65a57868d21f510043bb6fa35ff3d8f36edbb9146460d",
+   1861
+  ],
+  "assets/buddha-statue.jpg.part-0.gz": [
+   "?v=170806e780b083eaea33",
+   "494008066a45dc010139e35326df8e67b2a92bb4e6f2033fff85afc439dff2cc",
+   262144
+  ],
+  "assets/buddha-statue.jpg.part-1.gz": [
+   "?v=c8ebe9ddb49202ce211e",
+   "f601df1d6924d3221a0eddc7fb3d0eae3fdf24a79565ae3ccfd51a5ddd2ed43f",
+   232816
+  ],
+  "assets/buddha-statue.json": [
+   "?v=41c132bf92b61bc538a0",
+   "41c132bf92b61bc538a0f744c3aae80489b0282e3af6b2b165e54296a5fcf711",
+   961
+  ],
+  "assets/buddha-statue.mesh.part-0.gz": [
+   "?v=c1d8a1c95d7d2e15cd41",
+   "804301b800ee37e34517b4719aecee46bed4ec386f10e758d8d1d2820ef0554b",
+   262144
+  ],
+  "assets/buddha-statue.mesh.part-1.gz": [
+   "?v=1ca5ece606a833f83c50",
+   "dddffb9ef93ce5ffbd52a01fddc1cab63799f9a1bf00d5df86ac043e82d80a3f",
+   262144
+  ],
+  "assets/buddha-statue.mesh.part-2.gz": [
+   "?v=406fa42a561866e1dc92",
+   "48ad0e3c417d39eb43a3473008a524f0bda8ebb46ecc7d7b5afc56653c6f55bb",
+   262144
+  ],
+  "assets/buddha-statue.mesh.part-3.gz": [
+   "?v=6c0e8679ab5d7ca8d11b",
+   "21482b4bc15111a204e262b90f2fb76b344400047867c710d52d6304503dd7c7",
+   262144
+  ],
+  "assets/buddha-statue.mesh.part-4.gz": [
+   "?v=1d3340ad5090e24635d5",
+   "b8367b749ca2d6d3f7a68d91aa939210c7fe346aea84a775cea36a54caddfad8",
+   262144
+  ],
+  "assets/buddha-statue.mesh.part-5.gz": [
+   "?v=ed061f4ce9537f25d28c",
+   "10dfec6fc00be489b519349e71482982921884a264a372ffaa855579aa9de5f2",
+   47680
+  ],
+  "assets/caishen.jpg.part-0.gz": [
+   "?v=648e16b29eff9ec93227",
+   "e2716f88935b4a9dab03acf1537b80e53645d443aface088d0b88d89226e54a5",
+   262144
+  ],
+  "assets/caishen.jpg.part-1.gz": [
+   "?v=90e03eec5c356214b6db",
+   "3a6617fa212511e598859a8735a4449326bb62d28b995d359d9339e538aace12",
+   132878
+  ],
+  "assets/caishen.json": [
+   "?v=ce7cfb1add0f30fc542e",
+   "ce7cfb1add0f30fc542e4cf4dece6e5812010ede67d59cb2ad5629e88bca5060",
+   857
+  ],
+  "assets/caishen.mesh.part-0.gz": [
+   "?v=344b8f6017d887d1ec51",
+   "0b76ddcbbb92abdd693dbf358074b425f0387f79cc8b106e844c854714dc96bc",
+   262144
+  ],
+  "assets/caishen.mesh.part-1.gz": [
+   "?v=9a046938f0c84445650d",
+   "99474df5a50bfdb872475ead25e0541ac4b06333fbc032f20e8832e9d4ab2b70",
+   262144
+  ],
+  "assets/caishen.mesh.part-2.gz": [
+   "?v=e9da44b6004aab09117c",
+   "bb324366905bc1fc19ab65bf099ad6b80302bcd280eb99b8ab97bab8bf6d8cc9",
+   262144
+  ],
+  "assets/caishen.mesh.part-3.gz": [
+   "?v=c6605870ae466c94395d",
+   "b4b2e07fbb65ac2e9c70a48fa052bd6237aae4449716efe0b05b3f7d7b6bca6d",
+   262144
+  ],
+  "assets/caishen.mesh.part-4.gz": [
+   "?v=8e659b6cb0ea187839dd",
+   "86a756ac9f889ae1f784b0b3acc3c44f57a53079abb08c90b5743fb48ab210e0",
+   77412
+  ],
+  "assets/cloud-outfit-normal.jpg.part-0.gz": [
+   "?v=ea4ae675a30e4f2f5b73",
+   "8c4adb07a123a5a697be41a9416d15acf3ea32e9d87d63905688a2db0d04aae1",
+   262144
+  ],
+  "assets/cloud-outfit-normal.jpg.part-1.gz": [
+   "?v=505dcb4959dac658e521",
+   "4a338ab52003674a787cc3dc60803b6d4a1e2451845c9be4aa650681d693353a",
+   37200
+  ],
+  "assets/cloud-outfit-preview.jpg": [
+   "?v=ad355f44bbc4cbe1cb53",
+   "ad355f44bbc4cbe1cb538fc69fc7d888db58bbd91cc9e6c103c6322a35597e4d",
+   11000
+  ],
+  "assets/cloud-outfit.jpg.part-0.gz": [
+   "?v=2cf7a941623b5cae31d0",
+   "924137b34237769e6f877c809e7ed42f2d6ff07b1ac7d55f20a8eb7cc40ac373",
+   262144
+  ],
+  "assets/cloud-outfit.jpg.part-1.gz": [
+   "?v=3e725f4271e46f54973b",
+   "47a02e41cf9387345843941155c0ca5e89262e041e654f7e7753231d8fb6c649",
+   150570
+  ],
+  "assets/cloud-outfit.json": [
+   "?v=22c29ec742f77cb109cb",
+   "22c29ec742f77cb109cb0deb2136b52fae69576ac943ccdecbe853614c832e45",
+   1376
+  ],
+  "assets/cloud-outfit.mesh.gz": [
+   "?v=1f17d4d352a27988cb46",
+   "05c8aed48f7bada3a25e8ffce5e23c838fc2dcf204792451efed15085ed3dfe9",
+   454280
+  ],
+  "assets/companions/Alpaca.glb.gz": [
+   "?v=0e4e732a85af1306e905",
+   "891e36428f34b6023c55c596071576a83cf28200c589424ffe3e196c48256b6b",
+   426756
+  ],
+  "assets/companions/Campfire.glb.gz": [
+   "?v=5235c8a7ebf4e05a6f47",
+   "9ef9bf71264ae756cddbd31646eb015c4f54eab0c355fcbfe8c2d3cb1beeb2e9",
+   547764
+  ],
+  "assets/companions/Cow_Cat.glb.part-0.gz": [
+   "?v=e7e57b99edce4879a949",
+   "10abff19c6d111c21a226cb215463fa17e38fd20a58743a82cbbf76e8869db2b",
+   262144
+  ],
+  "assets/companions/Cow_Cat.glb.part-1.gz": [
+   "?v=ef9cc2f7483ab936708d",
+   "ceda487e2f708e39dfe9ea17a65620cde2350354b116ed3e1f74dcb5a53b3917",
+   262144
+  ],
+  "assets/companions/Cow_Cat.glb.part-2.gz": [
+   "?v=43da6800fcae82e4c9a6",
+   "0c27c8936bfb44c477ac696fd12532ce1cff58a10288799764a6ab605d7e38de",
+   262144
+  ],
+  "assets/companions/Cow_Cat.glb.part-3.gz": [
+   "?v=443ae93d3116a221f448",
+   "59fb557250948c4deaae181f3ed9ae5e57dac5393827a76d67772b17d6e8d602",
+   262144
+  ],
+  "assets/companions/Cow_Cat.glb.part-4.gz": [
+   "?v=554b5349014ce48fee75",
+   "1969821418889541556c757c9c97140e8d37772fdfb43b0f7f00274c41cf5c54",
+   262144
+  ],
+  "assets/companions/Cow_Cat.glb.part-5.gz": [
+   "?v=7fe72087cc00e9e1caa0",
+   "bdfc39aebd1a600ade1e6fb7e4443dbdb5ee4e753fc3dc1ef1468e820a3ec5ea",
+   256060
+  ],
+  "assets/companions/Husky.glb.gz": [
+   "?v=f2cb1035f3995292039d",
+   "012bd5203dcaae88bf19808fada6ac1df1edd96dd1ec5928c8f847be05acb6eb",
+   803252
+  ],
+  "assets/companions/Shiba_Inu.glb.gz": [
+   "?v=79c325b4e41c7166d1e7",
+   "00d6683f2bf0c4299a8cc4f48a6ec1600ef81a1c0d560b96a92d13a19108b695",
+   732280
+  ],
+  "assets/entrance-step-paving.jpg": [
+   "?v=f9ed9e10fba8e8d0c7dd",
+   "f9ed9e10fba8e8d0c7dd0a59858d89176b8b476a176c26519919c08c04b496c0",
+   84083
+  ],
+  "assets/guanyin-statue.jpg.part-0.gz": [
+   "?v=d840f7993237845c6b0c",
+   "fa8f13334eb7c2ac9e7d1bcefc3e372f68e1a7fa6f976b1fd9bb264a5d898267",
+   262144
+  ],
+  "assets/guanyin-statue.jpg.part-1.gz": [
+   "?v=c4feca4f9c94a0580788",
+   "14b54a59b9986f9da320604fd29908dffade4b3f54bf37c1dba8863e3768b26b",
+   262144
+  ],
+  "assets/guanyin-statue.jpg.part-2.gz": [
+   "?v=8389402cab4a466e068a",
+   "32accce36222a161abd15d4ed639bfc14174b793f789e017a54784d39da5fed7",
+   36493
+  ],
+  "assets/guanyin-statue.json": [
+   "?v=484b87ba7bb6e1d66168",
+   "484b87ba7bb6e1d661681ef58ca10ead33314a373d910b3ef2c80eb8acc30ecf",
+   862
+  ],
+  "assets/guanyin-statue.mesh.part-0.gz": [
+   "?v=443878c98602e6483e09",
+   "6432617a42321b682f059b087abd285496154045791c922d251e71d2e6b6661f",
+   262144
+  ],
+  "assets/guanyin-statue.mesh.part-1.gz": [
+   "?v=97a49f31acc64bf5a9ee",
+   "971167353c32576b827d7e801b0f8b0b65a551393d903dcb4f48b1ef43503997",
+   262144
+  ],
+  "assets/guanyin-statue.mesh.part-2.gz": [
+   "?v=8c9b573f67e1dacd3795",
+   "7e83745be099b7780b1c0d75a06b6493d69c86a96539f9eca3c89adfc658a129",
+   262144
+  ],
+  "assets/guanyin-statue.mesh.part-3.gz": [
+   "?v=db719f56312e66e34199",
+   "77dda1c4b0fc1f1b711d50576430f4bcbe0f28313bfdcb622fd75f8d8ba22a85",
+   220108
+  ],
+  "assets/hall-chant-loop.mp3.part-0.gz": [
+   "?v=c37fb532b42ac92a9ca8",
+   "e38ae8625fd6bcda7f01bac0a26fba86b09486ccc23c6f55c0ab6133431666f7",
+   262144
+  ],
+  "assets/hall-chant-loop.mp3.part-1.gz": [
+   "?v=bd5a29927218d411af55",
+   "b82f173ebc9b0ed0c80a90c8f4aa85cdb01279ce4e2fe25dc634e92782a32f46",
+   262144
+  ],
+  "assets/hall-chant-loop.mp3.part-2.gz": [
+   "?v=7ec1430edf13899ea086",
+   "1fccdb8229f65f5c908004a2e20f3b858d27e3601f2a476d53af268f8601a6d1",
+   52716
+  ],
+  "assets/incense-burner.jpg": [
+   "?v=4a94af76a64ac70dccd0",
+   "4a94af76a64ac70dccd05d2600d7d306075225003bd35fd1752ae32692968b7e",
+   90040
+  ],
+  "assets/incense-burner.json": [
+   "?v=2ab7d766194876610b49",
+   "2ab7d766194876610b492fd8a2b71e870982c581620854400d853b72472377bc",
+   876
+  ],
+  "assets/incense-burner.mesh.gz": [
+   "?v=5eda0d3c15039933d11d",
+   "07c32ad4d506684900d2a9018be77c55b31441cc157fe39724afc8e26bcb7fae",
+   386612
+  ],
+  "assets/interior-bamboo-silk.webp": [
+   "?v=729500f0c19d1210aec0",
+   "729500f0c19d1210aec0e0c4f81d52933355c2d62d59a908872924dbc653bb6a",
+   51376
+  ],
+  "assets/interior-lotus-silk.webp": [
+   "?v=9c6c47e19d78ea2af2a9",
+   "9c6c47e19d78ea2af2a995d77e32c73d3df4fa9c966923371ec4875ceaf70fac",
+   34646
+  ],
+  "assets/interior-ruyi-silk.webp": [
+   "?v=4184a8cabee047766a84",
+   "4184a8cabee047766a8479bbb72ad576a25caee9e2e5de1bbb6c9649a9c0efe1",
+   37742
+  ],
+  "assets/left-altar-statue.jpg.part-0.gz": [
+   "?v=83c7d3eb0e10fd9dcf95",
+   "abeff3e5ae3cd21ebcf729bb4652b351053e6698e1402f4e74c8f67e46777c6c",
+   262144
+  ],
+  "assets/left-altar-statue.jpg.part-1.gz": [
+   "?v=428f310ecad9d008a435",
+   "48e1585969d08309acf125822ffbad6ba68c80bccd5a64579a52ecf4066ba38a",
+   262144
+  ],
+  "assets/left-altar-statue.jpg.part-2.gz": [
+   "?v=d2f76bc32715d0cc98a1",
+   "d2af08f3206077590b9a1a1cb04bae156b7f721e9f88d5d663f7efdfe2c16f2e",
+   51765
+  ],
+  "assets/left-altar-statue.json": [
+   "?v=0e9bb2e1c11fc51923d0",
+   "0e9bb2e1c11fc51923d0600b66b12d423b1d06ce08a151ad648b6c6d3033888d",
+   869
+  ],
+  "assets/left-altar-statue.mesh.part-0.gz": [
+   "?v=e6fcd2637d83b4b4002a",
+   "fc5cdd4a8a9c0ba665abc393ffb35a7943f3768ad2c1d5a4917d7a1f25d17db1",
+   262144
+  ],
+  "assets/left-altar-statue.mesh.part-1.gz": [
+   "?v=c120de3764e214ea6294",
+   "de0d719b5af8800cc64db52cd2909d78bfca5cd37c75308bd77929fe59895303",
+   262144
+  ],
+  "assets/left-altar-statue.mesh.part-2.gz": [
+   "?v=1617c477cf25b6da441b",
+   "ba8c4c1b48480f8a7f4ed825ba9e6f2b8d54b7202bf382d5a4e2e4b8a5c32488",
+   262144
+  ],
+  "assets/left-altar-statue.mesh.part-3.gz": [
+   "?v=d3286dcf9d7bbdade86b",
+   "5e7c508defcf4655ec9b8741681cb22293819f7e5e9ba26877f79356cce3bed8",
+   255508
+  ],
+  "assets/lotus-outfit-preview.jpg": [
+   "?v=3dc0aa7a12b2e3037b80",
+   "3dc0aa7a12b2e3037b8022fffec5600d436e607c15ff9b036acab2d07a2f1e78",
+   7103
+  ],
+  "assets/lotus-outfit.jpg.part-0.gz": [
+   "?v=503409dde6e0a2fe9e81",
+   "759a40bc16fdab5c02beb419f9a55b2d5f1e26fb5afdb083907befb7b9de74f2",
+   262144
+  ],
+  "assets/lotus-outfit.jpg.part-1.gz": [
+   "?v=e65377ec6af6057b3fa5",
+   "4ed21278d202e7364e48d234abb5f2a906f8c790f7de195578d42d55725ac2f8",
+   45509
+  ],
+  "assets/lotus-outfit.json": [
+   "?v=fa36b64b3eef1709f4a1",
+   "fa36b64b3eef1709f4a11f128aaa289d638a84b5b07eef9a3ad24a1439398d72",
+   1059
+  ],
+  "assets/lotus-outfit.mesh.part-0.gz": [
+   "?v=41c54eca7eb3547ce202",
+   "c03c5f10646d959c59d4a361a84866b73da8cfbae203f820002b65d95a6f2c80",
+   262144
+  ],
+  "assets/lotus-outfit.mesh.part-1.gz": [
+   "?v=ac4188d205082a517b7b",
+   "826cea0b4cc531f4e0495d6ac830dceee9d14a8cedcff89f9fb86eadb77acafe",
+   239524
+  ],
+  "assets/monk-guide.glb.part-0.gz": [
+   "?v=32dd8922bad7ea23c97c",
+   "787c0f8652df328608254ebe96c188b6e9d0c72a1703cc6362ffe7f450fcf930",
+   262144
+  ],
+  "assets/monk-guide.glb.part-1.gz": [
+   "?v=a8472c4a49d533223f00",
+   "3fe4c9a66b4e24e9659100a62abe86170425cb97bfb55524b8a207ca1f771931",
+   262144
+  ],
+  "assets/monk-guide.glb.part-2.gz": [
+   "?v=7f30e1d82fac57d3cbd1",
+   "26f89531b707f6b3120256cc736f364f17eed3af2a82ef183ac25e8d5039dd6e",
+   262144
+  ],
+  "assets/monk-guide.glb.part-3.gz": [
+   "?v=97f170481492bcabba2a",
+   "bb9b2af302237a4a30eefa3aed395db10b408487b368abf67d7838277995de26",
+   262144
+  ],
+  "assets/monk-guide.glb.part-4.gz": [
+   "?v=546b444b19d708aeddc6",
+   "e9c3523d35c2c2f5b49daf317f7ecd4ae6ade662ed1216fdd3975841e83baec1",
+   262144
+  ],
+  "assets/monk-guide.glb.part-5.gz": [
+   "?v=2bd7c9a3edc022819262",
+   "acbc9c8e6d3798b0a296c3f336f66092dad8da2025afbbaed053e3dad6149477",
+   179276
+  ],
+  "assets/oil-lamp.jpg": [
+   "?v=f2d59f9f18ea2b317b25",
+   "f2d59f9f18ea2b317b257fb3ed3b95966f01ec4e018336ffd0f1f97295dedea2",
+   97616
+  ],
+  "assets/oil-lamp.json": [
+   "?v=0ec0b90d96c281ee873e",
+   "0ec0b90d96c281ee873eeacc61b47eb4b3c5901a28b06fa8bf8a29439a435abe",
+   855
+  ],
+  "assets/oil-lamp.mesh.gz": [
+   "?v=08731a3e502051dda409",
+   "760f1a5438fea022ed8c397a2fe43fec72058e610ce76c95085ddbec020c9669",
+   262212
+  ],
+  "assets/robe-golden.webp": [
+   "?v=7361017a0e1f091f8550",
+   "7361017a0e1f091f855051c6d8cd3917d0542cc5777629bed9a99a4ddfdafcf4",
+   194722
+  ],
+  "assets/robe-moon.webp": [
+   "?v=afeb204d74b08f0904fb",
+   "afeb204d74b08f0904fbc65190be177bd864b19eb373f72956363dac3a915c25",
+   140178
+  ],
+  "assets/robe-moss.webp": [
+   "?v=211ce374f8cd7208d5f7",
+   "211ce374f8cd7208d5f7f1e9cc84af7b17284213c64f28276b3ef5a0aa3284e8",
+   131070
+  ],
+  "assets/robe-plum.webp": [
+   "?v=ca38cf31e45ea9f084b8",
+   "ca38cf31e45ea9f084b830c60b84d3f13859c258f94dde5e50a132c6b957e634",
+   136960
+  ],
+  "assets/robe-saffron.webp": [
+   "?v=694cbd32c9425b85bcea",
+   "694cbd32c9425b85bcea325324f8dff02602a2e422bc2cf64661f746bb97aa72",
+   180824
+  ],
+  "assets/robe-tide.webp": [
+   "?v=e557c0e77303758b6b96",
+   "e557c0e77303758b6b9625f6ae34778d6c51eb90662638c0dd6263cb9b80b00b",
+   179496
+  ],
+  "assets/scripture-calligraphy-original.jpg.part-0.gz": [
+   "?v=24ce5409aeb52cd1e3af",
+   "c32f942acf0d48ef7a5c302fb6db3acf62272450c2b3d7d834a936cfb6daa87f",
+   262144
+  ],
+  "assets/scripture-calligraphy-original.jpg.part-1.gz": [
+   "?v=553ca949c47377cb69f2",
+   "430866cb04c44868412972687cfee92a5537fb37b21c9575724e3884b85492d8",
+   262144
+  ],
+  "assets/scripture-calligraphy-original.jpg.part-2.gz": [
+   "?v=f2be7dd166ff19558c9a",
+   "32b1826bba93b5f889e3913370ae24f801182ff4e6631aeded35eb49f52d231f",
+   204271
+  ],
+  "assets/temple-shell-lowered.json": [
+   "?v=20bd05039755ea41e0cc",
+   "20bd05039755ea41e0ccf4f85055d9120d960f7ea0943ab8f530d7f72590b869",
+   1418
+  ],
+  "assets/temple-shell-lowered.mesh.part-0.gz": [
+   "?v=9471be59e3b2dfb3c63e",
+   "f045d6f10ad892824df1ea718eab39a63971c2d45acf7128669e11bec87e72ac",
+   262144
+  ],
+  "assets/temple-shell-lowered.mesh.part-1.gz": [
+   "?v=f8b658be5d45683ef94a",
+   "15d8e37c3fec9a9151ebf487bfcbbfabd72148a2e51e88fa391337090677874f",
+   262144
+  ],
+  "assets/temple-shell-lowered.mesh.part-10.gz": [
+   "?v=064d0bfb5b51b2ed45aa",
+   "3f98a56c831080c53aaf5d04c5fa2f82dcbd13e899f4616cb670f1863339069b",
+   262144
+  ],
+  "assets/temple-shell-lowered.mesh.part-11.gz": [
+   "?v=387bb97d2235e0a3cb2f",
+   "c3394c3adadba97446151ab15f4464fdaa78e923e84785326ad01c5fef5ddedf",
+   24116
+  ],
+  "assets/temple-shell-lowered.mesh.part-2.gz": [
+   "?v=8aed304ad0b85464d148",
+   "88cf4d0141031e5edfca5402a1b6421aa0fbd85a7e577e02bc3f91e0933b0215",
+   262144
+  ],
+  "assets/temple-shell-lowered.mesh.part-3.gz": [
+   "?v=a567cca917c874e74a06",
+   "1522427c99bfb2ed132b031258f5a4bb06c7d2ed090021f73410120af05bff29",
+   262144
+  ],
+  "assets/temple-shell-lowered.mesh.part-4.gz": [
+   "?v=98e1678306ec813eadd4",
+   "3d1989b498d16b61109a97f886aaab33e81dbac122f42f1ba7eedd578922273d",
+   262144
+  ],
+  "assets/temple-shell-lowered.mesh.part-5.gz": [
+   "?v=4f67459afc1ff602471e",
+   "c850e7fe545a4d340d325272c174af9d2973228b632670f852c1b710788e3d40",
+   262144
+  ],
+  "assets/temple-shell-lowered.mesh.part-6.gz": [
+   "?v=655a6521fa09d0611854",
+   "dbd490a2760451216950a14ee9ef3c13f49e8e9845ac6ed8f7396b36a6766a81",
+   262144
+  ],
+  "assets/temple-shell-lowered.mesh.part-7.gz": [
+   "?v=ee22a0ab786f59787088",
+   "7961f4375546c57e5a6dfa0286efd72aab7cf82ca3a49d8b9b9e9e39115fa57a",
+   262144
+  ],
+  "assets/temple-shell-lowered.mesh.part-8.gz": [
+   "?v=b1ac7edc69d8bd802d42",
+   "386c93e809e1473feb923f7998c99c5d85a4528cf813e0d1899f3b62b386836f",
+   262144
+  ],
+  "assets/temple-shell-lowered.mesh.part-9.gz": [
+   "?v=26a0431b518411bd718d",
+   "a89a065e9ad008aedb4606703007fda1512ce965bbd019e6bfd73a9506aac5ba",
+   262144
+  ],
+  "assets/temple-shell.jpg.part-0.gz": [
+   "?v=dc3fd467c1037fa05b89",
+   "c8a07e93351c8d132a310070a00ac7505a0cd5ae36108c35a9aa744ca73e4b68",
+   262144
+  ],
+  "assets/temple-shell.jpg.part-1.gz": [
+   "?v=befdfad76dff480406fc",
+   "1098a2a20615b090275d60dfe6fb8a0c71facaca1a4df4bf99d432fe10538484",
+   66081
+  ],
+  "assets/wardrobe-gold.webp": [
+   "?v=addc79559f0f45f60d12",
+   "addc79559f0f45f60d127c6fbe405413d955364681e77e5e597b40032892719f",
+   6502
+  ],
+  "assets/wardrobe-golden.webp": [
+   "?v=d39522d6081b72165bbc",
+   "d39522d6081b72165bbc1897cb9c9ec6cb8bdb0e2042985f340ed2fcae169d7f",
+   6886
+  ],
+  "assets/wardrobe-hemp.webp": [
+   "?v=19bc314bb31ae3e1dd53",
+   "19bc314bb31ae3e1dd535b3cf91f87036b90e4dcf94e484907988165434f6975",
+   4690
+  ],
+  "assets/wardrobe-indigo.webp": [
+   "?v=d9a10ba064e382704e7f",
+   "d9a10ba064e382704e7f45d4c8ac86073ef4b0b3bcd3479e62770e9984346375",
+   4022
+  ],
+  "assets/wardrobe-jade.webp": [
+   "?v=ca1474ffdb0c476d2992",
+   "ca1474ffdb0c476d29924ad68336e0a73e4d687727aa8f91ee158a599d79fb87",
+   3860
+  ],
+  "assets/wardrobe-moon.webp": [
+   "?v=70ad8053946be84ca3e7",
+   "70ad8053946be84ca3e7c9beaadeb6b25aa616ad6720b0f8161e1a977b43a77a",
+   5080
+  ],
+  "assets/wardrobe-moss.webp": [
+   "?v=5a6b7ad85e9ed3236013",
+   "5a6b7ad85e9ed323601328e7d1685dec9d4a29cfd5f9b11e55daf72a2e06b7ae",
+   4720
+  ],
+  "assets/wardrobe-original.webp": [
+   "?v=b71fcdb3ce7396d9c8bd",
+   "b71fcdb3ce7396d9c8bd864d28c304b721aa155b1719111426bf2d1e59e50ce1",
+   1628
+  ],
+  "assets/wardrobe-plum.webp": [
+   "?v=2eff1d55bf0e48044125",
+   "2eff1d55bf0e48044125a1f2c142cdb07c33399e80e13a2219a404563e2c431f",
+   5118
+  ],
+  "assets/wardrobe-pouch.webp": [
+   "?v=e104e0dc2ee5f1413673",
+   "e104e0dc2ee5f14136730e9a93c7aee27403439d16e4a70cc84c4782639737a7",
+   4004
+  ],
+  "assets/wardrobe-saffron.webp": [
+   "?v=24e0f447a81c486f19f8",
+   "24e0f447a81c486f19f8a2343d334d285ebeb05902549110e380338b2979c9e3",
+   6396
+  ],
+  "assets/wardrobe-sandal.webp": [
+   "?v=27204792f553f53c9ade",
+   "27204792f553f53c9adeba8d802a5c55f879a61dc7fd64ef8f79a3d16ecf2c3f",
+   3378
+  ],
+  "assets/wardrobe-tide.webp": [
+   "?v=8217c4308e08a90503bd",
+   "8217c4308e08a90503bddb5d49037eb1954b5a42e55f2977af3026e2b42a1a7a",
+   5896
+  ],
+  "assets/wardrobe-vermilion.webp": [
+   "?v=dfc37ae6ca5ea0537e2c",
+   "dfc37ae6ca5ea0537e2c4debe9ddb7f517a23b0791a172bd49c6ee6913c8b3ae",
+   5882
+  ],
+  "assets/wishing-tree.jpg.part-0.gz": [
+   "?v=782f98901754b1742604",
+   "5f9419fa3642bdee39297b0e1b23ba076845f4bf2a026d079c38676fe2dc38a2",
+   262144
+  ],
+  "assets/wishing-tree.jpg.part-1.gz": [
+   "?v=5984705b6e81897608f7",
+   "5376a3a7409de0cd6a3845cf7b4dffbc6b2859a23b8baa30cab519f8a0ea6345",
+   256030
+  ],
+  "assets/wishing-tree.json": [
+   "?v=e75af048b128e38e92cf",
+   "e75af048b128e38e92cffedb43d3f787f599c1cd88ddebf21be4c490a328baea",
+   873
+  ],
+  "assets/wishing-tree.mesh.part-0.gz": [
+   "?v=884fa170e861a17aa902",
+   "962246cc2a09f6bd03282293ecb51ad9990f8a665671663a3da801ff7ff3e80e",
+   262144
+  ],
+  "assets/wishing-tree.mesh.part-1.gz": [
+   "?v=372e3d553d9dd7226a02",
+   "4724d3080e5d71674d15af8068b2cfb959e85334ffa2dac1e9d1dcb6709f25a9",
+   262144
+  ],
+  "assets/wishing-tree.mesh.part-2.gz": [
+   "?v=16446d95eccea4afd8c4",
+   "6f10b2b5899cf993f88b52cad4b47311af920d7e6069d30f546253a7a49bf5f7",
+   262144
+  ],
+  "assets/wishing-tree.mesh.part-3.gz": [
+   "?v=bdc606dccddd81b64fd1",
+   "129b103001af343b7b8cb9ee5d468c22650b0e247cbca692957d1ba7854ce16b",
+   262144
+  ],
+  "assets/wishing-tree.mesh.part-4.gz": [
+   "?v=ba5614249de648e806a8",
+   "3d0e8e3fa0e86eda8baa528e1067ff918b76f08067d450ac5601e70c9dec8e44",
+   262144
+  ],
+  "assets/wishing-tree.mesh.part-5.gz": [
+   "?v=ca647c92138374b82b48",
+   "b8f66bd7a645369bca9c095aa44300c70dc9e0a95249b83cbb8153a3fdb23a4b",
+   91736
+  ],
+  "camera-query.js": [
+   "",
+   "b77e016b7dbbbeeb4dffb919599f25f1408a4f6abcf1b9ae623465a7eb8bc0be",
+   4158
+  ],
+  "clean-controls.css": [
+   "?v=eb5de44a20178f5c3211",
+   "eb5de44a20178f5c3211c5832351145058986d71f37cf688ed626b3a04d223b7",
+   11705
+  ],
+  "coast-view.jpg": [
+   "",
+   "342f79efda19fd294392c45dc884d59b6f3d9c2cd212ff78b9404810b1fc7b04",
+   83096
+  ],
+  "index.html": [
+   "",
+   "e34e5ebb15674fb8ccf298463c4a0d1c4a81b243b342bb8d2b3b186f38def2ed",
+   30179
+  ],
+  "management.css": [
+   "?v=dde23aa9495b3d17612c",
+   "dde23aa9495b3d17612ce2563c5ac62bd7509b5e35e805a93826d40ae2778f1b",
+   1365
+  ],
+  "media/quiet-temple-poster.jpg": [
+   "",
+   "10ccd31cb7f67b264277ec02da4a7ae22fe96b57775863fe651affd84085d588",
+   33327
+  ],
+  "media/quiet-temple.mp4": [
+   "",
+   "78a647b97af9100c78c25b1925ab1ab1b57876e9e4b300ca9e21226d16448ff5",
+   1311914
+  ],
+  "media/temple-dusk-coast.jpg": [
+   "",
+   "5ec29af71f1da400345ad01b02dead888f6de0444b7f39ceac96a44d166283f5",
+   80716
+  ],
+  "media/temple-incense.jpg": [
+   "",
+   "d7dc768ceebc4e7e328f4bbd47c3b3d7e10ce37ce4c52fe1f3b31044eeb46a67",
+   72611
+  ],
+  "media/temple-share-gallery.jpg": [
+   "",
+   "f0d43252aa68d00f059915d920f9a82c16e36ce1e48f7b014c7f55a8bae828ce",
+   131251
+  ],
+  "media/temple-sunflower-ride.jpg": [
+   "",
+   "34bbca036731cc7d91533905cd074788a13aa44d95de68422a1c569e25c21cf6",
+   122225
+  ],
+  "media/temple-wishing-tree.jpg": [
+   "",
+   "4541de4f892a913f8a2dad6242964842f11f3c52875fa985efa2f8a21cbd4428",
+   132787
+  ],
+  "play-qr.png": [
+   "",
+   "723d6354e5d9ce6ae571539546ef68f992fe99b016a27a190da205c25204612d",
+   11271
+  ],
+  "privacy.html": [
+   "",
+   "cf7209b34e1dac3593428566605eadd89758ee5e1c48d38f6659d190a7cd5272",
+   1323
+  ],
+  "profile.css": [
+   "?v=e5f6b637a14cd363951a",
+   "e5f6b637a14cd363951a1d2ce37f17970ed89bdf6adbbf963e8431e5b86f7825",
+   15505
+  ],
+  "room-activities.css": [
+   "?v=fb2c378e044f6ab6e698",
+   "fb2c378e044f6ab6e6983666831ecc13c63697f78d1f72fbef53c89436b068eb",
+   3746
+  ],
+  "share.jpg.png": [
+   "",
+   "b43b0b7fe5200cae2c3f430f39c3ff6efc6d35fd0dec62f98be9a845f164e469",
+   1032906
+  ],
+  "style.css": [
+   "?v=a52f76a5d7ac0c9953aa",
+   "a52f76a5d7ac0c9953aaaafcf1e14fec3567e02ed92fe16ab8c505ec277c7d1f",
+   15945
+  ],
+  "telemetry.js": [
+   "?v=6c642f1200a89248097f",
+   "6c642f1200a89248097fc5b506cc86f7b59ab52c176b4a57bf96874915ae5214",
+   7692
+  ],
+  "temple-client.js": [
+   "?v=31a0ebccbb846dfa2c8c",
+   "31a0ebccbb846dfa2c8c237f2925a528fdc2d1c735217dc95644e7b0d3325ab0",
+   3439558
+  ],
+  "vendor/THREE-LICENSE.txt": [
+   "",
+   "8b378ebe60e2fe500158cb0ac71cb5e8b7d92953c2abcc63a0eb90499653b5bc",
+   1081
+  ],
+  "vendor/three-mesh-bvh-LICENSE.txt": [
+   "",
+   "b106ef6198a9862ed2b5b873e944ecf3583c631a84a7462d400ecc1910ce7fee",
+   1072
+  ],
+  "vendor/three-mesh-bvh.js": [
+   "",
+   "69739a5067251aeac203fce682971520e682009b8ded6f21a84e7dc160e9f64c",
+   300929
+  ],
+  "vendor/three.offline.js": [
+   "",
+   "6fcd0db3f51c7de6c8cfe4a9e234f6355337a8525139789cdceac73d987643ad",
+   2197219
+  ]
+ },
+ "merged": {
+  "assets/buddha-statue.jpg": [
+   "d65dfa22ada61bbc9b22aa1130fc77d7613fa57b23a3c2e7016c768d61212987",
+   [
+    "assets/buddha-statue.jpg.part-0.gz",
+    "assets/buddha-statue.jpg.part-1.gz"
+   ]
+  ],
+  "assets/buddha-statue.mesh.gz": [
+   "6dfa68f0e0d51637e3822993117b687205cf44e9bb52b2f39bc221ab5e89cb61",
+   [
+    "assets/buddha-statue.mesh.part-0.gz",
+    "assets/buddha-statue.mesh.part-1.gz",
+    "assets/buddha-statue.mesh.part-2.gz",
+    "assets/buddha-statue.mesh.part-3.gz",
+    "assets/buddha-statue.mesh.part-4.gz",
+    "assets/buddha-statue.mesh.part-5.gz"
+   ]
+  ],
+  "assets/caishen.jpg": [
+   "9090ad0cc6b4f7a14a1f9e485a698229caea51d9b265b996bab664586917ceda",
+   [
+    "assets/caishen.jpg.part-0.gz",
+    "assets/caishen.jpg.part-1.gz"
+   ]
+  ],
+  "assets/caishen.mesh.gz": [
+   "9edf0fce052028c598811c100fb326cf8f00492396853aea22f36405a7149a10",
+   [
+    "assets/caishen.mesh.part-0.gz",
+    "assets/caishen.mesh.part-1.gz",
+    "assets/caishen.mesh.part-2.gz",
+    "assets/caishen.mesh.part-3.gz",
+    "assets/caishen.mesh.part-4.gz"
+   ]
+  ],
+  "assets/cloud-outfit-normal.jpg": [
+   "7bac3da03fee4a118dd4692de1afe181e41b83ba1b40439aaa9f8f4cde913378",
+   [
+    "assets/cloud-outfit-normal.jpg.part-0.gz",
+    "assets/cloud-outfit-normal.jpg.part-1.gz"
+   ]
+  ],
+  "assets/cloud-outfit.jpg": [
+   "6f567be6561a1aa08bf02a0e19f94a3c46b82d7cc4f02fd44863e5e0c5805fa4",
+   [
+    "assets/cloud-outfit.jpg.part-0.gz",
+    "assets/cloud-outfit.jpg.part-1.gz"
+   ]
+  ],
+  "assets/companions/Cow_Cat.glb.gz": [
+   "cc869d075c013cc6847a4a654f86185faf0fa572395f75ba716929f5a3417ff7",
+   [
+    "assets/companions/Cow_Cat.glb.part-0.gz",
+    "assets/companions/Cow_Cat.glb.part-1.gz",
+    "assets/companions/Cow_Cat.glb.part-2.gz",
+    "assets/companions/Cow_Cat.glb.part-3.gz",
+    "assets/companions/Cow_Cat.glb.part-4.gz",
+    "assets/companions/Cow_Cat.glb.part-5.gz"
+   ]
+  ],
+  "assets/guanyin-statue.jpg": [
+   "bc95b0968fcbdd24911cf4364b941bce78fdea3d3d22117a05312616143a1f65",
+   [
+    "assets/guanyin-statue.jpg.part-0.gz",
+    "assets/guanyin-statue.jpg.part-1.gz",
+    "assets/guanyin-statue.jpg.part-2.gz"
+   ]
+  ],
+  "assets/guanyin-statue.mesh.gz": [
+   "71645e245d2794574eeb3f46b79042555e0a20a3a699937826fbdc8f6d97862f",
+   [
+    "assets/guanyin-statue.mesh.part-0.gz",
+    "assets/guanyin-statue.mesh.part-1.gz",
+    "assets/guanyin-statue.mesh.part-2.gz",
+    "assets/guanyin-statue.mesh.part-3.gz"
+   ]
+  ],
+  "assets/hall-chant-loop.mp3": [
+   "7ca2be0879e1f2045da3682d78b147f33359e99c066418c85be70e5fb82dddc0",
+   [
+    "assets/hall-chant-loop.mp3.part-0.gz",
+    "assets/hall-chant-loop.mp3.part-1.gz",
+    "assets/hall-chant-loop.mp3.part-2.gz"
+   ]
+  ],
+  "assets/left-altar-statue.jpg": [
+   "9659130aeb0944fa84fa2599dd8d5010fa78eed18948ad039811de775961ccaf",
+   [
+    "assets/left-altar-statue.jpg.part-0.gz",
+    "assets/left-altar-statue.jpg.part-1.gz",
+    "assets/left-altar-statue.jpg.part-2.gz"
+   ]
+  ],
+  "assets/left-altar-statue.mesh.gz": [
+   "addca2fb224fe164ae47f35fb38840f9d6f61b7d82c2be2cc20cf0b8ed12d8db",
+   [
+    "assets/left-altar-statue.mesh.part-0.gz",
+    "assets/left-altar-statue.mesh.part-1.gz",
+    "assets/left-altar-statue.mesh.part-2.gz",
+    "assets/left-altar-statue.mesh.part-3.gz"
+   ]
+  ],
+  "assets/lotus-outfit.jpg": [
+   "60d04d676a054283ab08f8431f02f4205154d6251aef6056d39fd0f6145200a8",
+   [
+    "assets/lotus-outfit.jpg.part-0.gz",
+    "assets/lotus-outfit.jpg.part-1.gz"
+   ]
+  ],
+  "assets/lotus-outfit.mesh.gz": [
+   "f919079a76028849afb1f38fd62c2056110699faf8a625d32fd71603862523f0",
+   [
+    "assets/lotus-outfit.mesh.part-0.gz",
+    "assets/lotus-outfit.mesh.part-1.gz"
+   ]
+  ],
+  "assets/monk-guide.glb": [
+   "0fd583a8ebb95705534c4ef086a8045a3eb2a017b74d226cba742ca7c79df5b2",
+   [
+    "assets/monk-guide.glb.part-0.gz",
+    "assets/monk-guide.glb.part-1.gz",
+    "assets/monk-guide.glb.part-2.gz",
+    "assets/monk-guide.glb.part-3.gz",
+    "assets/monk-guide.glb.part-4.gz",
+    "assets/monk-guide.glb.part-5.gz"
+   ]
+  ],
+  "assets/scripture-calligraphy-original.jpg": [
+   "f0c31d77b72760592804ca9f57c05e3d58c3ca8ee9059f98346d0c099bd09c98",
+   [
+    "assets/scripture-calligraphy-original.jpg.part-0.gz",
+    "assets/scripture-calligraphy-original.jpg.part-1.gz",
+    "assets/scripture-calligraphy-original.jpg.part-2.gz"
+   ]
+  ],
+  "assets/temple-shell-lowered.mesh.gz": [
+   "b4b50183ee0a7ceadb3c14d2d91e1c0bbd22453a0fbe3e13d645b372d653ee92",
+   [
+    "assets/temple-shell-lowered.mesh.part-0.gz",
+    "assets/temple-shell-lowered.mesh.part-1.gz",
+    "assets/temple-shell-lowered.mesh.part-2.gz",
+    "assets/temple-shell-lowered.mesh.part-3.gz",
+    "assets/temple-shell-lowered.mesh.part-4.gz",
+    "assets/temple-shell-lowered.mesh.part-5.gz",
+    "assets/temple-shell-lowered.mesh.part-6.gz",
+    "assets/temple-shell-lowered.mesh.part-7.gz",
+    "assets/temple-shell-lowered.mesh.part-8.gz",
+    "assets/temple-shell-lowered.mesh.part-9.gz",
+    "assets/temple-shell-lowered.mesh.part-10.gz",
+    "assets/temple-shell-lowered.mesh.part-11.gz"
+   ]
+  ],
+  "assets/temple-shell.jpg": [
+   "01a7d2d65e5bce11defe03c7109717d392e43db6cde2712e85f5561a3b41545e",
+   [
+    "assets/temple-shell.jpg.part-0.gz",
+    "assets/temple-shell.jpg.part-1.gz"
+   ]
+  ],
+  "assets/wishing-tree.jpg": [
+   "5562c921c666280bce54e2cc283e782a8e5f5cdbd43acd760dccebe8b20b61b4",
+   [
+    "assets/wishing-tree.jpg.part-0.gz",
+    "assets/wishing-tree.jpg.part-1.gz"
+   ]
+  ],
+  "assets/wishing-tree.mesh.gz": [
+   "49947c4c5fdf5e14ecf3e2d890506fe544aade1574c1d790701cbd36f191b53f",
+   [
+    "assets/wishing-tree.mesh.part-0.gz",
+    "assets/wishing-tree.mesh.part-1.gz",
+    "assets/wishing-tree.mesh.part-2.gz",
+    "assets/wishing-tree.mesh.part-3.gz",
+    "assets/wishing-tree.mesh.part-4.gz",
+    "assets/wishing-tree.mesh.part-5.gz"
+   ]
+  ]
+ }
+}

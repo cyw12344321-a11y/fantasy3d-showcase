@@ -1,0 +1,29 @@
+name: Prepare original temple for Pages
+on:
+  push:
+    branches: [temple-pages-build]
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: temple-pages-build
+  cancel-in-progress: false
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Verify the original public game files and prepare the playable build
+        run: |
+          python3 tools/build_temple.py "$RUNNER_TEMP/temple-public"
+          node prepare.mjs "$RUNNER_TEMP/temple-public"
+      - name: Stage the verified static release for publication
+        run: |
+          git switch --detach origin/main
+          cp -a "$RUNNER_TEMP/temple-public/." .
+          git add -- .
+          git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" commit -m "Publish original Quiet Temple 3D game for local play"
+          git push origin HEAD:refs/heads/temple-pages-release
