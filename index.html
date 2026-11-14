@@ -115,12 +115,12 @@ window.__ISLAND_ZEN_LEGACY_WEBGL_DISABLED__ = true;
     if(window.__ISLAND_ZEN_READY__||window.__ISLAND_ZEN_FALLBACK_STARTED__){clearInterval(watchdog);return;}
     var now=Date.now(),reported=window.__ISLAND_ZEN_LAST_PROGRESS_AT__||startedAt;
     if(reported>lastProgress)lastProgress=reported;
-    if(now-startedAt<20000||now-lastProgress<20000)return;
+    if(now-startedAt<60000&&now-lastProgress<20000)return;
     clearInterval(watchdog);
     window.__ISLAND_ZEN_FORCE_FALLBACK__=true;
     var play=document.getElementById('play'),load=document.getElementById('loadStatus');
     if(play){play.disabled=false;play.textContent='进入海岛（兼容画面）';}
-    if(load)load.textContent='3D加载较慢，已自动启用可玩兼容模式；错误：'+(window.__ISLAND_ZEN_ERROR__||'资源加载超时');
+    if(load)load.textContent='3D资源超过60秒或连续20秒没有进展，已自动启用可玩兼容模式；错误：'+(window.__ISLAND_ZEN_ERROR__||'资源加载超时');
     if(window.startIslandZen2D&&!window.__ISLAND_ZEN_FALLBACK_STARTED__){
       window.__ISLAND_ZEN_FALLBACK_STARTED__=true;
       try{window.startIslandZen2D();}catch(e){if(load)load.textContent='兼容模式启动失败：'+(e&&e.message||e);}
