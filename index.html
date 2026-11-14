@@ -30,7 +30,12 @@
         border: 1px solid #e3d5b5; background: #382f25; color: #fff3d6;
         font: 600 14px/1.2 system-ui, sans-serif; touch-action: manipulation;
       }
-      .wide #rotate-screen { top: 6px; }
+      .wide #rotate-screen {
+        /* In the rotated stage, the phone's top inset is the game's left inset. */
+        left: 8px; left: max(8px, env(safe-area-inset-top));
+        top: 50%; transform: translateY(-50%);
+        width: 52px; min-height: 44px; padding: 4px; font-size: 13px;
+      }
     }
   </style>
 </head>
