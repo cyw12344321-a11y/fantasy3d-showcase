@@ -1,0 +1,18 @@
+name: Prepare wardrobe controls
+on:
+  push:
+    branches: [prepare-wardrobe-controls-20261115]
+permissions:
+  contents: write
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build the tested wardrobe and practice controls
+        run: |
+          node tools/prepare-wardrobe-controls.mjs
+          node --check temple-client.js
+          git add -- temple-client.js
+          git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" commit -m "Build tested wardrobe controls"
+          git push origin HEAD:refs/heads/wardrobe-controls-tested-20261115
