@@ -4,5 +4,6 @@
   "chunks": 23,
   "chunkChars": 500000,
   "sourceBytes": 12947228,
-  "sha256": "39543b279a61acba03783401ff5b24fac1ed97f4ff31e09365fe0ac7b3d56963"
+  "sha256": "39543b279a61acba03783401ff5b24fac1ed97f4ff31e09365fe0ac7b3d56963",
+  "totalEncodedChars": 11181796
 }
