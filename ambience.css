@@ -1,0 +1,18 @@
+.ambience-controls{position:absolute;right:200px;top:84px;z-index:36;font-family:inherit;color:#ead8b5;pointer-events:auto}
+.ambience-controls button{font:inherit;color:inherit;cursor:pointer;border:1px solid #b8a17477;background:#302b24ed;border-radius:8px}
+#ambience-toggle{height:25px;padding:2px 10px;font-size:10px;letter-spacing:1px}
+#ambience-panel{position:absolute;top:34px;right:0;width:252px;max-width:calc(100vw - 24px);box-sizing:border-box;padding:17px;background:#252922f5;border:1px solid #b8a17480;border-radius:14px;box-shadow:0 12px 40px #0005;backdrop-filter:blur(12px)}
+#ambience-panel[hidden]{display:none}
+#ambience-panel header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}
+#ambience-panel strong{font-size:14px;font-weight:400;letter-spacing:1px}
+#ambience-close{width:27px;height:27px;font-size:20px;line-height:20px}
+.ambience-label{font-size:10px;color:#bcb89c;margin:13px 0 7px;letter-spacing:2px}
+.ambience-times,.ambience-weather{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
+.ambience-seasons{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.ambience-times button,.ambience-seasons button,.ambience-weather button{font-size:11px;min-height:34px;padding:6px 5px;line-height:1.4}
+#ambience-panel{max-height:calc(100dvh - 125px);overflow-y:auto;overscroll-behavior:contain}
+.ambience-controls button[aria-pressed=true]{background:#7b6840;border-color:#d8bf88;color:#fff1ca}
+.ambience-controls button:hover{border-color:#e5d1a2}
+.ambience-controls button:focus-visible{outline:2px solid #f6dfa0;outline-offset:3px}
+@media(max-width:1050px){.ambience-controls{right:184px}}
+@media(max-width:650px){.ambience-controls{top:51px;left:12px;right:auto}#ambience-toggle{height:23px;font-size:9px}#ambience-panel{left:0;right:auto;top:31px;width:252px}}

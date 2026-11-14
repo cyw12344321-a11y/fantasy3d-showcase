@@ -1,0 +1,98 @@
+.profile-trigger{font-size:19px}.practice-dialog{color:#f0e1c5;background:#30231d;border:1px solid #c5a36a80;border-radius:20px;width:min(610px,calc(100vw - 28px));max-height:calc(100dvh - 32px);padding:0;overflow:auto;box-shadow:0 24px 100px #08050399}.practice-dialog::backdrop{background:#100b09aa;backdrop-filter:blur(5px)}.practice-panel{padding:27px 30px}.practice-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}.practice-eyebrow{color:#b9a184;font-size:10px;letter-spacing:1px;margin:0 0 7px}.practice-heading h2{font-family:SimSun,serif;font-size:25px;font-weight:400;letter-spacing:3px;margin:0}.practice-close{width:32px;height:32px;border:1px solid #b69a6c66;border-radius:50%;color:#ecd4ac;background:#463126;font-size:22px;line-height:1}.practice-summary{display:flex;align-items:baseline;gap:16px;margin:23px 0 18px}.practice-name-label{font-size:11px;color:#bfa98b}.practice-dharma{font:400 29px SimSun,serif;letter-spacing:5px;color:#f0d9aa}.practice-totals{display:grid;grid-template-columns:1fr 1fr;gap:12px}.practice-totals>div{padding:13px 16px;border:1px solid #b4986333;border-radius:12px;background:#251b174d}.practice-totals span{display:block;font-size:10px;color:#bdac90}.practice-totals strong{display:block;font:400 25px Georgia,serif;color:#f1d9aa;margin-top:5px}.practice-progress{margin:19px 0}.practice-progress-header{display:flex;justify-content:space-between;gap:12px;font-size:10px;color:#cfb992}.practice-progress progress{appearance:none;width:100%;height:5px;border:0;border-radius:8px;background:#1c1512;overflow:hidden;margin-top:9px}.practice-progress progress::-webkit-progress-bar{background:#1c1512}.practice-progress progress::-webkit-progress-value{background:#c9a66a;border-radius:8px}.practice-progress progress::-moz-progress-bar{background:#c9a66a}.practice-progress p{margin:5px 0 0;color:#b39d7e;font-size:10px}.practice-section-title,.practice-rename h3{font-size:14px;font-weight:400;letter-spacing:2px;margin:20px 0 12px}.practice-cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}.practice-outfit{border:1px solid #c2a06c44;border-radius:12px;background:#271c184d;overflow:hidden;text-align:center;padding:12px 7px 10px}.practice-outfit.is-equipped{border-color:#d1ac6c;background:#65412b4d}.practice-robe-preview{height:69px;width:59px;position:relative;margin:0 auto 7px;filter:drop-shadow(0 3px 4px #0003)}.practice-robe-head{position:absolute;width:25px;height:25px;border-radius:50%;background:#d9ad82;left:17px;top:0}.practice-robe-body{position:absolute;width:43px;height:39px;background:var(--robe);left:8px;top:25px;border-radius:12px 12px 8px 8px;clip-path:polygon(15% 0,85% 0,100% 98%,0 98%)}.practice-robe-sash{position:absolute;width:12px;height:34px;background:var(--sash);top:26px;left:31px;transform:rotate(-5deg)}.practice-outfit.is-locked .practice-robe-preview{opacity:.5;filter:grayscale(.7)}.practice-outfit h4{font-size:11px;font-weight:400;margin:7px 0}.practice-outfit p{font-size:8px;line-height:1.5;color:#b6a080;min-height:24px;margin:0 0 8px}.practice-equip{font-size:10px;width:100%;border:1px solid #b9975f80;background:#674732;color:#f0d8ab;border-radius:16px;padding:6px 3px}.practice-equip:disabled{background:#3c2c2366;color:#ad9b82;border-color:#b9975f33}.practice-note{font-size:9px;line-height:1.7;color:#b5a286;margin:10px 0 0}.practice-rename{border-top:1px solid #b99a6638;margin-top:20px;padding-top:1px}.practice-rename>p{font-size:10px;line-height:1.8;color:#bca789;margin:0 0 10px}.practice-rename-line{display:flex;gap:9px;align-items:stretch}.practice-rename input[type=text]{width:105px;min-width:80px;max-width:35%;padding:8px 10px;border:1px solid #c9a66a66;border-radius:7px;background:#241914;color:#f3dfbb;letter-spacing:4px;text-align:center;font-size:16px}.practice-rename-submit{flex:1;border:1px solid #c5a36a77;border-radius:7px;color:#e9d0aa;background:#674631;padding:9px;font-size:10px}.practice-rename-submit:disabled,.practice-rename input:disabled{opacity:.5}.practice-confirm{display:flex;align-items:flex-start;gap:7px;font-size:9px;line-height:1.7;color:#c6b394;margin-top:10px}.practice-confirm[hidden]{display:none}.practice-confirm input{margin-top:3px;accent-color:#c6a16a}.practice-message{font-size:10px;line-height:1.8;min-height:18px;color:#e8bd8c;margin:12px 0 0}.practice-dialog button:focus-visible,.practice-dialog input:focus-visible{outline:2px solid #e6c586;outline-offset:3px}.practice-blessing{pointer-events:none;position:absolute;top:21%;left:50%;transform:translateX(-50%);z-index:25;text-align:center;width:min(430px,85vw);padding:16px 20px;border:1px solid #e3c38b70;border-radius:18px;background:#463022df;box-shadow:0 8px 38px #2b160740;color:#f5dfad}.practice-blessing[hidden]{display:none}.practice-blessing span{display:block;font-size:12px;letter-spacing:2px;color:#d8bb83}.practice-blessing strong{display:block;font-size:17px;font-weight:400;letter-spacing:2px;margin-top:7px}
+@media(max-width:650px){.practice-panel{padding:22px 18px}.practice-dialog{max-height:calc(100dvh - 20px)}.practice-cards{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.practice-outfit{display:grid;grid-template-columns:46px 1fr;align-items:center;text-align:left;padding:10px}.practice-robe-preview{grid-row:1/4;width:46px;transform:scale(.8);transform-origin:left center;margin:0}.practice-outfit h4{font-size:11px;margin:0}.practice-outfit p{min-height:0;margin:3px 0 5px;font-size:8px}.practice-equip{padding:5px 3px}.practice-heading h2{font-size:22px}.practice-dharma{font-size:25px}.practice-summary{margin:17px 0}.practice-progress-header{font-size:9px}.practice-blessing{top:29%;padding:13px 15px}.practice-blessing strong{font-size:14px}.practice-blessing span{font-size:10px}}
+
+.practice-robe-preview img{width:100%;height:100%;object-fit:contain;border-radius:8px}
+.practice-outfit.is-locked .practice-robe-preview{filter:none;opacity:.86}
+.practice-try,.fitting-controls button{border:1px solid #b9975f80;background:#48382c;color:#f3e3c6;border-radius:15px;cursor:pointer}
+.practice-try{width:100%;font-size:11px;padding:6px;margin-bottom:5px}
+.practice-try[aria-pressed=true]{background:#66513b;border-color:#ddc08b}
+.fitting-mirror{margin-bottom:14px;border:1px solid #b79b695c;background:#3a3027;border-radius:14px;overflow:hidden}
+.fitting-mirror[hidden],.fitting-load[hidden]{display:none}
+.fitting-mirror header{display:flex;justify-content:space-between;align-items:center;padding:9px 13px}
+.fitting-mirror h4{font:400 16px SimSun,serif;letter-spacing:1px;margin:0}
+.fitting-stage{height:clamp(185px,33dvh,300px);position:relative;display:grid;place-items:center;isolation:isolate;background:radial-gradient(ellipse 22% 3% at 50% 87%,#917b5e80,transparent),radial-gradient(ellipse at 50% 43%,#eee2c5,#d6c7ad 72%,#c3b396)}
+.fitting-stage canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:grab}
+.fitting-load{z-index:1;font-size:13px;color:#493e31;text-align:center}
+.fitting-mirror>p{font-size:12px;text-align:center;color:#efdab1;margin:10px 0}
+.fitting-controls{display:flex;justify-content:center;gap:8px;align-items:stretch;padding:0 10px 12px}
+.fitting-controls button{min-width:38px;padding:6px 10px;font-size:13px}
+.fitting-controls .practice-equip{width:auto;background:#76583c}
+.fitting-controls button:disabled{opacity:.6;cursor:default}
+@media(max-width:650px){.practice-outfit .practice-robe-preview{grid-row:1/5}.practice-outfit button{grid-column:2}.practice-try{margin:3px 0}.fitting-controls{gap:5px}}
+
+.practice-dialog[data-wardrobe=true] :is(.practice-eyebrow,.practice-summary,.practice-totals,.practice-rename,.practice-section-title){display:none}
+.practice-dialog[data-wardrobe=true] .practice-cards{margin-top:18px}
+.wardrobe-accessory{display:flex;align-items:center;gap:13px;border-top:1px solid #b99a6650;padding:14px 0 4px;margin-top:15px}
+.wardrobe-accessory[hidden]{display:none}
+.wardrobe-accessory strong{color:#f1d599;font-size:15px;font-weight:500}
+.wardrobe-accessory p,.wardrobe-petals{color:#cfbda1;font-size:12px;margin:4px 0}
+.wardrobe-accessory button,.wardrobe-gift button{width:auto;flex-shrink:0;padding:7px 13px;margin-left:auto}
+.wardrobe-beads{display:block;position:relative;width:34px;height:28px;border:5px dotted #dbb967;border-radius:50%;margin:0 4px 6px;box-shadow:inset 0 0 0 1px #ab7c41}
+.wardrobe-beads::after{content:'';position:absolute;width:6px;height:8px;bottom:-10px;left:calc(50% - 3px);border-radius:50%;background:#ca9560}
+.wardrobe-gift{position:absolute;z-index:26;left:50%;top:14%;transform:translateX(-50%);width:max-content;max-width:min(92%,450px);display:flex;align-items:center;gap:12px;padding:10px 16px;border:1px solid #dfbb73;border-radius:10px;background:#443224f2;color:#ffebbd;font:14px/1.6 system-ui,sans-serif;box-shadow:0 0 18px #e8bd6240;pointer-events:none}
+.wardrobe-gift button{pointer-events:auto}
+.wardrobe-gift[hidden],.wardrobe-gift button[hidden],.wardrobe-petals[hidden]{display:none}
+@media(prefers-reduced-motion:no-preference){.wardrobe-gift:not([hidden]){animation:temple-gift-glow 1.8s ease-out 1}@keyframes temple-gift-glow{0%{box-shadow:0 0 0 #e8bd6200}40%{box-shadow:0 0 27px #ffe096a0}100%{box-shadow:0 0 18px #e8bd6240}}}
+
+@media(min-width:651px){.practice-dialog[data-wardrobe=true] .practice-cards{grid-template-columns:repeat(3,minmax(0,1fr))}}
+
+/* Item collection and live fitting mirror */
+.wardrobe-gallery [hidden],.wardrobe-gift [hidden]{display:none!important}
+.wardrobe-gallery,.wardrobe-inventory,.wardrobe-gallery .fitting-mirror{min-width:0}
+.wardrobe-tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:3px}
+.wardrobe-tab{position:relative;min-height:42px;padding:5px 3px;border:0;border-radius:9px;background:transparent;color:#cbbda3;font:inherit;font-size:13px;overflow-wrap:anywhere}
+.wardrobe-tab[aria-pressed=true]{background:#eee0ba;color:#332c21}
+.wardrobe-tab[data-fresh=true]::after{content:'';position:absolute;top:6px;right:7px;width:6px;height:6px;border-radius:50%;background:#e0aa55}
+.wardrobe-new{position:absolute;z-index:1;top:6px;left:6px;color:#fff6d6;background:#805321;padding:3px 7px;border-radius:7px;font-size:10px;pointer-events:none}
+.wardrobe-empty{display:grid;place-items:center;width:100%;height:100%;font:36px Georgia,serif;color:#928775}
+.practice-dialog[data-wardrobe=true]{width:min(880px,calc(100vw - 24px));background:linear-gradient(118deg,#332b24,#2e2720 60%,#231f1a);border-color:#ae9965b0}
+.practice-dialog[data-wardrobe=true] .practice-panel{padding:clamp(15px,2.8vw,29px)}
+.practice-dialog[data-wardrobe=true] .practice-heading{margin-bottom:17px;align-items:center}
+.practice-dialog[data-wardrobe=true] .practice-heading h2{font-size:25px;color:#faebcf}
+.practice-dialog[data-wardrobe=true] .wardrobe-gallery{display:grid;grid-template-columns:minmax(205px,.86fr) minmax(0,1.14fr);align-items:start;gap:clamp(12px,2vw,22px)}
+.practice-dialog[data-wardrobe=true] .fitting-mirror{position:sticky;top:0;margin:0;background:#3a3127;border-color:#a28c605f}
+.practice-dialog[data-wardrobe=true] .fitting-mirror header{padding:12px;min-width:0}
+.practice-dialog[data-wardrobe=true] .fitting-mirror h4{font-size:14px;letter-spacing:.04em;overflow-wrap:anywhere}
+.practice-dialog[data-wardrobe=true] .fitting-stage{height:clamp(205px,36dvh,330px);background:radial-gradient(ellipse 24% 3% at 50% 91%,#a38c6994,transparent),linear-gradient(160deg,#f4eddb,#ddd0b2 78%,#c3b492)}
+.practice-dialog[data-wardrobe=true] .fitting-controls{flex-wrap:wrap;align-items:center;gap:5px}
+.practice-dialog[data-wardrobe=true] .fitting-controls button{min-height:38px}
+.practice-dialog[data-wardrobe=true] .fitting-controls .practice-equip{background:#d5be8e;color:#302417}
+.practice-dialog[data-wardrobe=true] .practice-cards{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:11px 0 0}
+.practice-dialog[data-wardrobe=true] .practice-outfit{position:relative;display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;min-width:0;gap:0;padding:7px 7px 10px;text-align:left;background:#3e362c;border:1px solid #a28b625b;border-radius:12px}
+.practice-dialog[data-wardrobe=true] .practice-outfit[data-selected=true]{border-color:#eed49a;box-shadow:inset 0 0 0 1px #eed49a}
+.practice-dialog[data-wardrobe=true] .practice-robe-preview{position:static;transform:none;filter:none;opacity:1;width:100%;height:auto;aspect-ratio:1.65/1;margin:0 0 7px;background:#ece4d3;border-radius:7px;overflow:hidden}
+.practice-dialog[data-wardrobe=true] .practice-robe-preview img{object-fit:contain;display:block}
+.practice-dialog[data-wardrobe=true] .practice-outfit h4,.practice-dialog[data-wardrobe=true] .practice-outfit p{margin:1px 3px;line-height:1.4;overflow-wrap:anywhere}
+.practice-dialog[data-wardrobe=true] .practice-outfit h4{font-size:14px;color:#f1e3c3}
+.practice-dialog[data-wardrobe=true] .practice-outfit p{font-size:11px;color:#c8b99f}
+.practice-dialog[data-wardrobe=true] .practice-outfit.is-equipped p{color:#eadaad}
+.practice-dialog[data-wardrobe=true] .practice-outfit .practice-try{position:absolute;inset:0;z-index:1;width:100%;height:100%;padding:0;border:0;margin:0;border-radius:11px;font-size:0;background:transparent}
+.practice-dialog[data-wardrobe=true] .practice-outfit .practice-equip{display:none}
+.practice-dialog[data-wardrobe=true] .practice-note{display:none}
+.practice-dialog[data-wardrobe=true] .wardrobe-petals{margin:14px 0 0;color:#c4b18a}
+.wardrobe-gift{flex-wrap:wrap;justify-content:center}
+.wardrobe-gift .practice-try,.wardrobe-gift .practice-equip{width:auto;margin:0;min-height:36px}
+@media(max-width:660px){
+ .practice-dialog[data-wardrobe=true]{max-height:calc(100dvh - 14px)}
+ .practice-dialog[data-wardrobe=true] .practice-panel{padding:14px}
+ .practice-dialog[data-wardrobe=true] .wardrobe-gallery{grid-template-columns:minmax(0,1fr);gap:13px}
+ .practice-dialog[data-wardrobe=true] .fitting-mirror{position:static}
+ .practice-dialog[data-wardrobe=true] .fitting-stage{height:clamp(148px,27dvh,228px)}
+ .practice-dialog[data-wardrobe=true] .fitting-mirror header{padding:8px 12px}
+ .practice-dialog[data-wardrobe=true] .practice-cards{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-height:450px) and (orientation:landscape){
+ .practice-dialog[data-wardrobe=true] .wardrobe-gallery{grid-template-columns:minmax(190px,.88fr) minmax(0,1.12fr)}
+ .practice-dialog[data-wardrobe=true] .fitting-stage{height:145px}
+ .practice-dialog[data-wardrobe=true] .practice-heading{margin-bottom:8px}
+}
+
+.icon-button.wardrobe-shortcut{width:auto;min-width:42px;padding:0 9px;font-size:13px;line-height:1.25}
+.clean-hud #temple-menu .clean-menu-utility .wardrobe-shortcut{font-size:13px;justify-content:flex-start;overflow-wrap:anywhere}
+.clean-hud #temple-menu .clean-menu-utility .wardrobe-shortcut::after{content:none}
+.wardrobe-shortcut[data-fresh=true]::before{content:'';display:inline-block;width:6px;height:6px;flex:none;border-radius:50%;background:#e0aa55}
+
+.practice-dialog[data-wardrobe=true] .practice-progress{margin:0 0 16px}
+.practice-dialog[data-wardrobe=true] .practice-progress-header{align-items:baseline;font-size:12px;line-height:1.4}
+.practice-dialog[data-wardrobe=true] .practice-progress-header span:last-child{white-space:nowrap}
+.practice-dialog[data-wardrobe=true] .practice-progress p{font-size:11px}

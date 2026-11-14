@@ -1,0 +1,100 @@
+/* The selected classic two-thumb HUD. Full records and settings live in Menu. */
+#game.clean-hud{--action-edge:max(20px,env(safe-area-inset-right));--action-bottom:max(20px,env(safe-area-inset-bottom));--stick-size:126px;--stick-left:max(6vw,env(safe-area-inset-left));--stick-bottom:max(10vh,45px)}
+.clean-hud .brand,.clean-hud .controls,.clean-hud #interaction-note,.clean-hud .room-action-title{display:none!important}
+.clean-hud.hide-player-text #player-label,.clean-hud.hide-player-text .remote-name,.clean-hud.hide-player-text .speech,.clean-hud.hide-player-text #toast,.clean-hud.hide-player-text #prayer-status,.clean-hud.hide-player-text #interaction-label,.clean-hud.hide-player-text #interaction-note{display:none!important}
+.clean-hud.hide-player-text .interact-button:disabled::after{content:none!important}
+.clean-hud .topbar{top:max(16px,env(safe-area-inset-top));left:auto;right:var(--action-edge);z-index:40}
+.clean-hud .top-actions{gap:10px;align-items:center}
+.clean-hud #player-text-toggle,.clean-hud #temple-menu summary{width:42px;height:42px;font-size:20px;background:#241f183d;border:1px solid #f4e4bf66;color:#fff2d6;backdrop-filter:none}
+.clean-hud #player-text-toggle[aria-pressed=false]{opacity:.6}
+.clean-hud .welcome-card{max-height:calc(100dvh - 24px);overflow-y:auto;overscroll-behavior:contain}
+.clean-hud #temple-menu>div{top:51px;width:260px;max-width:calc(100vw - 32px);max-height:calc(100dvh - 96px);overflow:auto;overscroll-behavior:contain;background:#30271bf5;padding:12px}
+.clean-hud .clean-menu-utility{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;margin-bottom:8px}
+.clean-hud #temple-menu .clean-menu-utility button{display:flex;align-items:center;gap:7px;min-height:40px;width:100%;height:auto;border-radius:7px;font-size:15px;padding:7px}
+.clean-hud .clean-menu-utility button::after{content:attr(aria-label);font:11px/1.3 sans-serif;letter-spacing:0}
+.clean-hud>.ritual-actions{position:absolute;top:max(16px,env(safe-area-inset-top));left:max(16px,env(safe-area-inset-left));display:flex;flex-direction:column;gap:8px;z-index:20}
+.clean-hud>.ritual-actions .ritual-button{min-width:100px;max-width:145px;min-height:44px;display:flex;align-items:center;gap:9px;padding:8px 12px;border-radius:10px;background:#30271bbd;backdrop-filter:none}
+.clean-hud>.ritual-actions .ritual-icon{width:26px;height:26px;flex:none;font-size:15px}
+.clean-hud>.ritual-actions .ritual-button b{font-size:13px;letter-spacing:2px}
+.clean-hud>.ritual-actions .ritual-button:disabled{opacity:.55}
+.clean-hud #viewport canvas{cursor:default!important}
+.clean-hud .ritual-button small,.clean-hud #online-status{display:none}
+.clean-hud #online-status.recovering{display:block;padding:6px 9px;border-radius:6px;background:#30271be6;color:#fff2d6}
+.clean-hud .clean-menu-stats{margin:7px 0;font-size:12px}
+.clean-hud #temple-menu .clean-menu-stats>summary{height:auto;width:100%;border:0;border-radius:0;background:none;font:12px sans-serif;padding:11px 8px;display:block}
+.clean-hud #temple-menu .merit-panel{position:static;display:block;width:100%;border:0;background:none;padding:8px;backdrop-filter:none}
+.clean-hud #temple-menu .merit-panel .merit-meta,.clean-hud #temple-menu .merit-panel #save-status{font-size:11px}
+.clean-hud .merit-panel .panel-eyebrow,.clean-hud .merit-panel .fine-rule,.clean-hud .merit-panel #identity{display:none}
+.clean-hud .ambience-controls,.clean-hud .language-picker{position:static;display:block;margin:8px 0}
+.clean-hud #ambience-toggle,.clean-hud .language-picker select{width:100%;max-width:none;min-height:38px;font-size:12px;text-align:left}
+.clean-hud #ambience-panel{position:static;width:100%;max-width:none;margin-top:8px;padding:10px;box-shadow:none}
+.clean-hud #ambience-panel button{font-size:11px;text-align:center;padding:6px}
+.clean-hud #motion-controls{position:absolute;inset:auto var(--action-edge) var(--action-bottom) auto;width:210px;height:210px;display:block;pointer-events:none}
+.clean-hud #motion-controls[hidden],.clean-hud #run-control[hidden]{display:none}
+.clean-hud #motion-controls button{position:absolute;pointer-events:auto;display:grid;place-items:center;min-width:0;width:56px;height:56px;padding:0;border-radius:50%;background:#241f183d;border:1px solid #f4e4bf66;color:#fff2d6;font-size:12px;letter-spacing:.5px;box-shadow:none;touch-action:none}
+.clean-hud #motion-controls [data-motion=jump]{right:0;bottom:130px}
+.clean-hud #motion-controls [data-motion=sit]{right:0;bottom:34px}
+.clean-hud #motion-controls [data-motion=lie]{right:74px;bottom:0}
+.clean-hud #motion-controls [data-motion=greet]{right:148px;bottom:34px}
+.clean-hud #motion-controls button[aria-pressed=true],.clean-hud #run-control[aria-pressed=true]{background:#ad84466b;border-color:#f3d29b}
+.clean-hud .interaction{left:auto;right:calc(var(--action-edge) + 96px);bottom:calc(var(--action-bottom) + 96px);transform:none;gap:0;z-index:15}
+.clean-hud .interact-button{width:66px;height:66px;max-width:none;padding:0;display:grid;place-items:center;border-radius:50%;border:1px solid #f1d496a6;background:#4d3a224d;box-shadow:none;color:#fff2d6;backdrop-filter:none}
+.clean-hud .interact-button kbd,.clean-hud #interaction-label,.clean-hud .button-flower{display:none}
+.clean-hud .interact-button::after{content:attr(data-label);font:13px sans-serif;letter-spacing:1px}
+.clean-hud .interact-button:disabled{opacity:.4}
+.clean-hud .prayer-status{bottom:39%;width:min(230px,45vw);pointer-events:none}
+.clean-hud .prayer-status p{display:none}
+.clean-hud .prayer-word{font-size:18px;letter-spacing:3px}
+.clean-hud .bottom-bar{display:none;left:max(16px,env(safe-area-inset-left));right:auto;bottom:max(15px,env(safe-area-inset-bottom));z-index:25}
+.clean-hud.chat-open .bottom-bar{display:flex}
+.clean-hud .chat-form{width:min(300px,calc(100vw - 32px));max-width:none;background:#30271bf5}
+.clean-hud .chat-form input{font-size:16px}
+.clean-hud #chat-toggle{position:absolute;left:max(18px,env(safe-area-inset-left));bottom:max(14px,env(safe-area-inset-bottom));width:36px;height:36px;border-radius:50%;border:1px solid #f4e4bf55;background:#241f183d;color:#fff2d6;font:17px serif;z-index:16}
+.clean-hud.chat-open #chat-toggle{display:none}
+.clean-hud .room-actions{top:78px;bottom:auto;width:calc(100vw - 120px);max-width:430px;z-index:18}
+.clean-hud .room-action-buttons button{min-height:40px;padding:8px 12px;font-size:12px;background:#30271bcc}
+.clean-hud #toast{top:74px;max-width:70vw;white-space:normal;font-size:11px;letter-spacing:.5px;padding:8px 15px;z-index:25}
+.clean-hud #touch-controls{display:none}
+.clean-hud #touch-joystick{position:absolute;left:var(--stick-left);bottom:var(--stick-bottom);width:var(--stick-size);height:var(--stick-size);padding:0;border:1px solid #fff2cc38;border-radius:50%;background:#e8dcc815;color:#fff7de99;opacity:.6;touch-action:none;z-index:16;-webkit-user-select:none}
+.clean-hud #touch-joystick>span:not(.stick-knob){position:absolute;font:28px/1 sans-serif;pointer-events:none}
+.clean-hud .stick-up{top:4%;left:43%}.clean-hud .stick-down{bottom:4%;left:43%}.clean-hud .stick-left{left:7%;top:37%}.clean-hud .stick-right{right:7%;top:37%}
+.clean-hud .stick-knob{position:absolute;left:29%;top:29%;width:42%;height:42%;border:1px solid #fff6dd80;background:#f5eed840;border-radius:50%;transform:translate(var(--stick-x,0px),var(--stick-y,0px));pointer-events:none}
+.clean-hud #run-control{display:none;position:absolute;left:calc(var(--stick-left) + 33px);bottom:calc(var(--stick-bottom) + var(--stick-size) + 12px);width:60px;height:34px;padding:0;border-radius:20px;border:1px solid #f4e4bf66;background:#241f183d;color:#fff2d6;font-size:12px;z-index:17;touch-action:none}
+.clean-hud:not(.hud-ready) #motion-controls,.clean-hud:not(.hud-ready) #touch-controls,.clean-hud:not(.hud-ready) #run-control,.clean-hud:not(.hud-ready) #chat-toggle,.clean-hud:not(.hud-ready)>.ritual-actions{display:none!important}
+@media(pointer:coarse){.clean-hud #touch-controls,.clean-hud #run-control{display:block}}
+@media(pointer:coarse){.clean-hud .welcome-card{padding:22px}.clean-hud .welcome-instructions,.clean-hud .welcome-footnote{display:none}.clean-hud .welcome-symbol{margin-bottom:12px;padding:6px 4px}.clean-hud .welcome-card h2{font-size:26px;letter-spacing:1px;margin:16px 0}}
+@media(max-height:500px){.clean-hud .welcome-card{padding:14px 24px}.clean-hud .welcome-symbol,.clean-hud .welcome-instructions,.clean-hud .welcome-footnote,.clean-hud .overline{display:none}.clean-hud .welcome-card h2{font-size:24px;letter-spacing:1px;margin:10px 0}.clean-hud #welcome-copy{line-height:1.6;margin:9px 0}}
+html[lang=ja] body{font-family:'Yu Gothic','Meiryo',sans-serif}
+html[lang=ko] body{font-family:'Malgun Gothic','Apple SD Gothic Neo',sans-serif}
+html[lang=ja] .clean-hud>.ritual-actions .ritual-button b,html[lang=ko] .clean-hud>.ritual-actions .ritual-button b{letter-spacing:0}
+@media(orientation:portrait) and (max-width:700px){
+ #game.clean-hud{--stick-size:112px;--stick-left:20px;--stick-bottom:12vh;--action-edge:12px;--action-bottom:10vh}
+ .clean-hud #run-control{left:calc(var(--stick-left) + 26px)}
+ .clean-hud #motion-controls{width:178px;height:240px}
+ .clean-hud #motion-controls button{width:50px;height:50px;font-size:12px}
+ .clean-hud #motion-controls [data-motion=jump]{right:0;bottom:160px}
+ .clean-hud #motion-controls [data-motion=sit]{right:0;bottom:42px}
+ .clean-hud #motion-controls [data-motion=lie]{right:64px;bottom:0}
+ .clean-hud #motion-controls [data-motion=greet]{right:120px;bottom:75px}
+ .clean-hud .interaction{right:calc(var(--action-edge) + 82px);bottom:calc(var(--action-bottom) + 158px)}
+ .clean-hud .interact-button{height:62px;width:62px}
+ .clean-hud .topbar{top:max(12px,env(safe-area-inset-top))}
+ .clean-hud .room-actions{top:122px;width:calc(100vw - 30px);max-width:340px}
+ .clean-hud .prayer-status{bottom:43%;width:180px}
+}
+@media(orientation:landscape) and (max-height:500px){#game.clean-hud{--stick-size:112px;--stick-left:max(7vw,64px);--stick-bottom:10vh;--action-bottom:14px}.clean-hud .topbar{top:12px}.clean-hud>.ritual-actions{top:max(12px,env(safe-area-inset-top));left:max(12px,env(safe-area-inset-left))}.clean-hud #run-control{left:calc(var(--stick-left) + 26px)}.clean-hud .room-actions{top:66px}.clean-hud #motion-controls{height:200px}.clean-hud #toast{top:64px}}
+
+/* Keep the sprint icon beside the action control on desktop and while riding. */
+.clean-hud.hud-ready .interaction #run-control:not([hidden]){
+ display:grid;place-items:center;left:50%;right:auto;bottom:calc(100% + 8px);
+ transform:translateX(-50%);width:52px;height:52px;border-radius:50%;
+ background:#30271bc7;color:#fff2d6;border:1px solid #f4e4bf99;font-size:0;
+ transition:background-color .15s,border-color .15s;
+}
+.clean-hud.hud-ready .interaction #run-control::before{
+ content:"";width:27px;height:27px;background:currentColor;
+ mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='15.6' cy='4' r='2.1'/%3E%3Cpath d='m5 11 3-3.3 4.1-.7 3 3.5 3.6.3M12.1 7l-2.7 6.1 4.6 2.7 1.6 5.3M9.7 12.8l-2.4 4.1-4.1 1.6' fill='none' stroke='black' stroke-width='2.4' stroke-linejoin='round' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat center / contain;
+}
+.clean-hud.hud-ready .interaction #run-control[aria-pressed=true]{background:#88612b;color:white;border:2px solid #ffdf91;box-shadow:0 0 0 2px #33230c90}
+.clean-hud.hud-ready .interaction #run-control:disabled{opacity:.45}
+@media(prefers-reduced-motion:reduce){.clean-hud.hud-ready .interaction #run-control:not([hidden]){transition:none}}
