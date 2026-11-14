@@ -29,16 +29,44 @@ async function gunzip(bytes){
  const a=window.pako.ungzip(bytes);
  return a.buffer.slice(a.byteOffset,a.byteOffset+a.byteLength);
 }
-async function fetchTextWithTimeout(url,timeoutMs=45000,cache='force-cache'){
- const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),timeoutMs);
+async function fetchTextWithTimeout(url,timeoutMs=45000,cache='force-cache',onProgress=null){
+ const controller=new AbortController();
+ let timer=null;
+ const armTimeout=()=>{if(timer)clearTimeout(timer);timer=setTimeout(()=>controller.abort(),timeoutMs);};
+ armTimeout();
  try{
   const response=await fetch(url,{cache,signal:controller.signal});
   if(!response.ok)throw Error('HTTP '+response.status+'：'+url);
-  return await response.text();
+  const total=Number(response.headers.get('content-length'))||0;
+  if(!response.body||!response.body.getReader){
+   const text=await response.text();
+   window.__ISLAND_ZEN_LAST_PROGRESS_AT__=Date.now();
+   if(onProgress)onProgress(text.length,total||text.length);
+   return text;
+  }
+  const reader=response.body.getReader(),decoder=new TextDecoder(),chunks=[];
+  let received=0,lastReport=0;
+  while(true){
+   const part=await reader.read();
+   if(part.done)break;
+   chunks.push(decoder.decode(part.value,{stream:true}));
+   received+=part.value.byteLength;
+   const now=Date.now();
+   window.__ISLAND_ZEN_LAST_PROGRESS_AT__=now;
+   if(onProgress&&(now-lastReport>=800||(total&&received>=total))){
+    onProgress(received,total);
+    lastReport=now;
+   }
+   armTimeout();
+  }
+  chunks.push(decoder.decode());
+  if(onProgress)onProgress(received,total||received);
+  window.__ISLAND_ZEN_LAST_PROGRESS_AT__=Date.now();
+  return chunks.join('');
  }catch(e){
-  if(e&&e.name==='AbortError')throw Error('资源下载超时：'+url);
+  if(e&&e.name==='AbortError')throw Error('资源下载连续超时无数据：'+url);
   throw e;
- }finally{clearTimeout(timer);}
+ }finally{if(timer)clearTimeout(timer);}
 }
 async function getScene(){
  const assetBase=new URL('/fantasy3d-showcase/assets/scene/',location.origin).href;
@@ -50,14 +78,18 @@ async function getScene(){
  let loaded=0;
  await Promise.all(Array.from({length:packCount},async(_,i)=>{
   const name='scene_pack_'+String(i).padStart(2,'0')+'.txt';
-  parts[i]=(await fetchTextWithTimeout(assetBase+name,90000,'force-cache')).trim();
+  parts[i]=(await fetchTextWithTimeout(assetBase+name,180000,'force-cache',(received,total)=>{
+   const current=(received/1048576).toFixed(1);
+   const expected=total?(total/1048576).toFixed(1):'?';
+   status('正在下载真实 3D 场景资源包 '+(i+1)+'/'+packCount+' · '+current+'/'+expected+' MB');
+  })).trim();
   loaded++;
-  status('正在下载真实岛屿模型资源包 '+loaded+'/'+packCount+'…');
+  status('真实 3D 场景资源包已完成 '+loaded+'/'+packCount+'…');
  }));
  const b=atob(parts.join(''));
  const c=new Uint8Array(b.length);
  for(let i=0;i<b.length;i++)c[i]=b.charCodeAt(i);
- status('正在解压并校验 3D 场景…');
+ status('正在解压并校验 3D 场景…');\n window.__ISLAND_ZEN_LAST_PROGRESS_AT__=Date.now();
  const data=await gunzip(c);
  if(m.sourceBytes&&data.byteLength!==m.sourceBytes)throw Error('场景字节数校验失败');
  if(m.sha256&&crypto.subtle){
@@ -90,6 +122,6 @@ window.addEventListener('keydown',e=>{const k=e.key.toLowerCase();if(['w','a','s
 function resize(){if(!renderer)return;const w=canvas.clientWidth||innerWidth,h=canvas.clientHeight||innerHeight;renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.7));renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();}
 function frame(t){requestAnimationFrame(frame);if(!renderer)return;const dt=Math.min(.05,Math.max(.001,(t-(last||t))/1000));last=t;state.elapsed+=dt;if(state.started){state.day+=dt;state.season+=dt;let f=(keys.has('w')||keys.has('arrowup')?1:0)-(keys.has('s')||keys.has('arrowdown')?1:0),s=(keys.has('d')||keys.has('arrowright')?1:0)-(keys.has('a')||keys.has('arrowleft')?1:0),l=Math.hypot(f,s);if(l>.001&&!state.sit){f/=l;s/=l;const fw=new T.Vector3(Math.sin(yaw),0,Math.cos(yaw)),rt=new T.Vector3(Math.cos(yaw),0,-Math.sin(yaw)),dir=fw.multiplyScalar(f).add(rt.multiplyScalar(s)).normalize(),speed=keys.has('shift')?6:3.1;const nx=T.MathUtils.clamp(player.position.x+dir.x*speed*dt,-150,150),nz=T.MathUtils.clamp(player.position.z+dir.z*speed*dt,-47,142),fy=floorY(nx,nz);if(fy!==null){player.position.set(nx,fy+.02,nz);player.rotation.y=Math.atan2(dir.x,dir.z);state.stride+=dt*speed*2;}}avatar.position.copy(player.position);avatar.rotation.y=player.rotation.y;if(!state.sit){const sw=(l>.001?Math.sin(state.stride)*.42:0);legL.rotation.x=sw;legR.rotation.x=-sw;armL.rotation.x=-sw*.5;armR.rotation.x=sw*.5;armL.rotation.z=state.pray ? .78 : 0;armR.rotation.z=state.pray ? -.78 : 0;const b=(state.elapsed-state.bowAt)/1.6;torso.rotation.x=b>=0&&b<=1?Math.sin(Math.PI*b)*.48:0;}if(t-lastUI>500){const q=nearSeat();$('tip').textContent=state.sit?(state.seatId?'正在蒲团 '+state.seatId+' 静坐 · 按 E 起身':'静坐片刻，听海风经过 · 按空格起身'):q?'蒲团 '+q.id+' · 按 E 入座静坐':'WASD 漫游 · E 靠近蒲团入座 · 空格静坐 · Shift 奔跑';timeSeason();lastUI=t;}const target=new T.Vector3(player.position.x,player.position.y+(state.sit ? .85 : 1.15),player.position.z),offset=new T.Vector3(-Math.sin(yaw)*distance,3.8+pitch*5,-Math.cos(yaw)*distance);camera.position.lerp(target.clone().add(offset),1-Math.pow(.001,dt));camera.lookAt(target.clone().add(new T.Vector3(Math.sin(yaw)*2,.2,Math.cos(yaw)*2)));}
 if(t-lastWave>90){for(const w of waters){const a=w.a,b=w.base;for(let i=0;i<a.count;i++){const k=i*3,x=b[k],z=b[k+2];a.array[k+1]=b[k+1]+Math.sin(x*.035+state.elapsed*1.25)*.05+Math.cos(z*.026-state.elapsed*.9)*.035;}a.needsUpdate=true;w.g.computeVertexNormals();}lastWave=t;}renderer.render(scene,camera);}
-async function boot(){try{status('正在准备真实 3D 场景…');T=await ensureThree();if(window.__ISLAND_ZEN_FORCE_FALLBACK__)return;renderer=new T.WebGLRenderer({canvas,antialias:true,powerPreference:'high-performance'});renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.7));renderer.setSize(innerWidth,innerHeight,false);renderer.outputEncoding=T.sRGBEncoding;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.12;renderer.shadowMap.enabled=true;scene=new T.Scene();scene.background=new T.Color(0xaed7dc);scene.fog=new T.Fog(0xc8ddda,150,850);camera=new T.PerspectiveCamera(58,innerWidth/innerHeight,.08,1800);camera.position.set(0,7.5,40);camera.lookAt(0,2,0);ambient=new T.HemisphereLight(0xd8edf4,0x76604a,1.05);scene.add(ambient);sun=new T.DirectionalLight(0xffedcf,1.8);sun.position.set(55,85,30);scene.add(sun);moon=new T.DirectionalLight(0x8ea8d8,.12);scene.add(moon);status('正在读取 23 个真实场景数据分块…');const data=await getScene();if(window.__ISLAND_ZEN_FORCE_FALLBACK__)return;status('正在解析海岛、大殿、佛像与 PBR 贴图…');const gltf=await new Promise((ok,no)=>new T.GLTFLoader().parse(data,'',ok,no));prep(gltf);player=new T.Group();const shoreY=floorY(0,-31);player.position.set(0,(shoreY===null?0:shoreY)+.02,-31);player.rotation.y=yaw;scene.add(player);buildAvatar();avatar.position.copy(player.position);buildHut();timeSeason();controls();resize();play.disabled=false;status('真实 3D 场景已就绪 · 144个网格 · 75张贴图');window.__ISLAND_ZEN_READY__='glb';window.__ISLAND_ZEN_VERSION__='4.0';requestAnimationFrame(frame);}catch(e){console.error('[Island Zen]',e);window.__ISLAND_ZEN_ERROR__=String(e&&e.message||e);if(window.__ISLAND_ZEN_FORCE_FALLBACK__)return;play.disabled=false;play.textContent='进入海岛（兼容画面）';status('真实 3D 启动失败，已切换兼容画面：'+String(e&&e.message||e));if(window.startIslandZen2D&&!window.__ISLAND_ZEN_FALLBACK_STARTED__)window.startIslandZen2D();else if(!window.startIslandZen2D)$('error').style.display='flex';}}
+async function boot(){try{status('正在准备真实 3D 场景…');T=await ensureThree();if(window.__ISLAND_ZEN_FORCE_FALLBACK__)return;renderer=new T.WebGLRenderer({canvas,antialias:true,powerPreference:'high-performance'});renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.7));renderer.setSize(innerWidth,innerHeight,false);renderer.outputEncoding=T.sRGBEncoding;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.12;renderer.shadowMap.enabled=true;scene=new T.Scene();scene.background=new T.Color(0xaed7dc);scene.fog=new T.Fog(0xc8ddda,150,850);camera=new T.PerspectiveCamera(58,innerWidth/innerHeight,.08,1800);camera.position.set(0,7.5,40);camera.lookAt(0,2,0);ambient=new T.HemisphereLight(0xd8edf4,0x76604a,1.05);scene.add(ambient);sun=new T.DirectionalLight(0xffedcf,1.8);sun.position.set(55,85,30);scene.add(sun);moon=new T.DirectionalLight(0x8ea8d8,.12);scene.add(moon);status('正在读取 23 个真实场景数据分块…');const data=await getScene();if(window.__ISLAND_ZEN_FORCE_FALLBACK__)return;status('正在解析海岛、大殿、佛像与 PBR 贴图…');window.__ISLAND_ZEN_LAST_PROGRESS_AT__=Date.now();const gltf=await new Promise((ok,no)=>new T.GLTFLoader().parse(data,'',ok,no));prep(gltf);window.__ISLAND_ZEN_LAST_PROGRESS_AT__=Date.now();player=new T.Group();const shoreY=floorY(0,-31);player.position.set(0,(shoreY===null?0:shoreY)+.02,-31);player.rotation.y=yaw;scene.add(player);buildAvatar();avatar.position.copy(player.position);buildHut();timeSeason();controls();resize();play.disabled=false;status('真实 3D 场景已就绪 · 144个网格 · 75张贴图');window.__ISLAND_ZEN_READY__='glb';window.__ISLAND_ZEN_VERSION__='4.0';requestAnimationFrame(frame);}catch(e){console.error('[Island Zen]',e);window.__ISLAND_ZEN_ERROR__=String(e&&e.message||e);if(window.__ISLAND_ZEN_FORCE_FALLBACK__)return;play.disabled=false;play.textContent='进入海岛（兼容画面）';status('真实 3D 启动失败，已切换兼容画面：'+String(e&&e.message||e));if(window.startIslandZen2D&&!window.__ISLAND_ZEN_FALLBACK_STARTED__)window.startIslandZen2D();else if(!window.startIslandZen2D)$('error').style.display='flex';}}
 play.disabled=true;boot();
 })();
