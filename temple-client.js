@@ -105417,7 +105417,7 @@ window.TempleNavigation={PLAYER_MOTION,templeJumpHeight,templeRestFits,islandLan
 /* Same-origin room synchronisation. Players and saved merit come from the server. */
 (function () {
   'use strict';
-  const CALLBACKS = ['onWelcome', 'onJoined', 'onLeft', 'onSnapshot', 'onChat', 'onPresence', 'onReward', 'onStatus', 'onError', 'onProfile', 'onSeats'];
+  const CALLBACKS = ['onWelcome', 'onJoined', 'onLeft', 'onSnapshot', 'onChat', 'onPresence', 'onReward', 'onStatus', 'onError', 'onProfile', 'onSeats', 'onMotion'];
   const ACTIONS = new Set(['idle', 'walk', 'run', 'jump', 'sit', 'lie', 'greet', 'pray', 'woodfish', 'incense', 'read', 'tea']);
   const RITUALS = new Set(['pray', 'woodfish', 'incense']);
   const VISITOR_KEY = 'quiet-temple-visitor-v1';
@@ -105491,6 +105491,7 @@ window.TempleNavigation={PLAYER_MOTION,templeJumpHeight,templeRestFits,islandLan
       this._profileSnapshot='';this._blessingAcks=new Set();
       this._seatPromises=new Map();
       this._movementProtocol=false;this._heldSeatId=null;
+      this._poseSocket=null;this._poseReady=false;this._poseSeq=0;this._poseLastSent=0;this._poseLastState=null;this._poseReconnectTimer=null;this._poseRetry=0;
       this._lastAcknowledged=-Infinity;
       this._trail=window.TempleMovementTrail?.create((a,b)=>window.TempleNavigation?.templeCanTravel(a.x,a.z,b.x,b.z,this._heldSeatId))||null;
     }
@@ -105585,12 +105586,104 @@ window.TempleNavigation={PLAYER_MOTION,templeJumpHeight,templeRestFits,islandLan
         const reconnected = this._welcomed; this._welcomed = true;
         this._emit('onWelcome', { type: 'welcome', id: this._session.id, room: this._status.room, players, stats: { ...saved },
           capacity: 50, statsScope: 'persistent', reconnected, resumedPosition:!!resumeSession&&result.resumedPosition===true, cumulative: true, online: this._status.online, rooms: this._status.rooms });
+        this._openPoseStream(generation);
         this._publishProfile(result,true);
         this._statusChanged();
       } catch (error) { this._failed(error, generation); }
       finally {
         if (generation === this._generation) this._inFlight = false;
         if (!this._manual && generation === this._generation) this._schedule(this._failureCount ? this._retryDelay() : 500, generation);
+      }
+    }
+    _openPoseStream(generation) {
+      if (this._manual || generation !== this._generation || !this._session || !this._status.room || typeof WebSocket === 'undefined') return;
+      if (this._poseSocket && (this._poseSocket.readyState === WebSocket.CONNECTING || this._poseSocket.readyState === WebSocket.OPEN)) return;
+      clearTimeout(this._poseReconnectTimer); this._poseReconnectTimer = null;
+      let endpoint;
+      try {
+        endpoint = new URL('/api/pose-stream', window.TEMPLE_CONFIG.roomOrigin);
+        endpoint.protocol = endpoint.protocol === 'https:' ? 'wss:' : 'ws:';
+        endpoint.searchParams.set('room', this._status.room);
+      } catch (error) {
+        console.warn('Temple realtime endpoint unavailable:', error);
+        return;
+      }
+      const socket = new WebSocket(endpoint.href);
+      this._poseSocket = socket; this._poseReady = false; this._poseLastState = null;
+      socket.addEventListener('open', () => {
+        if (this._manual || generation !== this._generation || this._poseSocket !== socket || !this._session) {
+          socket.close(1000, 'Session changed'); return;
+        }
+        try {
+          socket.send(JSON.stringify({type:'auth', id:this._session.id, token:this._session.token, motionProtocol:1}));
+        } catch (_) { socket.close(); }
+      });
+      socket.addEventListener('message', event => {
+        if (this._manual || generation !== this._generation || this._poseSocket !== socket) return;
+        let data;
+        try { data = JSON.parse(event.data); } catch (_) { return; }
+        if (!record(data)) return;
+        if (data.type === 'ready') {
+          if (data.motionProtocol !== 1) { socket.close(1008, 'Unsupported motion protocol'); return; }
+          this._poseReady = true; this._poseRetry = 0;
+          if (Number.isSafeInteger(data.minSeq)) this._poseSeq = Math.max(this._poseSeq, data.minSeq);
+          this._status.transport = 'websocket+http'; this._statusChanged();
+          this._sendPose(true);
+          return;
+        }
+        if (data.type === 'motion') {
+          if (typeof data.id !== 'string' || !finite(data.x) || !finite(data.z) || !finite(data.yaw) ||
+              !['idle','walk','run','lie'].includes(data.action)) return;
+          this._emit('onMotion', data);
+        } else if (data.type === 'pose' && typeof data.id === 'string' && typeof data.lying === 'boolean') {
+          this._emit('onMotion', data);
+        }
+      });
+      socket.addEventListener('close', () => {
+        if (this._poseSocket !== socket) return;
+        this._poseSocket = null; this._poseReady = false;
+        this._status.transport = 'http'; this._statusChanged();
+        if (this._manual || generation !== this._generation || !this._session) return;
+        const delay = Math.min(5000, 500 * Math.pow(2, Math.min(this._poseRetry++, 4)));
+        clearTimeout(this._poseReconnectTimer);
+        this._poseReconnectTimer = setTimeout(() => {
+          this._poseReconnectTimer = null;
+          this._openPoseStream(generation);
+        }, delay);
+      });
+      socket.addEventListener('error', () => {
+        try { socket.close(); } catch (_) {}
+      });
+    }
+    _sendPose(force=false) {
+      const socket = this._poseSocket, current = this._state;
+      if (!this._poseReady || !socket || socket.readyState !== WebSocket.OPEN || !current ||
+          !['idle','walk','run','lie'].includes(current.action)) return false;
+      const now = performance.now(), previous = this._poseLastState;
+      const actionChanged = !previous || previous.action !== current.action;
+      const moved = !previous || Math.hypot(current.x-previous.x,current.z-previous.z) >= .018;
+      const turned = !previous || Math.abs(Math.atan2(Math.sin(current.yaw-previous.yaw),Math.cos(current.yaw-previous.yaw))) >= .025;
+      if (!force && !actionChanged && !moved && !turned) return false;
+      if (!force && !actionChanged && now-this._poseLastSent < 50) return false;
+      const seq = ++this._poseSeq;
+      try {
+        socket.send(JSON.stringify({type:'motion',seq,x:current.x,z:current.z,yaw:current.yaw,action:current.action,
+          ...(Number.isSafeInteger(current._moveSeq)?{moveSeq:current._moveSeq}:{})}));
+        this._poseLastSent = now;
+        this._poseLastState = {x:current.x,z:current.z,yaw:current.yaw,action:current.action};
+        return true;
+      } catch (_) {
+        try { socket.close(); } catch (_) {}
+        return false;
+      }
+    }
+    _closePoseStream() {
+      clearTimeout(this._poseReconnectTimer); this._poseReconnectTimer = null;
+      const socket = this._poseSocket;
+      this._poseSocket = null; this._poseReady = false; this._poseLastState = null;
+      this._status.transport = 'http';
+      if (socket && socket.readyState < WebSocket.CLOSING) {
+        try { socket.close(1000, 'Client disconnected'); } catch (_) {}
       }
     }
     _retryDelay() { return Math.min(10000, 500 * Math.pow(2, Math.min(this._failureCount, 5))); }
@@ -105601,6 +105694,7 @@ window.TempleNavigation={PLAYER_MOTION,templeJumpHeight,templeRestFits,islandLan
       this._status.connected = false; this._status.connecting = true;
       this._status.error = error?.message || '连接中断，正在恢复；累计功德不会清零';
       if (error?.status === 401 || error?.status === 404 || error?.code === 'expired_session') {
+        this._closePoseStream();
         if(this._session)this._resumeSession={...this._session};
         this._session = null;
         // The durable balance is recovered by join; an unconfirmed ritual cannot be resumed in a new session.
@@ -105705,6 +105799,7 @@ window.TempleNavigation={PLAYER_MOTION,templeJumpHeight,templeRestFits,islandLan
       const current = state(value); if (!current || this._manual) return false;
       if(this._movementProtocol)current._moveSeq=this._trail.record(current);
       this._state = current; if (RITUALS.has(current.action)) this._actionStates.set(current.action, { ...current });
+      this._sendPose(false);
       return this._status.connected;
     }
     sendChat(value) {
@@ -105754,6 +105849,7 @@ window.TempleNavigation={PLAYER_MOTION,templeJumpHeight,templeRestFits,islandLan
       this._statusChanged(); return true;
     }
     disconnect() {
+      this._closePoseStream();
       for(const resolve of this._seatPromises?.values()||[])resolve(false);this._seatPromises?.clear();
       const previous = this._session;
       this._manual = true; this._generation++; clearTimeout(this._timer); this._timer = null;
@@ -107531,7 +107627,7 @@ window.TempleNavigation={PLAYER_MOTION,templeJumpHeight,templeRestFits,islandLan
       const label=document.createElement('div');label.className='remote-name';label.textContent=p.name||t('香客');$('speech-layer').appendChild(label);
       const colors={robe:new T.Color(p.robe||'#939e98'),sash:new T.Color(p.sash||'#d5b963'),skin:new T.Color(p.skin||'#d8a476')};
       const r={anchor,detail:null,appearance:{...p,gear:{...p.gear}},colors,headWorld:new T.Vector3(),phase:remotes.size*.71,
-        label,from:new T.Vector3(x,y,z),fromYaw:p.yaw??Math.PI,motionStart:0,motionMs:0,missingSince:null,target:new T.Vector3(x,y,z),yaw:p.yaw??Math.PI,action:p.action||'idle',progress:p.progress||0,speech:null,inserted:false};
+        label,from:new T.Vector3(x,y,z),fromYaw:p.yaw??Math.PI,motionStart:0,motionMs:0,missingSince:null,streamAt:0,target:new T.Vector3(x,y,z),yaw:p.yaw??Math.PI,action:p.action||'idle',progress:p.progress||0,speech:null,inserted:false};
       remotes.set(p.id,r);nextDetailCheck=0;
     }
     function removeRemote(id){
@@ -107540,7 +107636,7 @@ window.TempleNavigation={PLAYER_MOTION,templeJumpHeight,templeRestFits,islandLan
       if(!remotes.size&&crowd){crowd.dispose();crowd=null;}
     }
     let remoteRoom=null;
-    function updateRemote(r,p,now){
+    function updateRemote(r,p,now,realtime=false){
       r.missingSince=null;
       updateRemoteAppearance(r,p);
       const name=p.name||t('guest');if(r.label.textContent!==name)r.label.textContent=name;
@@ -107550,7 +107646,7 @@ window.TempleNavigation={PLAYER_MOTION,templeJumpHeight,templeRestFits,islandLan
         r.from.copy(r.anchor.position);r.fromYaw=r.anchor.rotation.y;
         const elapsed=now-(r.lastPacket??(now-300));
         r.target.set(p.x,groundHeight(p.x,p.z),p.z);r.yaw=p.yaw;r.motionStart=now;
-        r.motionMs=Math.min(500,Math.max(120,elapsed));
+        r.motionMs=realtime?Math.min(120,Math.max(85,elapsed)):Math.min(500,Math.max(120,elapsed));
         if(Math.hypot(r.from.x-p.x,r.from.z-p.z)>6||
            !navigation.templeCanTravel(r.from.x,r.from.z,p.x,p.z))r.motionMs=0;
       }
@@ -107576,7 +107672,7 @@ window.TempleNavigation={PLAYER_MOTION,templeJumpHeight,templeRestFits,islandLan
       for(const p of players){
         if(p.id===ownId)continue;
         if(!remotes.has(p.id))addRemote(p);
-        const r=remotes.get(p.id);if(r)updateRemote(r,p,now);
+        const r=remotes.get(p.id);if(r){if(now-(r.streamAt||0)<1200){updateRemoteAppearance(r,p);const name=p.name||t('guest');if(r.label.textContent!==name)r.label.textContent=name;}else updateRemote(r,p,now);}
       }
     }
     function reconcilePosition(confirmed,preserve){
@@ -107601,6 +107697,7 @@ window.TempleNavigation={PLAYER_MOTION,templeJumpHeight,templeRestFits,islandLan
           if(msg.reconnected)toast(t('已恢复连接，累计功德已保留'),5);
         },
         onSnapshot:msg=>syncRemoteRoster(msg.players,network.status.room,network.status.id),
+        onMotion:msg=>{if(!msg||msg.id===network?.status.id)return;const r=remotes.get(msg.id);if(!r)return;const now=performance.now();if(msg.type==='pose'){r.action=msg.lying?'lie':'idle';r.progress=0;r.receivedAt=clock;r.lastPacket=now;r.streamAt=now;return;}updateRemote(r,{...r.appearance,id:msg.id,x:msg.x,z:msg.z,yaw:msg.yaw,action:msg.action,progress:0},now,true);r.streamAt=now;},
         onChat:msg=>{if(msg.id===network.status.id)return;const r=remotes.get(msg.id);if(!r)return;r.speech?.element.remove();const el=document.createElement('div');el.className='speech remote-speech';el.textContent=msg.text;$('speech-layer').appendChild(el);r.speech={element:el,expires:performance.now()+8000};},
         onPresence:()=>{},
         onSeats:seats=>{roomActivities?.setOccupancy(seats.filter(s=>s.sessionId!==network?.status.id));if(!roomActivities?.active&&!network?.status.seatReleasePending&&seats.some(s=>s.sessionId===network?.status.id))network?.releaseSeat();},
