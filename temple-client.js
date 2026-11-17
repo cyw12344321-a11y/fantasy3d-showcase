@@ -104030,8 +104030,10 @@ window.TempleNavigation={PLAYER_MOTION,templeJumpHeight,templeRestFits,islandLan
     element('div',panel,{class:'ambience-label','data-sky-label':'time'});element('div',panel,{class:'ambience-times'});element('div',panel,{class:'ambience-label','data-sky-label':'season'});element('div',panel,{class:'ambience-seasons'});
     element('div',panel,{class:'ambience-label','data-sky-label':'weather'});element('div',panel,{class:'ambience-weather'});
     (document.querySelector('main')||document.body).appendChild(ui);
-    function setOpen(open){panel.hidden=!open;toggle.setAttribute('aria-expanded',String(open));if(open){document.exitPointerLock?.();document.dispatchEvent(new CustomEvent('temple-ui-open'));}else if(panel.contains(document.activeElement))toggle.focus();}
+    function setOpen(open){panel.hidden=!open;toggle.setAttribute('aria-expanded',String(open));if(open){document.exitPointerLock?.();document.dispatchEvent(new CustomEvent('temple-ui-open',{detail:'weather'}));}else if(panel.contains(document.activeElement))toggle.focus();}
     toggle.addEventListener('click',()=>setOpen(panel.hidden));ui.querySelector('#ambience-close').addEventListener('click',()=>setOpen(false));
+    document.addEventListener('temple-hud-hidden',()=>setOpen(false));
+    document.addEventListener('temple-ui-open',event=>{if(event.detail==='pets')setOpen(false);});
     ui.addEventListener('keydown',e=>{if(e.key==='Escape'){setOpen(false);e.preventDefault();}e.stopPropagation();});
     ui.addEventListener('pointerdown',e=>e.stopPropagation());
     document.addEventListener('pointerdown',e=>{if(!ui.contains(e.target)&&!panel.hidden)setOpen(false);});
@@ -104039,7 +104041,7 @@ window.TempleNavigation={PLAYER_MOTION,templeJumpHeight,templeRestFits,islandLan
     function save(){try{localStorage.setItem('quiet-temple-ambience',JSON.stringify({time:state.time,season:state.season,weather:state.weather}));}catch(_){}}
     function setWeather(value){if(!['clear','rain','snow'].includes(value))return;state.weather=value;weather?.setMode(value);applyTime();save();refresh();}
     for(const [kind,values] of [['time',['day','sunset','night']],['season',['spring','summer','autumn','winter']],['weather',['clear','rain','snow']]])for(const value of values){const b=document.createElement('button');b.type='button';b.dataset.skyLabel=value;b.dataset[kind]=value;b.addEventListener('click',()=>{if(kind==='weather'){setWeather(value);return;}state[kind]=value;if(kind==='time')applyTime();else{flowerMat.map=textures[value];flowerMat.needsUpdate=true;}save();refresh();});ui.querySelector(kind==='time'?'.ambience-times':kind==='season'?'.ambience-seasons':'.ambience-weather').appendChild(b);buttons.push({b,kind,value});}
-    function refresh(){const l=labels[window.TempleI18n?.locale]||labels['zh-CN'];for(const e of ui.querySelectorAll('[data-sky-label]'))e.textContent=l[e.dataset.skyLabel];panel.setAttribute('aria-label',l.title);toggle.setAttribute('aria-label',l.title);ui.querySelector('#ambience-close').setAttribute('aria-label',l.close);for(const {b,kind,value}of buttons)b.setAttribute('aria-pressed',String(state[kind]===value));}
+    function refresh(){const l=labels[window.TempleI18n?.locale]||labels['zh-CN'];for(const e of ui.querySelectorAll('[data-sky-label]'))e.textContent=l[e.dataset.skyLabel];panel.setAttribute('aria-label',l.title);toggle.querySelector('span').textContent=l.weather;toggle.setAttribute('aria-label',l.weather);ui.querySelector('#ambience-close').setAttribute('aria-label',l.close);for(const {b,kind,value}of buttons)b.setAttribute('aria-pressed',String(state[kind]===value));}
     window.TempleI18n?.onChange(refresh);refresh();applyTime();
     function update(dt,clock,player){
       world.landscape?.update(dt,clock);
@@ -107513,6 +107515,253 @@ window.TempleNavigation={PLAYER_MOTION,templeJumpHeight,templeRestFits,islandLan
 ;
 (function () {
   'use strict';
+  const species = {
+    cat: { file: 'Cow_Cat', scale: .78, distance: 1.35, side: -1 },
+    dog: { file: 'Shiba_Inu', scale: .18, distance: 2.45, side: 1 }
+  };
+  const storageKey = 'quiet-temple-followers-v1';
+  const labels = {
+    'zh-CN': ['宠物', '奶牛猫', '柴犬', '放出', '收起', '正在加载', '跟随中', '已收起', '加载失败，请重试'],
+    'zh-TW': ['寵物', '乳牛貓', '柴犬', '放出', '收起', '正在載入', '跟隨中', '已收起', '載入失敗，請重試'],
+    en: ['Pets', 'Piebald cat', 'Shiba Inu', 'Summon', 'Recall', 'Loading', 'Following', 'Recalled', 'Could not load. Try again.'],
+    ja: ['ペット', '白黒猫', '柴犬', '呼ぶ', '戻す', '読み込み中', '同行中', '待機中', '再試行してください'],
+    ko: ['반려동물', '얼룩 고양이', '시바견', '부르기', '돌려보내기', '불러오는 중', '따라가는 중', '대기 중', '다시 시도하세요']
+  };
+  const distance = (a, b) => Math.hypot(a.x-b.x, a.z-b.z);
+
+  function create(T, world, nav, canOccupy) {
+    let saved = [];
+    try { saved = JSON.parse(localStorage.getItem(storageKey) || '[]'); } catch {}
+    const slots = Object.entries(species).map(([id, spec]) => ({
+      id, spec, enabled: Array.isArray(saved) && saved.includes(id),
+      actor: null, loading: null, error: false, waiting: 0, action: null
+    }));
+    const listeners = new Set();
+    const trail = [];
+    let disposed = false;
+    const notify = () => listeners.forEach(fn => fn());
+    function remember() {
+      try { localStorage.setItem(storageKey, JSON.stringify(slots.filter(s => s.enabled).map(s => s.id))); } catch {}
+    }
+    function hide(slot) {
+      if (!slot.actor) return;
+      const wasFollowing = !!slot.actor.anchor.parent;
+      slot.actor.anchor.removeFromParent();
+      slot.actor.mixer.stopAllAction();
+      slot.action = null;
+      slot.waiting = 0;
+      if (wasFollowing && !disposed) notify();
+    }
+    function load(slot) {
+      if (slot.actor || slot.loading || disposed) return;
+      slot.loading = Promise.resolve().then(() => window.TempleGLB.load('assets/companions/'+slot.spec.file+'.glb.gz'))
+        .then(({scene: model, animations}) => {
+          if (disposed) return;
+          const anchor = new T.Group();
+          anchor.name = 'Player pet: '+slot.id;
+          model.scale.multiplyScalar(slot.spec.scale);
+          model.traverse(node => {
+            node.layers.set(1);
+            if (node.isMesh) { node.castShadow = false; node.receiveShadow = true; }
+          });
+          anchor.add(model);
+          const mixer = new T.AnimationMixer(model);
+          const actions = new Map(animations.map(clip => [clip.name, mixer.clipAction(clip)]));
+          slot.actor = {anchor, model, mixer, actions};
+        }).catch(() => {
+          if (disposed || !slot.enabled) return;
+          slot.enabled = false;
+          slot.error = true;
+          remember();
+        }).finally(() => { slot.loading = null; if (!disposed) notify(); });
+      notify();
+    }
+    function setActive(id, enabled) {
+      const slot = slots.find(item => item.id === id);
+      if (!slot || disposed || slot.enabled === enabled) return;
+      slot.enabled = enabled;
+      slot.error = false;
+      if (!enabled) hide(slot);
+      else load(slot);
+      remember();
+      notify();
+    }
+    function play(slot, moving, speed = 0) {
+      const action = slot.actor.actions.get(moving ? 'Walk' : 'Idle');
+      if (!action) return;
+      if (action !== slot.action) {
+        slot.action?.fadeOut(.16);
+        action.reset().fadeIn(.16).play();
+        slot.action = action;
+      }
+      action.setEffectiveTimeScale(moving ? Math.max(.75, Math.min(2.8, speed/.9)) : 1);
+    }
+    function clear(slot, point) {
+      if (!nav.templeCanStand(point.x, point.z) || !canOccupy(point.x, point.z)) return false;
+      return slots.every(other => other === slot || !other.actor?.anchor.parent || distance(other.actor.anchor.position, point) >= .65);
+    }
+    function place(slot, player, preferred) {
+      const {position: origin} = player;
+      const yaw = player.rotation.y, c = Math.cos(yaw), s = Math.sin(yaw);
+      const candidates = [];
+      if (preferred) candidates.push(preferred);
+      for (const [side, back] of [[slot.spec.side,1],[-slot.spec.side,1],[slot.spec.side,0],[-slot.spec.side,0],[slot.spec.side,-1]]) {
+        candidates.push({x: origin.x+side*c-back*s, z: origin.z-side*s-back*c});
+      }
+      const point = candidates.find(p => distance(p, origin) >= .8 && distance(p, origin) <= 3.3
+        && clear(slot, p) && nav.templeCanTravel(origin.x, origin.z, p.x, p.z));
+      if (!point) return;
+      const {anchor, model} = slot.actor;
+      anchor.position.set(point.x, nav.templeGroundHeight(point.x, point.z), point.z);
+      model.rotation.y = yaw;
+      slot.waiting = 0;
+      world.scene.add(anchor);
+      play(slot, false);
+      notify();
+    }
+    function update(dt, player) {
+      if (disposed) return;
+      if (!slots.some(slot => slot.enabled)) { trail.length = 0; return; }
+      const origin = player.position;
+      const last = trail.at(-1);
+      if (last && distance(last, origin) > 9) {
+        trail.length = 0;
+        slots.forEach(hide);
+      }
+      if (!trail.length || distance(trail.at(-1), origin) >= .32) {
+        trail.push({x: origin.x, z: origin.z});
+        if (trail.length > 45) trail.shift();
+      }
+      for (const slot of slots) {
+        if (!slot.enabled) continue;
+        if (!slot.actor) { load(slot); continue; }
+        const {anchor, model, mixer} = slot.actor, p = anchor.position;
+        let goalIndex = -1, gap = 0, next = origin;
+        for (let i = trail.length-1; i >= 0; i--) {
+          gap += distance(next, trail[i]);
+          if (gap >= slot.spec.distance) { goalIndex = i; break; }
+          next = trail[i];
+        }
+        const target = trail[goalIndex];
+        if (!anchor.parent || distance(p, origin) > 13 || slot.waiting > 3) {
+          hide(slot);
+          place(slot, player, target);
+          continue;
+        }
+        // If a corner blocks the direct route, trace the player's prior steps around it.
+        let waypoint = target;
+        const reachable = point => point && nav.templeCanTravel(p.x, p.z, point.x, point.z);
+        if (!reachable(waypoint)) {
+          waypoint = null;
+          for (let i = goalIndex-1; i >= 0; i--) {
+            if (distance(p, trail[i]) > .3 && reachable(trail[i])) { waypoint = trail[i]; break; }
+          }
+        }
+        let moved = false, speed = 0;
+        if (waypoint) {
+          const remaining = distance(p, waypoint);
+          if (remaining > .20) {
+            speed = Math.min(5.7, 1.6+Math.max(0, distance(p, origin)-1.4)*1.8);
+            const ratio = Math.min(1, speed*dt/remaining);
+            const step = {x: p.x+(waypoint.x-p.x)*ratio, z: p.z+(waypoint.z-p.z)*ratio};
+            if (distance(step, origin) >= .68 && clear(slot, step)) {
+              const yaw = Math.atan2(step.x-p.x, step.z-p.z);
+              const turn = yaw-model.rotation.y;
+              model.rotation.y += Math.atan2(Math.sin(turn), Math.cos(turn))*Math.min(1, dt*10);
+              p.set(step.x, nav.templeGroundHeight(step.x, step.z), step.z);
+              moved = ratio > 0;
+            }
+          }
+        }
+        slot.waiting = !moved && distance(p, origin)>3.5 ? slot.waiting+dt : 0;
+        play(slot, moved, speed);
+        mixer.update(dt);
+      }
+    }
+    function status() {
+      return slots.map(slot => ({
+        id: slot.id, enabled: slot.enabled, error: slot.error,
+        loading: !!slot.loading, following: !!slot.actor?.anchor.parent,
+        position: slot.actor?.anchor.parent ? slot.actor.anchor.position.toArray() : null
+      }));
+    }
+    function dispose() {
+      disposed = true;
+      slots.forEach(hide);
+      for (const slot of slots) if (slot.actor) slot.actor.mixer.uncacheRoot(slot.actor.model);
+      listeners.clear();
+    }
+    return {setActive, update, status, dispose, subscribe(fn) { listeners.add(fn); return () => listeners.delete(fn); }};
+  }
+
+  function mountControls(pets, top) {
+    const container = document.createElement('div');
+    container.className = 'pet-controls';
+    const toggle = document.createElement('button');
+    toggle.id = 'pet-toggle';
+    toggle.type = 'button';
+    toggle.setAttribute('aria-controls', 'pet-panel');
+    const panel = document.createElement('section');
+    panel.id = 'pet-panel';
+    const title = document.createElement('strong');
+    panel.append(title);
+    container.append(toggle, panel);
+    top.append(container);
+    const rows = ['cat', 'dog'].map(id => {
+      const row = document.createElement('div');
+      row.className = 'pet-row';
+      const description = document.createElement('div');
+      const name = document.createElement('span');
+      const state = document.createElement('small');
+      state.setAttribute('aria-live', 'polite');
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.addEventListener('click', () => pets.setActive(id, !pets.status().find(slot => slot.id === id).enabled));
+      description.append(name, state);
+      row.append(description, button);
+      panel.append(row);
+      return {name, state, button};
+    });
+    function setOpen(open) {
+      panel.hidden = !open;
+      toggle.setAttribute('aria-expanded', String(open));
+      if (open) {
+        document.exitPointerLock?.();
+        document.dispatchEvent(new CustomEvent('temple-ui-open', {detail:'pets'}));
+      }
+    }
+    toggle.addEventListener('click', () => setOpen(panel.hidden));
+    container.addEventListener('keydown', event => {
+      if (event.key === 'Escape' && !panel.hidden) { setOpen(false); toggle.focus(); event.preventDefault(); }
+      event.stopPropagation();
+    });
+    document.addEventListener('pointerdown', event => { if (!container.contains(event.target)) setOpen(false); });
+    document.addEventListener('temple-ui-open', event => { if (event.detail === 'weather') setOpen(false); });
+    document.addEventListener('temple-hud-hidden', () => setOpen(false));
+    function render() {
+      const names = labels[window.TempleI18n?.locale] || labels['zh-CN'];
+      toggle.textContent = names[0];
+      panel.setAttribute('aria-label', names[0]);
+      title.textContent = names[0];
+      pets.status().forEach((slot, i) => {
+        const row = rows[i], name = names[i+1];
+        row.name.textContent = name;
+        row.state.textContent = names[slot.error ? 8 : slot.enabled ? slot.loading || !slot.following ? 5 : 6 : 7];
+        row.button.textContent = names[slot.enabled ? 4 : 3];
+        row.button.setAttribute('aria-label', name+' · '+row.button.textContent);
+        row.button.setAttribute('aria-pressed', String(slot.enabled));
+      });
+    }
+    pets.subscribe(render);
+    window.TempleI18n?.onChange(render);
+    setOpen(false);
+    render();
+  }
+  window.TemplePets = {create, mountControls};
+})();
+;
+(function () {
+  'use strict';
   const $ = id => document.getElementById(id);
   const t = (key,args) => window.TempleI18n?.t(key,args) ?? key;
   const fatal = message => { $('fatal').hidden = false; $('fatal').textContent = message; };
@@ -107544,6 +107793,8 @@ window.TempleNavigation={PLAYER_MOTION,templeJumpHeight,templeRestFits,islandLan
     const ambience=window.TempleAmbience?.create(T,world,exterior)||null;
     const navigation=window.TempleNavigation;
     const companions=window.TempleIslandCompanions.create(T,world,navigation);
+    const pets=window.TemplePets.create(T,world,navigation,companions.canOccupy);
+    window.TemplePets.mountControls(pets,document.querySelector('.top-actions'));
     const layout=navigation.templeSceneLayout;
     const garden=window.TempleIslandGarden?.create(T,world,exterior,navigation)||null;
     const groundHeight=(x,z)=>navigation.templeGroundHeight(x,z)+world.prayerMatLift(x,z);
@@ -108325,6 +108576,7 @@ window.TempleNavigation={PLAYER_MOTION,templeJumpHeight,templeRestFits,islandLan
       if(started&&!paused){
         companions.update(dt,clock,player.root.position);
         companions.updateRide(dt,clock,player,isMoving,isMoving,(x,z)=>(!onlineMode||network?.canRoam)&&!blocked(x,z));
+        pets.update(dt,player.root);
       }
       if (!paused || !started) world.update && world.update(started ? clock : now / 1000, dt, started ? player.root.position : null);
       if(started&&!paused){rituals.updateIncense?.(dt);replacementStatue?.updateBlessing?.(dt);}
@@ -108406,7 +108658,7 @@ window.TempleNavigation={PLAYER_MOTION,templeJumpHeight,templeRestFits,islandLan
       }
     }
     updateStats(); updateCamera(0, true); updatePrompt(); updateSoundButton();
-    addEventListener('pagehide',event=>{if(!event.persisted){rituals.dispose?.();replacementStatue?.disposeBlessing?.();}});
+    addEventListener('pagehide',event=>{if(!event.persisted){rituals.dispose?.();replacementStatue?.disposeBlessing?.();pets.dispose();}});
     // Read-only diagnostics for reproducible acceptance checks; never alters game state.
     window.templeDiagnostics = () => ({
       motion:motion?.diagnostics(),version:layout.version,groundSource:"shared-mesh-and-structure",
@@ -108414,7 +108666,7 @@ window.TempleNavigation={PLAYER_MOTION,templeJumpHeight,templeRestFits,islandLan
       player: { x: +player.root.position.x.toFixed(3), y:+player.root.position.y.toFixed(3), z: +player.root.position.z.toFixed(3), facing: +player.root.rotation.y.toFixed(3) },
       statue:replacementStatue?{...replacementStatue.state}:null,
       uploadedProps:uploadedProps?{...uploadedProps.state}:null,
-      loading:{...TempleAssets.state}, companions:companions.diagnostics(),
+      loading:{...TempleAssets.state}, companions:companions.diagnostics(), pets:pets.status(),
       exterior:exterior?{...exterior.state}:null,
       stats: { ...stats }, saveAvailable,
       profile:latestProfile,profileUI:profilePanel?.diagnostics?.(),locale:window.TempleI18n?.locale,roomActivities:roomActivities?.diagnostics?.(),architecture:world.architecture?.state,garden:garden?.state,
@@ -108456,7 +108708,9 @@ window.TempleNavigation={PLAYER_MOTION,templeJumpHeight,templeRestFits,islandLan
   for(const button of [...top.querySelectorAll(':scope > button')])if(button!==names)utility.append(button);
   const ritual=document.querySelector('.ritual-actions'),stats=document.querySelector('.merit-panel'),language=document.querySelector('.language-picker'),sky=document.querySelector('.ambience-controls');
   const statsDetails=document.createElement('details'),statsTitle=document.createElement('summary');statsTitle.textContent='功德记录';statsDetails.className='clean-menu-stats';statsDetails.append(statsTitle,stats);
-  game.append(ritual);content.prepend(utility,statsDetails,sky,language);
+  game.append(ritual);content.prepend(utility,statsDetails,language);
+  if(sky)top.insertBefore(sky,menu);
+  const petControls=top.querySelector('.pet-controls');if(petControls)top.insertBefore(petControls,menu);
   const chat=document.getElementById('chat-form'),chatToggle=document.createElement('button');chatToggle.id='chat-toggle';chatToggle.type='button';chatToggle.textContent='言';chatToggle.setAttribute('aria-label','打开聊天');game.append(chatToggle);
   const chatClose=document.createElement('button');chatClose.id='chat-close';chatClose.type='button';chatClose.textContent='×';chatClose.setAttribute('aria-label','收起聊天');chat.append(chatClose);
   function closeChat(){game.classList.remove('chat-open');document.getElementById('chat-input').blur();}
@@ -108468,7 +108722,7 @@ window.TempleNavigation={PLAYER_MOTION,templeJumpHeight,templeRestFits,islandLan
   stick.addEventListener('pointermove',event=>{if(event.pointerId===pointer){event.preventDefault();move(event);}});
   for(const type of ['pointerup','pointercancel','lostpointercapture'])stick.addEventListener(type,event=>{if(event.pointerId===pointer)reset();});
   addEventListener('blur',reset);document.addEventListener('visibilitychange',()=>{if(document.hidden)reset();});
-  const overlay=document.getElementById('overlay');function ready(){game.classList.toggle('hud-ready',overlay.hidden);if(!overlay.hidden)reset();}
+  const overlay=document.getElementById('overlay');function ready(){game.classList.toggle('hud-ready',overlay.hidden);if(!overlay.hidden){reset();document.dispatchEvent(new Event('temple-hud-hidden'));}}
   new MutationObserver(ready).observe(overlay,{attributes:true,attributeFilter:['hidden']});ready();
   menu.addEventListener('toggle',()=>{if(menu.open){reset();document.exitPointerLock?.();}});
   function renderLabels(){menu.querySelector(':scope > summary').setAttribute('aria-label',t('hud.menu'));const admin=menu.querySelector('a[href="/admin.html"]');if(admin)admin.textContent=t('hud.admin');statsTitle.textContent=t('hud.records');chatToggle.textContent=t('chat.icon');chatToggle.setAttribute('aria-label',t('hud.chat.open'));chatClose.setAttribute('aria-label',t('hud.chat.close'));stick.setAttribute('aria-label',t('hud.move'));document.getElementById('interact').dataset.label=t('hud.bow');}

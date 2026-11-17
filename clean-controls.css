@@ -25,10 +25,27 @@
 .clean-hud #temple-menu .merit-panel{position:static;display:block;width:100%;border:0;background:none;padding:8px;backdrop-filter:none}
 .clean-hud #temple-menu .merit-panel .merit-meta,.clean-hud #temple-menu .merit-panel #save-status{font-size:11px}
 .clean-hud .merit-panel .panel-eyebrow,.clean-hud .merit-panel .fine-rule,.clean-hud .merit-panel #identity{display:none}
-.clean-hud .ambience-controls,.clean-hud .language-picker{position:static;display:block;margin:8px 0}
-.clean-hud #ambience-toggle,.clean-hud .language-picker select{width:100%;max-width:none;min-height:38px;font-size:12px;text-align:left}
-.clean-hud #ambience-panel{position:static;width:100%;max-width:none;margin-top:8px;padding:10px;box-shadow:none}
+.clean-hud .language-picker{position:static;display:block;margin:8px 0}
+.clean-hud .language-picker select{width:100%;max-width:none;min-height:38px;font-size:12px;text-align:left}
+.clean-hud .top-actions .ambience-controls,.clean-hud .pet-controls{position:static;margin:0;flex:none}
+.clean-hud #ambience-toggle,.clean-hud #pet-toggle{
+ min-height:42px;padding:0 9px;border:1px solid #f4e4bf66;border-radius:12px;
+ font:inherit;font-weight:600;font-size:13px;color:#fff2d6;background:#30271bd6;white-space:nowrap
+}
+.clean-hud #ambience-panel,.clean-hud #pet-panel{
+ position:absolute;top:52px;left:auto;right:0;margin:0;width:252px;max-width:calc(100vw - 36px);
+ max-height:calc(100dvh - 95px);overflow:auto;overscroll-behavior:contain;box-sizing:border-box
+}
 .clean-hud #ambience-panel button{font-size:11px;text-align:center;padding:6px}
+.clean-hud #pet-panel{padding:13px;background:#30271bf5;border:1px solid #b8a17480;border-radius:14px;box-shadow:0 12px 40px #0005}
+.clean-hud #pet-panel[hidden]{display:none}
+.clean-hud #pet-panel strong{display:block;margin-bottom:5px;color:#fff2d6;font-size:14px}
+.clean-hud .pet-row{display:flex;gap:9px;align-items:center;justify-content:space-between;padding:8px 0;border-top:1px solid #f4e4bf30;font-size:13px}
+.clean-hud .pet-row small{display:block;margin-top:3px;color:#d7c6a5;font-size:11px}
+.clean-hud .pet-row button{flex:none;min-height:38px;padding:5px 10px;color:#fff2d6;background:#5a432a;border:1px solid #b8a17480;border-radius:8px}
+.clean-hud .pet-row button[aria-pressed=true]{background:#7b6840}
+.clean-hud:not(.hud-ready) .top-actions .ambience-controls,.clean-hud:not(.hud-ready) .pet-controls{display:none}
+@media(max-width:500px){.clean-hud .top-actions{gap:6px}}
 .clean-hud #motion-controls{position:absolute;inset:auto var(--action-edge) var(--action-bottom) auto;width:210px;height:210px;display:block;pointer-events:none}
 .clean-hud #motion-controls[hidden]{display:none}
 .clean-hud #motion-controls button{position:absolute;pointer-events:auto;display:grid;place-items:center;min-width:0;width:56px;height:56px;padding:0;border-radius:50%;background:#241f183d;border:1px solid #f4e4bf66;color:#fff2d6;font-size:12px;letter-spacing:.5px;box-shadow:none;touch-action:none}
