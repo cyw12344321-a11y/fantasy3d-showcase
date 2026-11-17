@@ -95,7 +95,7 @@
  'controls.move':['移動','이동'],'controls.bow':['礼拝','예불'],'controls.camera':['左ドラッグで視点操作','왼쪽 버튼을 누르고 드래그해 시점 조절'],'controls.chat':['チャット','채팅'],'controls.space':['E / スペース','E / 스페이스'],'controls.walk':['自由に歩く','자유롭게 걷기'],'controls.complete':['礼拝を終える','예불 마치기'],'controls.headChat':['頭上に言葉を表示','머리 위에 말 표시'],'controls.forward':['前へ','앞으로'],'controls.left':['左へ','왼쪽으로'],'controls.back':['後ろへ','뒤로'],'controls.right':['右へ','오른쪽으로'],
  'welcome.title':['お堂で、ひと休み。','법당에서 잠시 쉬어 가요.'],'welcome.copy':['木のぬくもり、やわらかな灯り。\n空いた座布団に近づき、手を合わせて礼拝しましょう。','따스한 나무 향과 은은한 등불.\n빈 방석에 다가가 합장하고 예불해 보세요.'],'welcome.enter':['お堂に入る','법당 들어가기'],'welcome.footnote':['アルパカに乗って経蔵の外壁に沿って裏へ回ると、ひまわり畑に出ます。\n功徳はゲーム内の記録です。穏やかなひとときを。','알파카를 타고 장경각 바깥 벽을 따라 뒤로 돌아가면 해바라기밭이 나와요.\n공덕은 게임 내 기록이에요. 평온한 시간을 보내세요.'],
  'help.title':['ひと呼吸ずつ、ゆっくりと。','한 호흡씩, 천천히.'],'pause.title':['ひと休みして、また歩こう。','잠시 쉬고 다시 걸어요.'],
- 'help.copy':['WASDで移動、Shiftで走る、スペースでジャンプ、Cで座る、Zで仰向けに寝ます。移動すると立ち上がります。空いた座布団のそばでEを押すと礼拝します。マウスの左ボタンを押しながらドラッグすると視点を操作できます。カーソルは常に表示されます。ホイールで距離を調整、Escで一時停止。Enterで頭上に表示する言葉を入力できます。','WASD로 이동, Shift로 달리기, 스페이스로 점프, C로 앉기, Z로 반듯이 눕기. 이동하면 일어납니다. 빈 방석 근처에서 E를 누르면 예불해요. 마우스 왼쪽 버튼을 누르고 드래그해 시점을 조절하세요. 커서는 항상 표시됩니다. 휠로 거리를 조절하고 Esc로 일시 정지해요. Enter를 누르면 머리 위에 표시할 말을 입력할 수 있어요.'],
+ 'help.copy':['パソコンはWASD、スマートフォンは左下のスティックで走ります。離すと止まります。スペースでジャンプ、Cで座る、Zで仰向けに寝ます。移動すると立ち上がります。空いた座布団のそばでEを押すと礼拝します。マウスの左ボタンを押しながらドラッグすると視点を操作できます。カーソルは常に表示されます。ホイールで距離を調整、Escで一時停止。Enterで頭上に表示する言葉を入力できます。','컴퓨터에서는 WASD, 휴대폰에서는 왼쪽 아래 조이스틱으로 달리고 놓으면 멈춥니다. 스페이스로 점프, C로 앉기, Z로 반듯이 눕기. 이동하면 일어납니다. 빈 방석 근처에서 E를 누르면 예불해요. 마우스 왼쪽 버튼을 누르고 드래그해 시점을 조절하세요. 커서는 항상 표시됩니다. 휠로 거리를 조절하고 Esc로 일시 정지해요. Enter를 누르면 머리 위에 표시할 말을 입력할 수 있어요.'],
  'pause.copy':['灯りをともして待っています。準備ができたら、またどうぞ。','등불을 켜 두고 기다릴게요. 준비되면 계속하세요.'],'welcome.resume':['続ける','계속하기'],
  'prompt.save':['功徳を保存中','공덕 저장 중'],'prompt.save.note':['保存が終わるまでお待ちください','기록을 저장할 때까지 기다려 주세요'],'prompt.walking':['仏前へ向かっています','불상 앞으로 가는 중'],'prompt.woodfish':['木魚をたたいています','목탁을 두드리는 중'],'prompt.incense':['お香を供えています','향을 올리는 중'],'prompt.ritual.note':['しばらくお待ちください。作法は自動で終わります','잠시 머물러 주세요. 의식은 자동으로 끝나요'],'prompt.praying':['礼拝中','예불 중'],'prompt.praying.note':['移動するか別の動作を選ぶまで礼拝を続けます','움직이거나 다른 동작을 선택할 때까지 계속 절해요'],'prompt.busy':['この座布団は使用中です','이 방석은 사용 중이에요'],'prompt.busy.note':['空いた座布団を選び、ゆっくり歩きましょう','빈 방석을 골라 천천히 걸어가세요'],'prompt.near':['合掌 · 礼拝','합장 · 예불'],'prompt.near.note':['礼拝を1回終える · 功徳 +10','예불 한 번 완료 · 공덕 +10'],'prompt.find':['空いた座布団へ近づく','빈 방석에 다가가세요'],'prompt.find.note':['中央の列に空いた座布団があります','가운데 줄에 빈 방석이 있어요'],'prompt.initial.note':['仏像の前へ、ゆっくり進みましょう','불상 앞으로 천천히 걸어가세요'],
  'prayer.hands':['手を合わせる','차분히 합장'],'prayer.lower':['ゆっくり礼をする','천천히 절하기'],'prayer.still':['心静かに礼拝','고요히 예불'],'prayer.rise':['ゆっくり立ち上がる','천천히 일어나기'],'prayer.complete':['礼拝を終えました','예불을 마쳤어요'],'prayer.breath':['ひと呼吸、またひと呼吸。心穏やかに。','들이쉬고 내쉬며 마음을 편안하게.'],'prayer.woodfish':['木魚で静かなひととき','목탁 명상'],'prayer.incense':['お香を供え、合掌','분향과 합장'],
@@ -159,7 +159,7 @@
  ['chat.icon','言','言','…'],['chat.label','在小沙弥头顶显示的话','在小沙彌頭頂顯示的話','Message above your novice monk'],['chat.placeholder','轻声说一句…','輕聲說一句…','Say something kind…'],['chat.send','显示文字','顯示文字','Send message'],['chat.wait','文字还未发送，请等待连接恢复','文字還未送出，請等待連線恢復','Message not sent. Please wait for the connection.'],
  ['controls.move','移动','移動','Move'],['controls.bow','跪拜','跪拜','Bow'],['controls.camera','左键拖动视角','左鍵拖曳視角','Left-drag to look'],['controls.chat','打字','打字','Chat'],['controls.space','E / 空格','E / 空格','E / Space'],['controls.walk','自由走动','自由走動','Walk freely'],['controls.complete','完成礼拜','完成禮拜','Complete a bow'],['controls.headChat','头顶打字','頭頂打字','Overhead chat'],['controls.forward','向前','向前','Forward'],['controls.left','向左','向左','Left'],['controls.back','向后','向後','Back'],['controls.right','向右','向右','Right'],
  ['welcome.title','来佛堂，歇一歇。','來佛堂，歇一歇。','Rest here for a moment.'],['welcome.copy','木香微暖，灯火长明。\n走近空拜垫，合掌、跪拜，让心慢下来。','木香微暖，燈火長明。\n走近空拜墊，合掌、跪拜，讓心慢下來。','Warm wood, gentle lanterns.\nFind a free cushion, fold your hands and bow.'],['welcome.enter','进入佛堂','進入佛堂','Enter the temple'],['welcome.footnote','骑上羊驼，绕到藏经阁后面，就是向日葵田。\n点数仅为游戏记录，愿每一次停留都平和。','騎上羊駝，繞到藏經閣後面，就是向日葵田。\n點數僅為遊戲紀錄，願每一次停留都平和。','Ride an alpaca around the library to reach the sunflowers behind it.\nPoints are a game record. May your visit be peaceful.'],
- ['help.title','在一呼一吸之间。','在一呼一吸之間。','One breath at a time.'],['pause.title','歇一歇，再出发。','歇一歇，再出發。','Rest, then carry on.'],['help.copy','WASD 移动，Shift 跑步，空格跳跃，C 坐下，Z 仰躺；移动即可起身。走到空拜垫附近按 E 跪拜。按住鼠标左键拖动视角，鼠标始终可见；滚轮调整远近，Esc 暂停。按 Enter 打字，发送后文字会显示在头顶。','WASD 移動，Shift 跑步，空格跳躍，C 坐下，Z 仰躺；移動即可起身。走到空拜墊附近按 E 跪拜。按住滑鼠左鍵拖曳視角，游標始終可見；滾輪調整遠近，Esc 暫停。按 Enter 打字，送出後文字會顯示在頭頂。','WASD to move, Shift to run, Space to jump, C to sit, Z to lie face up. Move to stand. Press E at a free cushion to bow. Hold the left mouse button and drag to look; the cursor stays visible. Scroll to zoom. Esc pauses. Press Enter to type a message above your novice monk.'],['pause.copy','佛堂为你留了一盏灯。准备好了，就继续。','佛堂為你留了一盞燈。準備好了，就繼續。','A lantern waits for you. Continue when you are ready.'],['welcome.resume','继续礼佛','繼續禮佛','Continue'],
+ ['help.title','在一呼一吸之间。','在一呼一吸之間。','One breath at a time.'],['pause.title','歇一歇，再出发。','歇一歇，再出發。','Rest, then carry on.'],['help.copy','电脑按 WASD 直接跑步，松键停止；手机拖动左下摇杆直接跑步，松手停止。空格跳跃，C 坐下，Z 仰躺；移动即可起身。走到空拜垫附近按 E 跪拜。按住鼠标左键拖动视角，鼠标始终可见；滚轮调整远近，Esc 暂停。按 Enter 打字，发送后文字会显示在头顶。','電腦按 WASD 直接跑步，鬆鍵停止；手機拖曳左下搖桿直接跑步，鬆手停止。空格跳躍，C 坐下，Z 仰躺；移動即可起身。走到空拜墊附近按 E 跪拜。按住滑鼠左鍵拖曳視角，游標始終可見；滾輪調整遠近，Esc 暫停。按 Enter 打字，送出後文字會顯示在頭頂。','On desktop, WASD runs; release to stop. On mobile, drag the lower-left joystick to run; release to stop. Space to jump, C to sit, Z to lie face up. Move to stand. Press E at a free cushion to bow. Hold the left mouse button and drag to look; the cursor stays visible. Scroll to zoom. Esc pauses. Press Enter to type a message above your novice monk.'],['pause.copy','佛堂为你留了一盏灯。准备好了，就继续。','佛堂為你留了一盞燈。準備好了，就繼續。','A lantern waits for you. Continue when you are ready.'],['welcome.resume','继续礼佛','繼續禮佛','Continue'],
  ['prompt.save','正在保存善念','正在儲存善念','Saving your kindness'],['prompt.save.note','等记录完成，再继续礼佛','等紀錄完成，再繼續禮佛','Please wait for your progress to save'],['prompt.walking','正在前往佛前','正在前往佛前','Walking to the altar'],['prompt.woodfish','正在敲木鱼','正在敲木魚','Tapping the woodfish'],['prompt.incense','正在上香合掌','正在上香合掌','Offering incense'],['prompt.ritual.note','请安住片刻，仪式会自动完成','請安住片刻，儀式會自動完成','Rest a moment; the ritual will finish automatically'],['prompt.praying','礼拜进行中','禮拜進行中','Bowing in progress'],['prompt.praying.note','会一直礼拜，移动或做其他动作即可停下','會一直禮拜，移動或做其他動作即可停下','Bows repeat until you move or choose another action'],['prompt.busy','此处已有香客','此處已有香客','This cushion is occupied'],['prompt.busy.note','请选一方空拜垫，轻声慢行','請選一方空拜墊，輕聲慢行','Choose a free cushion and walk gently'],['prompt.near','合掌 · 跪拜','合掌 · 跪拜','Fold hands · Bow'],['prompt.near.note','完成一次礼拜，功德 +10','完成一次禮拜，功德 +10','Complete a bow · Merit +10'],['prompt.find','走近一方空拜垫','走近一方空拜墊','Approach a free cushion'],['prompt.find.note','中央一列的空拜垫正在等你','中央一列的空拜墊正在等你','Free cushions await in the middle row'],['prompt.initial.note','向佛像前方慢慢走去','向佛像前方慢慢走去','Walk gently towards the Buddha'],
  ['prayer.hands','合掌静心','合掌靜心','Fold your hands'],['prayer.lower','缓缓下拜','緩緩下拜','Bow slowly'],['prayer.still','静心礼拜','靜心禮拜','A quiet bow'],['prayer.rise','缓缓起身','緩緩起身','Rise gently'],['prayer.complete','礼拜圆满','禮拜圓滿','Bow complete'],['prayer.breath','一呼一吸，心念安宁','一呼一吸，心念安寧','Breathe in, breathe out. Be at peace.'],['prayer.woodfish','木鱼静心','木魚靜心','Woodfish meditation'],['prayer.incense','敬香合掌','敬香合掌','Offer incense'],
  ['notice.woodfish','慢慢走向木鱼，静心修行','慢慢走向木魚，靜心修行','Walk gently to the woodfish'],['notice.incense','慢慢走到佛前，敬香合掌','慢慢走到佛前，敬香合掌','Walk gently to offer incense'],['notice.saving','仪式圆满，正在记下这一份善念','儀式圓滿，正在記下這一份善念','Ritual complete. Saving this kindness.'],['notice.prayerSaving','礼拜圆满，正在记下这一份善念','禮拜圓滿，正在記下這一份善念','Bow complete. Saving this kindness.'],['notice.saved','善念已记下 · {action}','善念已記下 · {action}','Kindness saved · {action}'],['notice.practiceComplete','修行圆满','修行圓滿','Practice complete'],['notice.incenseComplete','敬香圆满','敬香圓滿','Incense offered'],['notice.woodfishReward','木鱼修行圆满 · 功德 +8','木魚修行圓滿 · 功德 +8','Woodfish practice complete · Merit +8'],['notice.incenseReward','敬香圆满 · 香火 +1 · 功德 +5','敬香圓滿 · 香火 +1 · 功德 +5','Incense offered · Incense +1 · Merit +5'],['notice.prayerReward','礼拜圆满 · 功德 +10 · 香火 +1','禮拜圓滿 · 功德 +10 · 香火 +1','Bow complete · Merit +10 · Incense +1'],['notice.sessionOnly','（本次记录）','（本次紀錄）',' (this session only)'],['notice.reconnected','已恢复连接，累计功德已保留','已恢復連線，累計功德已保留','Reconnected. Your cumulative merit is safe.'],['notice.noMat','请先走近一方空拜垫','請先走近一方空拜墊','Please approach a free cushion first'],['notice.matTaken','这方拜垫已有香客，请选空位','這方拜墊已有香客，請選空位','This cushion is occupied. Please choose another.'],['notice.noPath','暂时走不过去，请稍微挪开后再试','暫時走不過去，請稍微挪開後再試','The path is blocked. Move a little and try again.'],
@@ -171,7 +171,7 @@
  ['room.scripture','藏经室 · 静心阅经','藏經室 · 靜心閱經','Scripture room · Quiet reading'],['room.tea','暴富 · 财神礼拜','暴富 · 財神禮拜','Wealth hall · Prayer'],['room.return','沿敞开的门回到正殿，即可礼拜修行','沿敞開的門回到正殿，即可禮拜修行','Return through the open doorway to bow or practice'],
  ['controls.look','左键拖动视角 · 滚轮远近 · Esc 暂停','左鍵拖曳視角 · 滾輪遠近 · Esc 暫停','Left-drag to look · Scroll to zoom · Esc pauses'],
  ['language','语言','語言','Language'],['language.auto','自动（IP）','自動（IP）','Auto (IP)'],
- ['hud.menu','游戏菜单','遊戲選單','Game menu'],['hud.admin','管理后台','管理後台','Admin'],['hud.privacy','访问统计说明','訪問統計說明','About visit statistics'],['hud.metrics.off','访问统计已关闭','訪問統計已關閉','Visit statistics disabled'],['hud.metrics.disable','关闭匿名访问统计','關閉匿名訪問統計','Disable anonymous visit statistics'],['hud.announcement.close','关闭公告','關閉公告','Close announcement'],['hud.names.hide','隐藏头顶字和提示','隱藏頭頂字和提示','Hide names and hints'],['hud.names.show','显示头顶字和提示','顯示頭頂字和提示','Show names and hints'],['hud.records','功德记录','功德紀錄','Merit record'],['hud.chat.open','打开聊天','開啟聊天','Open chat'],['hud.chat.close','收起聊天','收起聊天','Close chat'],['hud.move','拖动摇杆移动','拖曳搖桿移動','Drag joystick to move'],['hud.bow','礼拜','禮拜','Bow']
+ ['hud.menu','游戏菜单','遊戲選單','Game menu'],['hud.admin','管理后台','管理後台','Admin'],['hud.privacy','访问统计说明','訪問統計說明','About visit statistics'],['hud.metrics.off','访问统计已关闭','訪問統計已關閉','Visit statistics disabled'],['hud.metrics.disable','关闭匿名访问统计','關閉匿名訪問統計','Disable anonymous visit statistics'],['hud.announcement.close','关闭公告','關閉公告','Close announcement'],['hud.names.hide','隐藏头顶字和提示','隱藏頭頂字和提示','Hide names and hints'],['hud.names.show','显示头顶字和提示','顯示頭頂字和提示','Show names and hints'],['hud.records','功德记录','功德紀錄','Merit record'],['hud.chat.open','打开聊天','開啟聊天','Open chat'],['hud.chat.close','收起聊天','收起聊天','Close chat'],['hud.move','拖动摇杆跑步，松手停止','拖曳搖桿跑步，鬆手停止','Drag joystick to run; release to stop'],['hud.bow','礼拜','禮拜','Bow']
  ];
  rows.push(['error.invalid_seat','座位请求无效，请走近座位后重试。','座位請求無效，請走近座位後重試。','Invalid seat request. Approach the seat and try again.'],['error.seat_busy','这个座位有人，请选择其他空位。','這個座位有人，請選擇其他空位。','This seat is occupied. Choose another seat.'],['error.seat_required','请先入座，再阅读或喝茶。','請先入座，再閱讀或喝茶。','Please sit down before reading or drinking tea.'],['error.seat_exit_pending','请先离开原来的座位，再继续。','請先離開原來的座位，再繼續。','Please leave your previous seat before continuing.'],['error.rest_space','这里空间不足，请换到平坦空地。','這裡空間不足，請換到平坦空地。','There is not enough room. Move to a clear, flat area.']);
  const dictionaries={'zh-CN':{},'zh-TW':{},en:{},ja:{},ko:{}},aliases={};
@@ -106631,41 +106631,29 @@ window.TempleNavigation={PLAYER_MOTION,templeJumpHeight,templeRestFits,islandLan
   actor.root.position.y+=(actor.root.userData.supineLift??.34)*b*b*(3-2*b);
  }
  window.TemplePlayerMotion={applySupinePose,create({player,navigation:nav,canStart,onRequest,notice,isMounted=()=>false}){
-  const M=nav.PLAYER_MOTION;let rest=null,jumpTime=null,run=false,wasMounted=false,clock=0,lastRender='';
+  const M=nav.PLAYER_MOTION;let rest=null,jumpTime=null,clock=0,lastRender='';
   const panel=document.createElement('div');panel.id='motion-controls';panel.setAttribute('aria-label','玩家动作');
-  const kinds=['run','jump','sit','lie','greet'],buttons={};for(const kind of kinds){const b=document.createElement('button');b.type='button';b.dataset.motion=kind;buttons[kind]=b;panel.append(b);let lastTouch=-Infinity;b.addEventListener('pointerdown',e=>{if(e.pointerType==='touch'){e.preventDefault();lastTouch=performance.now();request(kind);}});b.addEventListener('click',()=>{if(performance.now()-lastTouch>600)request(kind);});}
+  const kinds=['jump','sit','lie','greet'],buttons={};for(const kind of kinds){const b=document.createElement('button');b.type='button';b.dataset.motion=kind;buttons[kind]=b;panel.append(b);let lastTouch=-Infinity;b.addEventListener('pointerdown',e=>{if(e.pointerType==='touch'){e.preventDefault();lastTouch=performance.now();request(kind);}});b.addEventListener('click',()=>{if(performance.now()-lastTouch>600)request(kind);});}
   document.getElementById('game').append(panel);
   const labels={ 'zh-CN':['跑步','跳跃','坐下','仰躺','起身','这里太挤或坡度太陡，往旁边空地挪一点。','合十','放下','玩家动作'], 'zh-TW':['跑步','跳躍','坐下','仰躺','起身','這裡太擠或坡度太陡，往旁邊空地挪一點。','合十','放下','玩家動作'],en:['Run','Jump','Sit','Lie back','Stand up','Move to a clear, flatter spot to rest.','Greet','Lower hands','Player actions']};
   for(const lang of ['ja','ko']){const bundle=window.TempleLocaleBundles?.motion?.[lang];if(bundle)labels[lang]=['run','jump','sit','lie','stand','blocked','greet','lower','panel'].map(k=>bundle[k]);}
-  const desktopPointer=window.matchMedia?.('(any-pointer: fine)');
-  const mountedRunNames={'zh-CN':'骑乘奔跑','zh-TW':'騎乘奔跑',en:'Run while riding',ja:'騎乗ダッシュ',ko:'탑승 중 달리기'};
   function render(){
    const locale=window.TempleI18n?.locale,text=labels[locale]||labels['zh-CN'];
-   const mounted=isMounted(),enabled=canStart(),runEnabled=canStart('run');
-   if(wasMounted&&!mounted)run=false;
-   wasMounted=mounted;
-   const dockRun=mounted||!!desktopPointer?.matches;
-   const key=[locale,enabled,runEnabled,mounted,dockRun,rest?.kind,rest?.standing,jumpTime!==null,run].join('|');
+   const enabled=canStart();
+   const key=[locale,enabled,rest?.kind,rest?.standing,jumpTime!==null].join('|');
    if(key===lastRender)return;
    lastRender=key;
-   const game=document.getElementById('game'),runButton=buttons.run;
+   const game=document.getElementById('game');
    panel.hidden=!enabled;
-   runButton.hidden=!runEnabled&&!mounted;
-   if(runButton.id==='run-control'){
-    const dock=dockRun?document.getElementById('interact')?.parentElement:game;
-    if(dock&&runButton.parentElement!==dock)dock.append(runButton);
-   }
-   runButton.setAttribute('aria-label',mounted?(mountedRunNames[locale]||mountedRunNames['zh-CN']):text[0]);
    game.classList.toggle('ground-resting',!!rest);
    panel.setAttribute('aria-label',text[8]);
    kinds.forEach((k,i)=>{
-    buttons[k].textContent=rest?.kind===k?(k==='greet'?text[7]:text[4]):k==='greet'?text[6]:text[i];
-    buttons[k].setAttribute('aria-pressed',String(k==='run'?run:rest?.kind===k));
-    buttons[k].disabled=(k==='run'&&!runEnabled)||!!rest?.standing||(jumpTime!==null&&k!=='run');
+    buttons[k].textContent=rest?.kind===k?(k==='greet'?text[7]:text[4]):k==='greet'?text[6]:text[i+1];
+    buttons[k].setAttribute('aria-pressed',String(rest?.kind===k));
+    buttons[k].disabled=!!rest?.standing||jumpTime!==null;
    });
   }
-  function request(kind){if(!canStart(kind))return false;onRequest?.();
-   if(kind==='run'){run=!run;render();return true;}
+  function request(kind){if(!kinds.includes(kind)||!canStart(kind))return false;onRequest?.();
    if(rest){rest.standing=true;render();return true;}
    if(jumpTime!==null)return false;
    if(kind==='jump')jumpTime=0;
@@ -106685,8 +106673,8 @@ window.TempleNavigation={PLAYER_MOTION,templeJumpHeight,templeRestFits,islandLan
    return false;
   }
   function pose(running){if(jumpTime!==null){player.freePose(clock,'jump');player.root.position.y+=nav.templeJumpHeight(jumpTime/M.jumpSeconds);return true;}if(running){player.freePose(clock,'run');return true;}return false;}
-  function reset({keepRun=false}={}){rest=null;jumpTime=null;if(!keepRun)run=false;player.pose(clock,false);render();}
-  return{request,update,pose,reset,render,stand(){if(rest)rest.standing=true;},get run(){return run;},get busy(){return!!rest||jumpTime!==null;},get action(){return rest?.kind||(jumpTime!==null?'jump':null);},get progress(){return jumpTime===null?0:jumpTime/M.jumpSeconds;},diagnostics:()=>({action:rest?.kind||(jumpTime!==null?'jump':'idle'),blend:rest?.blend??0,standing:!!rest?.standing,jumpProgress:jumpTime===null?0:jumpTime/M.jumpSeconds,run,faceUp:rest?.kind==='lie'&&rest.blend===1})};
+  function reset(){rest=null;jumpTime=null;player.pose(clock,false);render();}
+  return{request,update,pose,reset,render,stand(){if(rest)rest.standing=true;},get run(){return true;},get busy(){return!!rest||jumpTime!==null;},get action(){return rest?.kind||(jumpTime!==null?'jump':null);},get progress(){return jumpTime===null?0:jumpTime/M.jumpSeconds;},diagnostics:()=>({action:rest?.kind||(jumpTime!==null?'jump':'idle'),blend:rest?.blend??0,standing:!!rest?.standing,jumpProgress:jumpTime===null?0:jumpTime/M.jumpSeconds,run:true,speedMode:'run-only',faceUp:rest?.kind==='lie'&&rest.blend===1})};
  }};
 })();
 ;
@@ -107882,7 +107870,6 @@ window.TempleNavigation={PLAYER_MOTION,templeJumpHeight,templeRestFits,islandLan
     });
     addEventListener('keydown', event => {
       if(wishes.isOpen||profileOpen)return;
-      if(event.target?.id==='run-control'&&['Enter','Space'].includes(event.code))return;
       const typing = /^(INPUT|SELECT|TEXTAREA)$/.test(document.activeElement?.tagName||'');
       if(entryPending&&!typing&&['KeyW','KeyA','KeyS','KeyD','ArrowUp','ArrowDown','ArrowLeft','ArrowRight','ShiftLeft','ShiftRight'].includes(event.code)){
         event.preventDefault();keys.add(event.code);return;
@@ -107922,7 +107909,7 @@ window.TempleNavigation={PLAYER_MOTION,templeJumpHeight,templeRestFits,islandLan
     });
     // The cursor stays visible. Legacy lock events must never clear held movement.
     document.addEventListener('pointerlockchange',()=>{if(document.pointerLockElement===renderer.domElement)document.exitPointerLock?.();});
-    document.addEventListener('pointerdown',e=>{if(e.pointerType==='touch'&&e.target?.closest?.('#touch-controls,#motion-controls,#interact,#run-control'))return;if(e.target?.closest?.('button,input,select,textarea'))releaseLook();});
+    document.addEventListener('pointerdown',e=>{if(e.pointerType==='touch'&&e.target?.closest?.('#touch-controls,#motion-controls,#interact'))return;if(e.target?.closest?.('button,input,select,textarea'))releaseLook();});
     renderer.domElement.addEventListener('pointerdown', e => {
       if(e.pointerType==='touch'&&(e.clientX<innerWidth*.45||dragging))return;
       if ((e.button === 0 || e.pointerType === 'touch') && started && !paused && !profileOpen&&!roomActivities?.panelOpen) { e.preventDefault();if(overview)setOverview(0);suppressSceneClick=false;dragging = { x: e.clientX, y: e.clientY,startX:e.clientX,startY:e.clientY,moved:false,pointerId:e.pointerId,pointerType:e.pointerType }; renderer.domElement.setPointerCapture(e.pointerId); }
@@ -108085,14 +108072,14 @@ window.TempleNavigation={PLAYER_MOTION,templeJumpHeight,templeRestFits,islandLan
       let forward = Number(keys.has('KeyW') || keys.has('ArrowUp')) - Number(keys.has('KeyS') || keys.has('ArrowDown'));
       let side = Number(keys.has('KeyD') || keys.has('ArrowRight')) - Number(keys.has('KeyA') || keys.has('ArrowLeft'));
       forward-=window.TempleTouchInput?.y||0;side+=window.TempleTouchInput?.x||0;
-      const length = Math.hypot(forward, side); isMoving = length > 0;
+      const length = Math.hypot(forward, side); isMoving = length > 1e-5;
       if(motion.update(dt,clock,isMoving)){isMoving=false;return;}
-      const running=isMoving&&(motion.run||keys.has('ShiftLeft')||keys.has('ShiftRight'));
+      const running=isMoving;
       const moveSpeed=companions.mountSubject ? companions.rideSpeed(dt,running,isMoving)
-        : running ? navigation.PLAYER_MOTION.runSpeed : navigation.PLAYER_MOTION.walkSpeed;
-      if (length) {
+        : navigation.PLAYER_MOTION.runSpeed;
+      if (isMoving) {
         if(overview)setOverview(0);
-        forward /= Math.max(1,length); side /= Math.max(1,length);
+        forward /= length; side /= length;
         const vx = (side * Math.cos(yaw) - forward * Math.sin(yaw)) * moveSpeed * dt;
         const vz = (-forward * Math.cos(yaw) - side * Math.sin(yaw)) * moveSpeed * dt;
         const position = player.root.position;
@@ -108126,7 +108113,7 @@ window.TempleNavigation={PLAYER_MOTION,templeJumpHeight,templeRestFits,islandLan
       if (!paused && pageVisible) { clock += dt; updatePlayer(dt); }
       audioEnvironment.position=player.root.position;audioEnvironment.indoors=!!navigation.templeIndoorArea(player.root.position.x,player.root.position.z);audioEnvironment.active=started&&!paused;audioEnvironment.weather=ambience?.state.weather||'clear';
       audio?.update(dt,audioEnvironment.active&&insideRitualHall(),audioEnvironment);
-      if(network?.canRoam){network.sendState({x:player.root.position.x,z:player.root.position.z,yaw:player.root.rotation.y,action:prayer?(prayer.aligning?'walk':'pray'):rituals.active?rituals.action:roomActivities?.active?roomActivities.action:motion?.action||(isMoving&&!paused?(motion.run||keys.has('ShiftLeft')||keys.has('ShiftRight')?'run':'walk'):'idle'),progress:prayer?Math.min(1,prayer.time/PRAYER_DURATION):roomActivities?.active?roomActivities.progress:motion?.action?motion.progress:rituals.progress});}
+      if(network?.canRoam){network.sendState({x:player.root.position.x,z:player.root.position.z,yaw:player.root.rotation.y,action:prayer?(prayer.aligning?'walk':'pray'):rituals.active?rituals.action:roomActivities?.active?roomActivities.action:motion?.action||(isMoving&&!paused?'run':'idle'),progress:prayer?Math.min(1,prayer.time/PRAYER_DURATION):roomActivities?.active?roomActivities.progress:motion?.action?motion.progress:rituals.progress});}
       if (!paused && now>=nextWorshipperPose) {
        nextWorshipperPose=now+50;
        npcs.forEach(npc => {
@@ -108140,7 +108127,7 @@ window.TempleNavigation={PLAYER_MOTION,templeJumpHeight,templeRestFits,islandLan
       garden?.update(dt,clock,player.root.position);
       if(started&&!paused){
         companions.update(dt,clock,player.root.position);
-        companions.updateRide(dt,clock,player,isMoving,motion.run||keys.has('ShiftLeft')||keys.has('ShiftRight'),(x,z)=>(!onlineMode||network?.canRoam)&&!blocked(x,z));
+        companions.updateRide(dt,clock,player,isMoving,isMoving,(x,z)=>(!onlineMode||network?.canRoam)&&!blocked(x,z));
       }
       if (!paused || !started) world.update && world.update(started ? clock : now / 1000, dt, started ? player.root.position : null);
       playerRing.position.x = player.root.position.x; playerRing.position.z = player.root.position.z;
@@ -108244,7 +108231,7 @@ window.TempleNavigation={PLAYER_MOTION,templeJumpHeight,templeRestFits,islandLan
       ambience:ambience?.state,interior:navigation?.templeIndoorArea(player.root.position.x,player.root.position.z),sideRooms:world.sideRooms?.map(r=>r.id),
       camera: { view:['player','temple','island','coast'][Number(overview)],mouseLook:dragging?.pointerType==='mouse',lockedPointer:document.pointerLockElement===renderer.domElement,yaw, pitch, distance,obstructed:cameraObstructed,avoidAngle:cameraAvoidAngle,position:camera.position.toArray() },
       audio: audio ? audio.status : null,
-      render: { fps: measuredFPS, frameWindow:lastFrameWindow, pixelRatio:renderer.getPixelRatio(), calls: renderer.info.render.calls, triangles: renderer.info.render.triangles, revision: T.REVISION }
+      render: { speedMode:'run-only',fps: measuredFPS, frameWindow:lastFrameWindow, pixelRatio:renderer.getPixelRatio(), calls: renderer.info.render.calls, triangles: renderer.info.render.triangles, revision: T.REVISION }
     });
     window.TempleI18n?.onChange(()=>{renderer.domElement.setAttribute('aria-label',t('scene.label'));$('toast').classList.remove('visible');toastUntil=0; refreshViewButton();$('identity').textContent=t('identity',{name:identity.name});updateStats();updatePrompt();updateSoundButton();const n=network?.status;$('save-status').textContent=t(n?.storageAvailable===false?'save.identityUnavailable':n?.pendingComplete?'save.pending':n?.connected?'save.saved':'save.connecting');if(latestProfile)profilePanel?.update(latestProfile,stats,identity); });
     requestAnimationFrame(frame);
@@ -108271,12 +108258,11 @@ window.TempleNavigation={PLAYER_MOTION,templeJumpHeight,templeRestFits,islandLan
   const ritual=document.querySelector('.ritual-actions'),stats=document.querySelector('.merit-panel'),language=document.querySelector('.language-picker'),sky=document.querySelector('.ambience-controls');
   const statsDetails=document.createElement('details'),statsTitle=document.createElement('summary');statsTitle.textContent='功德记录';statsDetails.className='clean-menu-stats';statsDetails.append(statsTitle,stats);
   game.append(ritual);content.prepend(utility,statsDetails,sky,language);
-  const run=motion.querySelector('[data-motion=run]');run.id='run-control';game.append(run);
   const chat=document.getElementById('chat-form'),chatToggle=document.createElement('button');chatToggle.id='chat-toggle';chatToggle.type='button';chatToggle.textContent='言';chatToggle.setAttribute('aria-label','打开聊天');game.append(chatToggle);
   const chatClose=document.createElement('button');chatClose.id='chat-close';chatClose.type='button';chatClose.textContent='×';chatClose.setAttribute('aria-label','收起聊天');chat.append(chatClose);
   function closeChat(){game.classList.remove('chat-open');document.getElementById('chat-input').blur();}
   chatToggle.addEventListener('click',()=>{game.classList.add('chat-open');document.getElementById('chat-input').focus();});chatClose.addEventListener('click',closeChat);chat.addEventListener('submit',()=>setTimeout(closeChat,0));
-  const touch=document.getElementById('touch-controls');touch.replaceChildren();const stick=document.createElement('button');stick.id='touch-joystick';stick.type='button';stick.setAttribute('aria-label','拖动摇杆移动');stick.innerHTML='<span class="stick-up">⌃</span><span class="stick-down">⌄</span><span class="stick-left">‹</span><span class="stick-right">›</span><span class="stick-knob"></span>';touch.append(stick);
+  const touch=document.getElementById('touch-controls');touch.replaceChildren();const stick=document.createElement('button');stick.id='touch-joystick';stick.type='button';stick.setAttribute('aria-label','拖动摇杆跑步，松手停止');stick.innerHTML='<span class="stick-up">⌃</span><span class="stick-down">⌄</span><span class="stick-left">‹</span><span class="stick-right">›</span><span class="stick-knob"></span>';touch.append(stick);
   let pointer=null;const reset=()=>{pointer=null;input.x=input.y=0;stick.style.setProperty('--stick-x','0px');stick.style.setProperty('--stick-y','0px');};
   function move(event){const r=stick.getBoundingClientRect(),dx=event.clientX-r.left-r.width/2,dy=event.clientY-r.top-r.height/2,max=r.width*.30,length=Math.hypot(dx,dy),scale=Math.min(1,max/(length||1));stick.style.setProperty('--stick-x',dx*scale+'px');stick.style.setProperty('--stick-y',dy*scale+'px');input.x=length<max*.12?0:dx*scale/max;input.y=length<max*.12?0:dy*scale/max;}
   stick.addEventListener('pointerdown',event=>{if(pointer!==null||!document.getElementById('overlay').hidden)return;event.preventDefault();pointer=event.pointerId;stick.setPointerCapture(pointer);move(event);});
