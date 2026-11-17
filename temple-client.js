@@ -103200,11 +103200,11 @@ window.TempleNavigation={PLAYER_MOTION,templeJumpHeight,templeRestFits,islandLan
   const burner=new T.Group();burner.name='Human scale incense burner';const burn=L.rituals.incense.burner;burner.position.set(burn.x,0,burn.z);interiorRoot.add(burner);
   for(let i=0;i<3;i++){const a=i*Math.PI*2/3;cylinder(.065,.09,.48,bronze,Math.sin(a)*.235,.28,Math.cos(a)*.235,burner,12);sphere(.09,.055,.09,bronze,Math.sin(a)*.27,.07,Math.cos(a)*.27,burner);}
   sphere(.405,.265,.405,bronze,0,.685,0,burner,28);cylinder(.415,.335,.25,bronze,0,.845,0,burner,32);
-  torus(.397,.035,gold,0,.972,0,burner).rotation.x=Math.PI/2;cylinder(.362,.362,.023,mat(0x8b8475,1),0,.978,0,burner,32);
+  torus(.397,.035,gold,0,.972,0,burner).rotation.x=Math.PI/2;const fallbackAsh=cylinder(.362,.362,.023,mat(0xb5afa0,1),0,.978,0,burner,32);fallbackAsh.name='Fallback incense ash';
   for(const side of[-1,1])torus(.12,.029,bronze,side*.426,.83,0,burner).rotation.y=Math.PI/2;
-  propAnchors.burner={fallback:burner,position:[burn.x,0,burn.z]};
+  propAnchors.burner={fallback:burner,ash:fallbackAsh,position:[burn.x,0,burn.z]};
   obstacle(burn.x,burn.z,.50,.49,'香炉');cameraBox(1,1.24,.98,burn.x,.62,burn.z,'Incense burner');
-  const wb=L.props.wealthBurner,wealthBurner=burner.clone(true);wealthBurner.name='Wealth incense burner fallback';wealthBurner.position.set(...wb.position);wealthBurner.scale.setScalar(wb.height/L.props.burner.height);interiorRoot.add(wealthBurner);propAnchors.wealthBurner={fallback:wealthBurner,position:[...wb.position]};
+  const wb=L.props.wealthBurner,wealthBurner=burner.clone(true);wealthBurner.name='Wealth incense burner fallback';wealthBurner.position.set(...wb.position);wealthBurner.scale.setScalar(wb.height/L.props.burner.height);interiorRoot.add(wealthBurner);propAnchors.wealthBurner={fallback:wealthBurner,ash:wealthBurner.getObjectByName('Fallback incense ash'),position:[...wb.position]};
   obstacle(wb.position[0],wb.position[2],.4,.4,'财神殿香炉');cameraBox(.8,wb.height,.8,wb.position[0],wb.position[1]+wb.height/2,wb.position[2],'Wealth incense burner');
   const wealth=L.props.caishen,plinth=wealth.plinth;
   solid(plinth.size[0],plinth.size[1]-.04,plinth.size[2],wood,plinth.position[0],(plinth.size[1]-.04)/2,plinth.position[2],'财神供台');
@@ -103224,6 +103224,8 @@ window.TempleNavigation={PLAYER_MOTION,templeJumpHeight,templeRestFits,islandLan
   torus(.075,.025,darkwood,0,.48,-.1,woodfish).rotation.x=-.4;obstacle(fx,fz,.475,.43,'木鱼');cameraBox(.95,1.08,.86,fx,.54,fz,'Woodfish stand');
   const wealthApproach=L.props.wealthBurner.approach;
   const rituals={incense:{...L.rituals.incense,burner:{...L.rituals.incense.burner,y:L.rituals.incense.burner.y+floorY}},wealthIncense:{x:wealthApproach[0],z:wealthApproach[1],burner:{x:wb.position[0],y:wb.position[1]+.972*wb.height/L.props.burner.height+floorY,z:wb.position[2]}},woodfish:{...L.rituals.woodfish,target:{...L.rituals.woodfish.target,y:L.rituals.woodfish.target.y+floorY},mesh:woodfish}};
+  Object.assign(rituals.incense.burner,{ashY:.9895+floorY,ashRadius:.362});
+  Object.assign(rituals.wealthIncense.burner,{ashY:wb.position[1]+.9895*wealthBurner.scale.y+floorY,ashRadius:.362*wealthBurner.scale.x});
   // Unified mat silhouettes and warm cloth. All seat and NPC assignments are shared.
   const cloth=canvas(256,256),cp=cloth.getContext('2d');cp.fillStyle='#814e45';cp.fillRect(0,0,256,256);cp.strokeStyle='#bda576';cp.lineWidth=3;cp.setLineDash([4,5]);cp.strokeRect(12,12,232,232);cp.setLineDash([]);
   const cushionMat=new T.MeshStandardMaterial({map:texture(cloth),roughness:1,color:0xd9c7b2});
@@ -103328,9 +103330,7 @@ window.TempleNavigation={PLAYER_MOTION,templeJumpHeight,templeRestFits,islandLan
   }
   architecture.state.mainHallPendantsRemoved=true;
   architecture.state.sideRoomLanternsRemoved=true;
-  const smokeCanvas=canvas(64,64),sm=smokeCanvas.getContext('2d'),sg=sm.createRadialGradient(32,32,0,32,32,32);sg.addColorStop(0,'rgba(220,213,191,.26)');sg.addColorStop(1,'rgba(220,213,191,0)');sm.fillStyle=sg;sm.fillRect(0,0,64,64);
-  const smokeMap=texture(smokeCanvas);
-  for(let i=0;i<8;i++){const sp=new T.Sprite(new T.SpriteMaterial({map:smokeMap,transparent:true,opacity:.22,depthWrite:false,color:0xc7c5b7}));sp.userData.phase=i/8;sp.position.set(burn.x,1.4+i*.17,burn.z);sp.scale.setScalar(.20+i*.03);interiorRoot.add(sp);smoke.push(sp);}
+  // Burning incense owns its smoke. An empty or extinguished burner is quiet.
   // Instance repeated architectural boxes by material after all interactive objects
   // are recorded. Book spines, seats and ritual props deliberately retain their tags.
   interiorRoot.updateMatrixWorld(true);
@@ -103370,7 +103370,7 @@ window.TempleNavigation={PLAYER_MOTION,templeJumpHeight,templeRestFits,islandLan
   Object.assign(architecture.state,{shellReady:true,shellVersion:architecture.shell.spec.id,wallReady:true,wallTriangles:trianglesFor('wall'),roofReady:true,roofTriangles:trianglesFor('roof'),perimeterReady:true,perimeterSolidParts:architecture.shell.prisms.length,retiredSourceSkins:true,ready:true});
   const roofReady=Promise.resolve(architecture.shell);
   const updatePrints=window.TempleWallPrints?.create(T,interiorRoot,architecture.shell.spec,L.sideHalls);
-  function update(time,dt,playerPosition){updatePrints?.(playerPosition);for(let i=0;i<flames.length;i++)flames[i].scale.y=1+Math.sin(time*4.7+i)*.09;for(let i=0;i<smoke.length;i++){const p=((time*.085+i/smoke.length)%1);smoke[i].position.y=1.2+p*2;smoke[i].position.x=burn.x+Math.sin(time*.8+i)*.07;smoke[i].material.opacity=Math.sin(p*Math.PI)*.22;}}
+  function update(time,dt,playerPosition){updatePrints?.(playerPosition);for(let i=0;i<flames.length;i++)flames[i].scale.y=1+Math.sin(time*4.7+i)*.09;}
   return {scene,interiorRoot,floorY,mats,prayerMatLift,obstacles,cameraObstacles,flames,smoke,lights,sideRooms,floorCoverage,statue,rituals,propAnchors,interactables,seats:L.seats,seatProps,furniture,architecture,roofReady,update};
  }};
 })();
@@ -104168,7 +104168,7 @@ window.TempleNavigation={PLAYER_MOTION,templeJumpHeight,templeRestFits,islandLan
   ornament.name=id==='pouch'?'Lotus drawstring pouch':'Jade ring and tassel';return ornament;
  }
  function tint(T,material,id,feet='original'){
-  const style=feetIndex(feet),cloud=material.userData.outfitAsset==='cloud';
+  const style=feetIndex(feet),cloud=['cloud','moss','moon','plum'].includes(material.userData.outfitAsset);
   const user=material.userData;
   let state=materialStyles.get(material);
   const first=!state;
@@ -104239,7 +104239,7 @@ window.TempleNavigation={PLAYER_MOTION,templeJumpHeight,templeRestFits,islandLan
  }
  window.TempleWardrobe={gearPreview,shoeMaterial,tint,textilePaths,
   load(T,id='lotus'){
-  const key=id==='cloud'?'cloud':'lotus';if(assetPromises.has(key))return assetPromises.get(key);
+  const key=['cloud','moss','moon','plum'].includes(id)?id:'lotus';if(assetPromises.has(key))return assetPromises.get(key);
   const promise=(async()=>{
    const m=await(await TempleAssets.fetch('assets/'+key+'-outfit.json')).json(),b=await(await TempleAssets.fetch('assets/'+m.file)).arrayBuffer();if(b.byteLength!==m.byteLength)throw Error('Outfit mesh length mismatch');const g=new T.BufferGeometry();
    for(const name of ['position','uv']){const a=m.attributes[name],size=name==='uv'?2:3,src=new Uint16Array(b,a.byteOffset,a.length),v=new Float32Array(a.length);for(let i=0;i<v.length;i++)v[i]=a.min[i%size]+src[i]/65535*a.scale[i%size];g.setAttribute(name,new T.BufferAttribute(v,size));}
@@ -104248,7 +104248,27 @@ window.TempleNavigation={PLAYER_MOTION,templeJumpHeight,templeRestFits,islandLan
    if(normalMap){normalMap.flipY=true;normalMap.anisotropy=4;}
    // Both scans are closed meshes. Back faces of occluded folds protrude when the arms move.
    const material=new T.MeshStandardMaterial({map:texture,normalMap,roughness:.88,side:T.FrontSide});if(normalMap)material.normalScale.set(.8,.8);material.userData.outfitAsset=key;
-   return{geometry:g,material,triangles:m.triangleCount,key,boneNames:m.boneNames,fullAvatar:!!m.fullAvatar};
+   let solePoints=null;
+   if(['moss','moon','plum'].includes(key)){
+    const p=g.attributes.position,j=g.attributes.skinIndex,w=g.attributes.skinWeight;
+    solePoints=[12,13].map(joint=>{
+     const points=[];
+     for(let i=0;i<p.count;i++)if(p.getY(i)<-.30){
+      let influence=0;for(let k=0;k<4;k++)if(j.array[i*4+k]===joint)influence+=w.array[i*4+k]/255;
+      if(influence>.95)points.push([p.getX(i),p.getY(i),p.getZ(i)]);
+     }
+     // Support samples come from each uploaded shoe, computed once on load.
+     // All subsequent frames use this compact convex outline, not a mesh scan.
+     const selected=new Set();
+     for(let n=0;n<32;n++)for(const lean of [-.25,0,.25]){
+      const a=n*Math.PI/16,dy=Math.cos(a),dz=Math.sin(a);let best=Infinity,chosen=null;
+      for(const point of points){const d=point[0]*lean+point[1]*dy+point[2]*dz;if(d<best){best=d;chosen=point;}}
+      if(chosen)selected.add(chosen);
+     }
+     return [...selected];
+    });
+   }
+   return{geometry:g,material,triangles:m.triangleCount,key,boneNames:m.boneNames,fullAvatar:!!m.fullAvatar,headOffsetY:m.headOffsetY||0,solePoints};
   })().catch(e=>{assetPromises.delete(key);throw e;});assetPromises.set(key,promise);return promise;
  }};
 })();
@@ -104593,7 +104613,7 @@ window.TempleNavigation={PLAYER_MOTION,templeJumpHeight,templeRestFits,islandLan
         geometry.morphTargetsRelative = true;
       }
       function refreshOutfit(){
-       const key=wantedOutfit==='cloud'?'cloud':'lotus';
+       const key=['cloud','moss','moon','plum'].includes(wantedOutfit)?wantedOutfit:'lotus';
        const selected=importedOutfits.get(key);
        root.userData.outfitReady=!!selected;
        retryAt=0;
@@ -104631,7 +104651,7 @@ window.TempleNavigation={PLAYER_MOTION,templeJumpHeight,templeRestFits,islandLan
          }
          // The first robe exposes the procedural face; the yellow scanned avatar owns its head.
          head.scale.setScalar(selected.fullAvatar?1:.95);
-         head.position.y=selected.fullAvatar?.99:.9725;
+         head.position.y=(selected.fullAvatar?.99:.9725)+(selected.headOffsetY||0);
          refreshGear();
          selected.mesh.visible=true;
          root.userData.outfitAsset=key;
@@ -104654,12 +104674,12 @@ window.TempleNavigation={PLAYER_MOTION,templeJumpHeight,templeRestFits,islandLan
         const boneNames=asset.boneNames||['Torso','Left upper arm','Right upper arm','Left forearm','Right forearm','Left thigh','Right thigh'],parts=restParts.slice(0,boneNames.length);
         const bones=parts.map((_,i)=>{const b=new THREE.Bone();b.name=boneNames[i];b.matrixAutoUpdate=false;b.matrix.copy(bodyBind);root.add(b);return b;});
         if(key==='lotus')prepareHemPoses(asset.geometry);
-        const mesh=new THREE.SkinnedMesh(asset.geometry,asset.material.clone());mesh.name=key==='cloud'?'Second upgrade - complete uploaded monk':'First upgrade - uploaded monk robe';mesh.position.y=.46;mesh.castShadow=true;mesh.receiveShadow=false;root.add(mesh);root.updateMatrixWorld(true);mesh.bind(new THREE.Skeleton(bones));mesh.frustumCulled=false;
+        const mesh=new THREE.SkinnedMesh(asset.geometry,asset.material.clone());mesh.name=asset.fullAvatar?'Complete uploaded monk - '+key:'First upgrade - uploaded monk robe';mesh.position.y=.46;mesh.castShadow=true;mesh.receiveShadow=false;root.add(mesh);root.updateMatrixWorld(true);mesh.bind(new THREE.Skeleton(bones));mesh.frustumCulled=false;
         mesh.visible=false;
-        importedOutfits.set(key,{mesh,bones,parts,fullAvatar:asset.fullAvatar});
+        importedOutfits.set(key,{mesh,bones,parts,fullAvatar:asset.fullAvatar,headOffsetY:asset.headOffsetY,solePoints:asset.solePoints});
         refreshOutfit();updateOutfit();
        }).catch(error=>{
-         if(disposed||key!==(wantedOutfit==='cloud'?'cloud':'lotus'))return;
+         if(disposed||key!==(['cloud','moss','moon','plum'].includes(wantedOutfit)?wantedOutfit:'lotus'))return;
          root.userData.outfitError=String(error.message||error);
          retryAt=Date.now()+retryDelay;
          retryDelay=Math.min(30000,retryDelay*2);
@@ -104743,7 +104763,9 @@ window.TempleNavigation={PLAYER_MOTION,templeJumpHeight,templeRestFits,islandLan
              // Support the original scan at heel, ball and toe. Its rounded soles
              // pitch about the ankle during the stride and descend as the shins fold.
              let floor=Infinity;
-             for(const [y,z] of cloudSoleProfile)floor=Math.min(floor,e[13]+y*e[5]+z*e[9]-(.22*Math.abs(e[1])));
+             if(importedOutfit.solePoints?.[i-12]?.length){
+               for(const [x,y,z] of importedOutfit.solePoints[i-12])floor=Math.min(floor,e[13]+x*e[1]+y*e[5]+z*e[9]);
+             }else for(const [y,z] of cloudSoleProfile)floor=Math.min(floor,e[13]+y*e[5]+z*e[9]-(.22*Math.abs(e[1])));
              e[13]+=Math.max(0,.001-floor);
              e[14]-=.055*kneel;
            }
@@ -105307,20 +105329,63 @@ window.TempleNavigation={PLAYER_MOTION,templeJumpHeight,templeRestFits,islandLan
     create({ THREE: T, world, player, audio, blocked, canMove, isAwaitingMovementAck, canStart, onStart, onComplete, onNotice }) {
       let active = null;
       const sticks = [], burner = world.rituals.incense.burner;
-      const stickGeo = new T.CylinderGeometry(.011, .011, .65, 6);
-      const tipGeo = new T.SphereGeometry(.016, 6, 4);
-      const stickMat = new T.MeshStandardMaterial({ color: '#a77c42', roughness: .9 });
-      const tipMat = new T.MeshBasicMaterial({ color: '#e88c44' });
+      const MAX_GROUPS=16,MAX_STICKS=MAX_GROUPS*3,SMOKE_PER_STICK=2,BURN_SECONDS=120,SMOKE_SECONDS=2.6;
+      const slots=new Map(),dummy=new T.Object3D();let effects=null,disposed=false,settled=false;
+      function createIncenseEffects(){
+        if(effects)return effects;
+        const root=new T.Group();root.name='Burning incense in both halls';
+        const stems=new T.InstancedMesh(new T.CylinderGeometry(.011,.011,1,6),new T.MeshStandardMaterial({color:0xa77c42,roughness:.94}),MAX_STICKS);
+        const embers=new T.InstancedMesh(new T.SphereGeometry(.016,6,4),new T.MeshBasicMaterial({color:0xef994d}),MAX_STICKS);
+        stems.name='Incense stems';embers.name='Descending incense embers';
+        for(const batch of[stems,embers]){batch.instanceMatrix.setUsage(T.DynamicDrawUsage);batch.frustumCulled=false;batch.count=0;root.add(batch);}
+        const geometry=new T.BufferGeometry(),positions=new Float32Array(MAX_STICKS*SMOKE_PER_STICK*3),opacity=new Float32Array(MAX_STICKS*SMOKE_PER_STICK),sizes=new Float32Array(opacity.length);
+        for(const [name,array,size]of[['position',positions,3],['aOpacity',opacity,1],['aSize',sizes,1]])geometry.setAttribute(name,new T.BufferAttribute(array,size).setUsage(T.DynamicDrawUsage));
+        geometry.setDrawRange(0,0);
+        const material=new T.ShaderMaterial({transparent:true,depthWrite:false,toneMapped:false,uniforms:{smokeColor:{value:new T.Color(0xc4c0b5)},pointScale:{value:240}},
+          vertexShader:'attribute float aOpacity;attribute float aSize;uniform float pointScale;varying float smokeOpacity;void main(){vec4 view=modelViewMatrix*vec4(position,1.);gl_Position=projectionMatrix*view;gl_PointSize=clamp(aSize*pointScale/max(.1,-view.z),1.,96.);smokeOpacity=aOpacity;}',
+          fragmentShader:'uniform vec3 smokeColor;varying float smokeOpacity;void main(){vec2 q=(gl_PointCoord-vec2(.5))*2.;q.x*=1.5;float r=length(q);float alpha=smokeOpacity*pow(max(0.,1.-r*r),1.6);if(alpha<.003)discard;gl_FragColor=vec4(smokeColor,alpha);\n#include <colorspace_fragment>\n}'});
+        const smoke=new T.Points(geometry,material);smoke.name='Incense smoke from burning tips';smoke.frustumCulled=false;root.add(smoke);world.scene.add(root);world.smoke?.push(smoke);
+        // World-size smoke must follow the actual framebuffer and camera, including
+        // low-quality resolution scaling. A fixed 240-pixel factor made it tiny.
+        smoke.onBeforeRender=(renderer,scene,camera)=>{material.uniforms.pointScale.value=renderer.domElement.height*.5*camera.projectionMatrix.elements[5];};
+        effects={root,stems,embers,smoke,positions,opacity,sizes};return effects;
+      }
+      // Separate from the walking/ritual state machine: the game updates this
+      // during active play even after the offering action has finished.
+      function updateIncense(dt=0){
+        if(disposed||settled||!sticks.length)return;
+        const step=Number.isFinite(dt)?Math.max(0,dt):0,e=createIncenseEffects();let instance=0,particle=0,hasSmoke=false,allExtinguished=true;
+        for(const record of sticks){
+          record.age+=step;
+          if(record.age<BURN_SECONDS+SMOKE_SECONDS)allExtinguished=false;
+          const target=record.target,ash=Number.isFinite(target.ashY)?target.ashY:target.y,radius=Number.isFinite(target.ashRadius)?target.ashRadius:.36;
+          const ring=Math.min(.18,radius*.48),x=target.x+Math.sin(record.slot*2.4)*ring,z=target.z+Math.cos(record.slot*2.4)*ring*.78;
+          const length=.65-.605*Math.min(1,record.age/BURN_SECONDS),base=ash-.025,tip=base+length;
+          for(let strand=0;strand<3;strand++){
+            const sx=x+(strand-1)*.035;
+            dummy.position.set(sx,base+length/2,z);dummy.scale.set(1,length,1);dummy.updateMatrix();e.stems.setMatrixAt(instance,dummy.matrix);
+            dummy.position.y=tip;dummy.scale.setScalar(record.age<BURN_SECONDS?1:0);dummy.updateMatrix();e.embers.setMatrixAt(instance++,dummy.matrix);
+            for(let puff=0;puff<SMOKE_PER_STICK;puff++){
+              const age=(record.age+puff*SMOKE_SECONDS/2+strand*.43+record.slot*.29)%SMOKE_SECONDS,phase=age/SMOKE_SECONDS,birth=record.age-age;
+              const live=birth>=0&&birth<BURN_SECONDS;
+              e.positions[particle*3]=sx+Math.sin(record.age*.72+strand+record.slot)*phase*.075;
+              e.positions[particle*3+1]=tip+.015+phase*.72;
+              e.positions[particle*3+2]=z+Math.cos(record.age*.58+puff+record.slot)*phase*.055;
+              e.opacity[particle]=live?Math.sin(phase*Math.PI)*.22:0;e.sizes[particle]=.085+phase*.15;
+              hasSmoke||=e.opacity[particle]>.003;particle++;
+            }
+          }
+        }
+        e.stems.count=e.embers.count=instance;e.stems.instanceMatrix.needsUpdate=e.embers.instanceMatrix.needsUpdate=true;
+        e.smoke.geometry.setDrawRange(0,particle);for(const attribute of Object.values(e.smoke.geometry.attributes))attribute.needsUpdate=true;e.smoke.visible=hasSmoke;
+        settled=allExtinguished;
+      }
       function insertIncense(target=burner) {
-        const group = new T.Group();
-        const index = sticks.length % 8;
-        group.position.set(target.x + Math.sin(index * 2.4) * .18, target.y + .30, target.z + Math.cos(index * 2.4) * .14);
-        [-.035, 0, .035].forEach(x => {
-          const stick = new T.Mesh(stickGeo, stickMat); stick.position.x = x; group.add(stick);
-          const tip = new T.Mesh(tipGeo, tipMat); tip.position.set(x, .325, 0); group.add(tip);
-        });
-        world.scene.add(group); sticks.push(group);
-        if (sticks.length > 16) sticks.shift().removeFromParent();
+        if(disposed||![target.x,target.y,target.z].every(Number.isFinite))return;
+        const same=sticks.filter(record=>record.target===target);
+        if(same.length>=8)sticks.splice(sticks.indexOf(same[0]),1);
+        const slot=slots.get(target)||0;slots.set(target,(slot+1)%8);sticks.push({target,slot,age:0});settled=false;
+        if(sticks.length>MAX_GROUPS)sticks.shift();updateIncense(0);
       }
       // A small unweighted grid search follows the same collision predicate as walking.
       function findPath(destination) {
@@ -105349,7 +105414,7 @@ window.TempleNavigation={PLAYER_MOTION,templeJumpHeight,templeRestFits,islandLan
         path.push({x:destination.x,z:destination.z});return path;
       }
       function start(kind,site='hall') {
-        if(active||!canStart(kind,site)||!world.rituals[kind])return false;
+        if(disposed||active||!canStart(kind,site)||!world.rituals[kind])return false;
         const data=kind==='incense'&&site==='wealth'?world.rituals.wealthIncense:world.rituals[kind];
         if(!data)return false;
         const path=findPath(data);
@@ -105381,7 +105446,9 @@ window.TempleNavigation={PLAYER_MOTION,templeJumpHeight,templeRestFits,islandLan
         if(progress>=1){const kind=a.kind;active=null;player.hideProps();world.rituals.woodfish.mesh.scale.y=1;onComplete(kind);}
       }
       function cancel(){active=null;player.hideProps();world.rituals.woodfish.mesh.scale.y=1;}
-      return {start,update,cancel,insertIncense,get active(){return active;},get action(){return active?(active.stage==='walking'?'walk':active.kind):'idle';},get progress(){return active&&active.stage==='acting'?Math.min(1,active.time/(active.kind==='woodfish'?7.2:5.8)):0;},get inserted(){return sticks.length;}};
+      function dispose(){if(disposed)return;disposed=true;active=null;sticks.length=0;slots.clear();if(!effects)return;effects.root.removeFromParent();if(world.smoke){const i=world.smoke.indexOf(effects.smoke);if(i>=0)world.smoke.splice(i,1);}for(const item of[effects.stems,effects.embers,effects.smoke]){item.dispose?.();item.geometry.dispose();item.material.dispose();}}
+      function incenseDiagnostics(){return{groups:sticks.length,burningGroups:sticks.filter(s=>s.age<BURN_SECONDS).length,burnSeconds:BURN_SECONDS,batches:effects?3:0,particleCapacity:MAX_STICKS*SMOKE_PER_STICK,particles:effects?.smoke.geometry.drawRange.count||0,disposed};}
+      return {start,update,cancel,insertIncense,updateIncense,dispose,incenseDiagnostics,get active(){return active;},get action(){return active?(active.stage==='walking'?'walk':active.kind):'idle';},get progress(){return active&&active.stage==='acting'?Math.min(1,active.time/(active.kind==='woodfish'?7.2:5.8)):0;},get inserted(){return sticks.length;}};
     }
   };
 })();
@@ -105959,8 +106026,8 @@ window.TempleNavigation={PLAYER_MOTION,templeJumpHeight,templeRestFits,islandLan
   ['robes','僧衣','僧衣','Robes','僧衣','승복'],['feet','布履','布履','Shoes','履物','신발'],['neck','颈饰','頸飾','Necklaces','首飾り','목 장식'],['waist','腰饰','腰飾','Belt charms','腰飾り','허리 장식'],
   ['vermilion','绛云袈裟','絳雲袈裟','Vermilion robe','紅雲の袈裟','진홍 가사'],['original','素布鞋','素布鞋','Plain cloth shoes','素布の靴','소박한 천신'],['hemp','蒲编草履','蒲編草履','Woven rush sandals','蒲編みの草履','부들 짚신'],['indigo','靛青云纹鞋','靛青雲紋鞋','Indigo cloud shoes','藍雲文の靴','쪽빛 구름무늬 신'],
   ['sandal','檀木念珠','檀木念珠','Sandalwood beads','白檀の念珠','백단 염주'],['gold','金色念珠','金色念珠','Golden prayer beads','金の念珠','금빛 염주'],['pouch','莲纹香囊','蓮紋香囊','Lotus sachet','蓮文の香袋','연꽃 향낭'],['jade','青玉环佩','青玉環佩','Jade ring pendant','青玉の環佩','청옥 고리 장식'],
-  ['moss','山青竹影僧衣','山青竹影僧衣','Bamboo grove robe','山緑の竹影僧衣','산빛 대나무 승복'],['moon','月白水纹僧衣','月白水紋僧衣','Moonlit ripple robe','月白の水紋僧衣','달빛 물결 승복'],
-  ['saffron','秋金稻穗袈裟','秋金稻穗袈裟','Golden harvest kasaya','秋金の稲穂袈裟','가을빛 이삭 가사'],['plum','烟紫梅纹僧衣','煙紫梅紋僧衣','Plum blossom robe','薄紫の梅文僧衣','자줏빛 매화 승복'],['tide','靛海潮纹袈裟','靛海潮紋袈裟','Indigo tide kasaya','藍海の潮文袈裟','쪽빛 파도 가사'],
+  ['moss','金米斜披袈裟','金米斜披袈裟','Golden cream kasaya','金生成りの袈裟','금빛 크림 가사'],['moon','象牙白云纹袈裟','象牙白雲紋袈裟','Ivory cloud kasaya','象牙色の雲文袈裟','상아빛 구름무늬 가사'],
+  ['saffron','秋金稻穗袈裟','秋金稻穗袈裟','Golden harvest kasaya','秋金の稲穂袈裟','가을빛 이삭 가사'],['plum','莲花连帽僧衣','蓮花連帽僧衣','Lotus hoodie','蓮のパーカー僧衣','연꽃 후드 승복'],['tide','靛海潮纹袈裟','靛海潮紋袈裟','Indigo tide kasaya','藍海の潮文袈裟','쪽빛 파도 가사'],
   ['neck-none','不戴颈饰','不戴頸飾','No necklace','首飾りなし','목 장식 없음'],['waist-none','不系腰饰','不繫腰飾','No belt charm','腰飾りなし','허리 장식 없음'],
   ['owned','已拥有','已擁有','Owned','所持','보유'],['newItem','新获得','新獲得','New','新着','새로 획득'],['viewWardrobe','查看衣柜','查看衣櫃','View wardrobe','衣櫃を見る','옷장 보기'],['unwear','取下','取下','Remove','外す','해제'],['previewing','试穿中','試穿中','Trying on','試着中','미리 보기'],['wearItem','装备','裝備','Equip','装備','장착'],['gearUnavailable','暂时无法保存搭配','暫時無法儲存搭配','Wardrobe sync unavailable','装備の保存ができません','장비를 저장할 수 없습니다'],
   ['beadEarn','获得金色念珠 · 已收入衣柜','獲得金色念珠 · 已收入衣櫃','Golden prayer beads added to your wardrobe','金の念珠を獲得 · 衣櫃に入りました','금빛 염주 획득 · 옷장에 보관되었습니다']
@@ -105971,11 +106038,11 @@ window.TempleNavigation={PLAYER_MOTION,templeJumpHeight,templeRestFits,islandLan
  const OUTFITS=[
   {id:'lotus',at:0,robe:'#b8b2a0',sash:'#b9855c'},
   {id:'vermilion',at:0,robe:'#a04436',sash:'#cda65d'},
-  {id:'moss',at:0,robe:'#637c64',sash:'#b6a475'},
-  {id:'moon',at:60,robe:'#becdd2',sash:'#7795a0'},
+  {id:'moss',at:0,robe:'#d8bf85',sash:'#e4c478'},
+  {id:'moon',at:60,robe:'#e8e2d8',sash:'#c7bfb4'},
   {id:'cloud',at:100,robe:'#d4ae5b',sash:'#a57437'},
   {id:'saffron',at:200,robe:'#c89244',sash:'#814e35'},
-  {id:'plum',at:600,robe:'#80637e',sash:'#cda7ad'},
+  {id:'plum',at:600,robe:'#eee5d6',sash:'#deb466'},
   {id:'tide',at:1200,robe:'#39576e',sash:'#c3b48b'},
   {id:'golden',at:10000,robe:'#8b6347',sash:'#e1bd62'}
  ];
@@ -105987,6 +106054,15 @@ window.TempleNavigation={PLAYER_MOTION,templeJumpHeight,templeRestFits,islandLan
  window.TempleProfile={create(options){
   const {THREE:T,scene,statue,player}=options;let profile=null,stats={},appearance={},started=false,busy=false,shown=false,pending=null,lastFocus=null,lastLocale='';
   const seen=new Set(),queue=[];let active=null,ackPending=[],ackRetry=0,elapsed=0,disposed=false;
+  const blessedItems=new Set();
+  const restoredThresholds=new Set();
+  function rewardBlessing(item){
+    if(disposed||!item)return;
+    const key=item.slot+':'+item.id;
+    if(blessedItems.has(key))return;
+    blessedItems.add(key);
+    try{options.onRewardBlessing?.({slot:item.slot,id:item.id,threshold:item.at||0});}catch(error){console.warn('Reward blessing unavailable:',error);}
+  }
   const tr=(key,args={})=>{const locale=window.TempleI18n?.locale||'zh-CN';return (DICT[locale]?.[key]||DICT.en[key]||key).replace(/\{(\w+)\}/g,(all,k)=>String(args[k]??all));};
   const create=(tag,className,text)=>{const el=document.createElement(tag);if(className)el.className=className;if(text!==undefined)el.textContent=text;return el;};
   const host=document.getElementById('game')||document.body,actions=document.querySelector('.top-actions')||host;
@@ -106185,11 +106261,14 @@ window.TempleNavigation={PLAYER_MOTION,templeJumpHeight,templeRestFits,islandLan
     }
   }
   function announceGold(){
-    goldPending=false;showGift('beads');
+    const overlay=document.getElementById('overlay');
+    if(!started||busy||shown||document.hidden||(overlay&&!overlay.hidden))return;
+    goldPending=false;showGift('beads');rewardBlessing({slot:'neck',id:'gold'});
     if(active){
       queue.unshift(active.threshold);active=null;glow.visible=false;points.visible=false;blessing.hidden=true;
     }
     if(typeof Event==='function')document.dispatchEvent?.(new Event('temple-gold-beads-earned'));
+    drawCollection();
   }
   const form=create('form','practice-rename'),renameHeading=create('h3'),renameHint=create('p'),renameLine=create('div','practice-rename-line'),renameInput=create('input'),renameButton=create('button','practice-rename-submit'),confirmLabel=create('label','practice-confirm'),confirm=create('input'),confirmText=create('span');renameInput.type='text';renameInput.id='practice-rename-input';renameInput.maxLength=4;renameInput.autocomplete='off';renameInput.spellcheck=false;renameInput.setAttribute('aria-describedby','practice-rename-hint');renameHint.id='practice-rename-hint';renameButton.type='submit';confirm.type='checkbox';confirmLabel.append(confirm,confirmText);renameLine.append(renameInput,renameButton);form.append(renameHeading,renameHint,renameLine,confirmLabel);summary.after(form);
   const message=create('p','practice-message');message.setAttribute('role','status');message.setAttribute('aria-live','polite');panel.append(message);host.append(dialog);
@@ -106215,9 +106294,9 @@ window.TempleNavigation={PLAYER_MOTION,templeJumpHeight,templeRestFits,islandLan
   const ringMat=new T.MeshBasicMaterial({color:0xf5d692,transparent:true,opacity:0,depthWrite:false,side:T.DoubleSide});const ring=new T.Mesh(new T.RingGeometry(.52,.55,48),ringMat);ring.rotation.x=-Math.PI/2;ring.position.y=.045;glow.add(ring);
   const pointCount=28,positions=new Float32Array(pointCount*3),pointGeometry=new T.BufferGeometry();pointGeometry.setAttribute('position',new T.BufferAttribute(positions,3));const pointMat=new T.PointsMaterial({color:0xf0ce85,size:.045,transparent:true,opacity:0,depthWrite:false});const points=new T.Points(pointGeometry,pointMat);scene.add(points);points.visible=false;
   const start=new T.Vector3(),end=new T.Vector3(),worldPos=new T.Vector3();
-  function beginBlessing(threshold){const reduce=window.matchMedia?.('(prefers-reduced-motion: reduce)').matches||false;active={threshold,time:0,reduce};blessing.hidden=false;glow.visible=!reduce;points.visible=!reduce;if(statue?.getWorldPosition)statue.getWorldPosition(start);else start.set(0,.7,-8);start.y+=2.5;render();}
+  function beginBlessing(threshold){const granted=OUTFITS.find(item=>item.at===threshold);if(granted&&!restoredThresholds.has(threshold))rewardBlessing({...granted,slot:'robes'});const reduce=window.matchMedia?.('(prefers-reduced-motion: reduce)').matches||false;active={threshold,time:0,reduce};blessing.hidden=false;glow.visible=!reduce;points.visible=!reduce;if(statue?.getWorldPosition)statue.getWorldPosition(start);else start.set(0,.7,-8);start.y+=2.5;render();}
   function acknowledge(){if(!ackPending.length||ackRetry>0||typeof options.onAcknowledge!=='function')return;const batch=[...new Set(ackPending)];ackPending=[];ackRetry=10;try{const result=options.onAcknowledge(batch);if(result===false){ackPending.push(...batch);return;}if(result&&typeof result.then==='function')result.then(value=>{if(value===false)ackPending.push(...batch);}).catch(()=>ackPending.push(...batch));}catch(_){ackPending.push(...batch);}}
-  function update(nextProfile,nextStats={},nextAppearance={}){const wasWaiting=!profile,previousLook=JSON.stringify(worn());trackGifts(nextProfile);profile=nextProfile&&typeof nextProfile==='object'?nextProfile:null;stats=nextStats||{};appearance=nextAppearance||{};if(selected&&viewer&&previousLook!==JSON.stringify(worn()))refreshViewer();if(wasWaiting&&profile&&!pending)message.textContent='';if(pending&&profile&&((pending.kind==='equip'&&profile.equipped===pending.value)||(pending.kind==='rename'&&profile.dharmaName===pending.value)||(pending.kind==='beads'&&profile.beadsEquipped===pending.value)||(Object.hasOwn(originalGear,pending.kind)&&profile.gear?.[pending.kind]===pending.value))){const {kind,value}=pending;
+  function update(nextProfile,nextStats={},nextAppearance={}){const wasWaiting=!profile,previousLook=JSON.stringify(worn());trackGifts(nextProfile);if(wasWaiting&&Array.isArray(nextProfile?.blessings))for(const at of nextProfile.blessings)restoredThresholds.add(at);profile=nextProfile&&typeof nextProfile==='object'?nextProfile:null;stats=nextStats||{};appearance=nextAppearance||{};if(selected&&viewer&&previousLook!==JSON.stringify(worn()))refreshViewer();if(wasWaiting&&profile&&!pending)message.textContent='';if(pending&&profile&&((pending.kind==='equip'&&profile.equipped===pending.value)||(pending.kind==='rename'&&profile.dharmaName===pending.value)||(pending.kind==='beads'&&profile.beadsEquipped===pending.value)||(Object.hasOwn(originalGear,pending.kind)&&profile.gear?.[pending.kind]===pending.value))){const {kind,value}=pending;
       if(kind==='rename'){
         message.textContent=tr('nameSaved',{name:profile.dharmaName});confirm.checked=false;renameInput.value='';
       }else{
@@ -106231,7 +106310,7 @@ window.TempleNavigation={PLAYER_MOTION,templeJumpHeight,templeRestFits,islandLan
   function tick(dt){if(disposed)return;if(giftKind&&performance.now()>giftUntil){
     giftKind=null;gift.hidden=true;
     if(petalWaiting){petalWaiting=false;showGift('petal');drawCollection();}
-   }const step=Math.max(0,Math.min(Number.isFinite(dt)?dt:0,.1));if(shown&&viewer){const state=viewer.tick(step);if(state&&state!==viewState){viewState=state;updateMirror();}}elapsed+=step;ackRetry=Math.max(0,ackRetry-step);if(lastLocale!==(window.TempleI18n?.locale||'zh-CN'))render();if(pending){pending.age+=step;if(pending.age>15)setError(tr('retry'));}if(!started)return;if(!active&&!busy&&!shown&&giftKind!=='beads'&&queue.length)beginBlessing(queue.shift());if(active){active.time+=step;const p=Math.min(1,active.time/3),fade=Math.sin(p*Math.PI);player.root.getWorldPosition(worldPos);glow.position.copy(worldPos);glow.position.y+=.03;const scale=.8+p*.35;lotus.scale.setScalar(scale);ring.scale.setScalar(1+p*.65);petalMat.opacity=fade*.35;ringMat.opacity=fade*.38;pointMat.opacity=fade*.7;end.copy(worldPos);end.y+=.8;for(let i=0;i<pointCount;i++){const travel=Math.min(1,Math.max(0,p*1.45-i*.012));const angle=i*2.39996;const spread=Math.sin(travel*Math.PI)*.35;positions[i*3]=start.x+(end.x-start.x)*travel+Math.cos(angle)*spread;positions[i*3+1]=start.y+(end.y-start.y)*travel+Math.sin(travel*Math.PI)*.65;positions[i*3+2]=start.z+(end.z-start.z)*travel+Math.sin(angle)*spread;}pointGeometry.attributes.position.needsUpdate=true;if(p>=1){ackPending.push(active.threshold);active=null;glow.visible=false;points.visible=false;blessing.hidden=true;acknowledge();}}else acknowledge();}
+   }const step=Math.max(0,Math.min(Number.isFinite(dt)?dt:0,.1));if(shown&&viewer){const state=viewer.tick(step);if(state&&state!==viewState){viewState=state;updateMirror();}}elapsed+=step;ackRetry=Math.max(0,ackRetry-step);if(lastLocale!==(window.TempleI18n?.locale||'zh-CN'))render();if(pending){pending.age+=step;if(pending.age>15)setError(tr('retry'));}if(!started||document.hidden)return;if(goldPending)announceGold();if(!active&&!busy&&!shown&&giftKind!=='beads'&&queue.length)beginBlessing(queue.shift());if(active){active.time+=step;const p=Math.min(1,active.time/3),fade=Math.sin(p*Math.PI);player.root.getWorldPosition(worldPos);glow.position.copy(worldPos);glow.position.y+=.03;const scale=.8+p*.35;lotus.scale.setScalar(scale);ring.scale.setScalar(1+p*.65);petalMat.opacity=fade*.35;ringMat.opacity=fade*.38;pointMat.opacity=fade*.7;end.copy(worldPos);end.y+=.8;for(let i=0;i<pointCount;i++){const travel=Math.min(1,Math.max(0,p*1.45-i*.012));const angle=i*2.39996;const spread=Math.sin(travel*Math.PI)*.35;positions[i*3]=start.x+(end.x-start.x)*travel+Math.cos(angle)*spread;positions[i*3+1]=start.y+(end.y-start.y)*travel+Math.sin(travel*Math.PI)*.65;positions[i*3+2]=start.z+(end.z-start.z)*travel+Math.sin(angle)*spread;}pointGeometry.attributes.position.needsUpdate=true;if(p>=1){ackPending.push(active.threshold);active=null;glow.visible=false;points.visible=false;blessing.hidden=true;acknowledge();}}else acknowledge();}
   const unsubscribe=window.TempleI18n?.onChange?.(render);render();
   return{update,tick,open,openWardrobe:()=>open('wardrobe'),wardrobeLabel:()=>tr('wardrobe'),close,setStarted(value){const next=!!value;if(started===next)return;started=next;if(!started)close();else if(goldPending)announceGold();render();},setBusy(value){const next=!!value;if(busy===next)return;busy=next;render();},setError,diagnostics(){return{open:shown,started,busy,name:profile?.dharmaName||null,equipped:profile?.equipped||null,unlocked:profile?.unlocked||[],pending:pending?.kind||null,blessing:active?{threshold:active.threshold,progress:active.time/3,reducedMotion:active.reduce}:null,queuedBlessings:[...queue],acknowledgementsPending:[...ackPending]};},dispose(){close();disposed=true;unsubscribe?.();trigger.remove();wardrobeShortcut.remove();dialog.remove();blessing.remove();gift.remove();scene.remove(glow,points);petalGeometry.dispose();petalMat.dispose();ring.geometry.dispose();ringMat.dispose();pointGeometry.dispose();pointMat.dispose();}};
  }};
@@ -106239,6 +106318,100 @@ window.TempleNavigation={PLAYER_MOTION,templeJumpHeight,templeRestFits,islandLan
 ;
 (function(){
  'use strict';
+ function blessingRig(T,mesh,world,rig){
+  const sourceGeometry=mesh.geometry,sourceMaterial=mesh.material,geometry=sourceGeometry.clone(),entries=rig.entries.map(e=>e.slice()),entryWeights=new Map(entries.map(e=>[e[0],e.slice(1)])),baseCount=rig.vertexCount+rig.vertices.length,base={};
+  if(rig.vertexCount!==sourceGeometry.attributes.position.count)throw Error('Buddha blessing rig vertex mismatch');
+  for(const name of ['position','normal','uv']){const source=sourceGeometry.attributes[name],array=new source.array.constructor(baseCount*source.itemSize);array.set(source.array);for(let i=0;i<rig.vertices.length;i++){const[a,b,t]=rig.vertices[i];for(let k=0;k<source.itemSize;k++)array[(rig.vertexCount+i)*source.itemSize+k]=array[a*source.itemSize+k]*(1-t)+array[b*source.itemSize+k]*t;}base[name]=array;}const sourceP=base.position;
+  const repairEntries=(rig.bodyRepairs||[]).map(e=>e.slice()),repairMap=new Map(repairEntries.map(e=>[e[0],e.slice(1)]));
+  const caps=[];for(const cap of rig.caps||[])for(const tri of cap.triangles){for(const side of [0,1]){const corners=(side?tri.slice().reverse():tri).map(i=>({source:cap.edges[i][side?2:0],weight:side?entryWeights.get(cap.edges[i][2]):null}));const points=corners.map(c=>new T.Vector3(...sourceP.slice(c.source*3,c.source*3+3))),n=new T.Vector3().subVectors(points[1],points[0]).cross(new T.Vector3().subVectors(points[2],points[0])).normalize();const kneeContact=!side&&points.every(p=>p.y>1&&p.y<1.5);corners.forEach((c,i)=>caps.push({...c,point:points[i].toArray(),normal:n.toArray(),uv:kneeContact?Array.from(base.uv.slice(c.source*2,c.source*2+2)):null}));}}
+  const total=baseCount+caps.length;
+  for(const name of ['position','normal','uv']){const source=sourceGeometry.attributes[name],array=new source.array.constructor(total*source.itemSize);array.set(base[name]);let dest=baseCount;
+   for(const cap of caps){for(let k=0;k<source.itemSize;k++)array[dest*source.itemSize+k]=name==='position'?cap.point[k]:name==='normal'?Math.round(cap.normal[k]*127):cap.uv?cap.uv[k]:cap.weight?-10:-20;dest++;}
+   geometry.setAttribute(name,new T.BufferAttribute(array,source.itemSize,source.normalized));
+  }
+  const dropped=new Set(rig.dropTriangles),indices=Array.from(sourceGeometry.index.array).filter((_,i)=>!dropped.has(Math.floor(i/3)));indices.push(...rig.extraIndices);let center=baseCount;
+  for(const cap of caps){indices.push(center);if(cap.weight)entries.push([center,...cap.weight]);else if(repairMap.has(cap.source))repairEntries.push([center,...repairMap.get(cap.source)]);center++;}geometry.setIndex(indices);
+  const handMorph=new Map(),bodyMorph=new Map(),bodyColors=new Map();
+  if(rig.handReplacement){
+   const replacement=rig.handReplacement,oldCount=geometry.attributes.position.count,cutCount=replacement.vertices.length,hand=replacement.hand,handCount=hand.position.length/3;
+   if(replacement.baseCount!==oldCount)throw Error('Buddha wrist attachment vertex mismatch');
+   for(const name of ['position','normal','uv']){const old=geometry.attributes[name],array=new old.array.constructor((oldCount+cutCount+handCount)*old.itemSize);array.set(old.array);for(let i=0;i<cutCount;i++){const[a,b,t]=replacement.vertices[i];for(let k=0;k<old.itemSize;k++)array[(oldCount+i)*old.itemSize+k]=array[a*old.itemSize+k]*(1-t)+array[b*old.itemSize+k]*t;}const source=name==='position'?hand.oldPosition:name==='normal'?hand.oldNormal:hand.uv;for(let i=0;i<source.length;i++)array[(oldCount+cutCount)*old.itemSize+i]=name==='normal'?Math.round(source[i]*127):source[i];geometry.setAttribute(name,new T.BufferAttribute(array,old.itemSize,old.normalized));}
+   const droppedHand=new Set(replacement.dropTriangles),joinedIndices=Array.from(geometry.index.array).filter((_,i)=>!droppedHand.has(Math.floor(i/3)));joinedIndices.push(...replacement.extraIndices);geometry.setIndex(joinedIndices);
+   for(const entry of replacement.cutWeights)entries.push(entry.slice());
+   for(let i=0;i<handCount;i++){const index=oldCount+cutCount+i;entries.push([index,0,0,1]);handMorph.set(index,{position:new T.Vector3().fromArray(hand.position,i*3),normal:new T.Vector3().fromArray(hand.normal,i*3)});}
+  }
+  if(rig.bodyPatch){
+   const patch=rig.bodyPatch,offset=geometry.attributes.position.count;
+   for(const name of ['position','normal','uv']){const old=geometry.attributes[name],array=new old.array.constructor((offset+patch.vertices.length)*old.itemSize);array.set(old.array);for(let i=0;i<patch.vertices.length;i++){const vertex=patch.vertices[i],value=name==='position'?vertex.oldPosition:name==='normal'?vertex.oldNormal:vertex.uv;for(let k=0;k<old.itemSize;k++)array[(offset+i)*old.itemSize+k]=name==='normal'?Math.round(value[k]*127):value[k];}geometry.setAttribute(name,new T.BufferAttribute(array,old.itemSize,old.normalized));}
+   const removed=new Set(patch.dropTriangles.map(t=>t.join(','))),old=geometry.index.array,joined=[];for(let i=0;i<old.length;i+=3){const tri=Array.from(old.slice(i,i+3));if(!removed.has(tri.join(',')))joined.push(...tri);}joined.push(...patch.indices.map(i=>i<0?offset-i-1:i));geometry.setIndex(joined);
+   for(let i=0;i<patch.vertices.length;i++){const vertex=patch.vertices[i],index=offset+i;entries.push([index,0,0,0]);bodyMorph.set(index,{position:new T.Vector3(...vertex.position),normal:new T.Vector3(...vertex.normal)});bodyColors.set(index,vertex.color||[.42,.23,.05]);}
+  }
+  const handGold=new Float32Array(geometry.attributes.position.count);for(const index of handMorph.keys())handGold[index]=1;geometry.setAttribute('aBlessingHand',new T.BufferAttribute(handGold,1));
+  const activeMaterial=sourceMaterial.clone();activeMaterial.onBeforeCompile=shader=>{if(shader.vertexShader)shader.vertexShader='attribute float aBlessingHand;varying float vBlessingHand;\n'+shader.vertexShader.replace('#include <begin_vertex>','#include <begin_vertex>\nvBlessingHand=aBlessingHand;');shader.fragmentShader='varying float vBlessingHand;\n'+shader.fragmentShader.replace('#include <map_fragment>','vec3 blessingBase=diffuseColor.rgb;\n#ifdef USE_MAP\n if(vMapUv.x < -15.0){diffuseColor *= vec4(.075,.035,.009,1.0);}else if(vMapUv.x < -5.0){diffuseColor *= vec4(.42,.23,.05,1.0);}else{\n#include <map_fragment>\n}\n#endif\ndiffuseColor.rgb=mix(diffuseColor.rgb,blessingBase*vec3(.42,.23,.05),smoothstep(0.,1.,vBlessingHand));').replace('#include <roughnessmap_fragment>','#include <roughnessmap_fragment>\n#ifdef USE_MAP\nif(vMapUv.x < -15.0)roughnessFactor=.82;\n#endif').replace('#include <metalnessmap_fragment>','#include <metalnessmap_fragment>\n#ifdef USE_MAP\nif(vMapUv.x < -15.0)metalnessFactor=.05;\n#endif').replace('#include <emissivemap_fragment>','#include <emissivemap_fragment>\n#ifdef USE_MAP\nif(vMapUv.x < -15.0)totalEmissiveRadiance=vec3(0.0);\n#endif');};activeMaterial.customProgramCacheKey=()=> 'buddha-contact-fill-v4';
+  const repairColor=new Float32Array(geometry.attributes.position.count*4);for(const[index,color]of bodyColors)repairColor.set([...color,1],index*4);geometry.setAttribute('aBlessingRepairColor',new T.BufferAttribute(repairColor,4));
+  const handBlend={value:0},compileHand=activeMaterial.onBeforeCompile;activeMaterial.onBeforeCompile=shader=>{compileHand(shader);shader.uniforms=shader.uniforms||{};shader.uniforms.uBlessingHandBlend=handBlend;if(shader.vertexShader)shader.vertexShader='attribute vec4 aBlessingRepairColor;varying vec4 vBlessingRepairColor;\n'+shader.vertexShader.replace('#include <begin_vertex>','#include <begin_vertex>\nvBlessingRepairColor=aBlessingRepairColor;');shader.fragmentShader='uniform float uBlessingHandBlend;varying vec4 vBlessingRepairColor;\n'+shader.fragmentShader.replace('smoothstep(0.,1.,vBlessingHand)','smoothstep(0.,1.,vBlessingHand)*uBlessingHandBlend').replace('#include <roughnessmap_fragment>','diffuseColor.rgb=mix(diffuseColor.rgb,blessingBase*vBlessingRepairColor.rgb/max(.00001,vBlessingRepairColor.a),max(0.,vBlessingRepairColor.a)*uBlessingHandBlend);\n#include <roughnessmap_fragment>');};activeMaterial.customProgramCacheKey=()=> 'buddha-contact-fill-v6';
+  const position=geometry.attributes.position,normal=geometry.attributes.normal;position.setUsage(T.DynamicDrawUsage);normal.setUsage(T.DynamicDrawUsage);
+  const restPositions=position.array.slice(),restNormals=normal.array.slice();
+  const ranges=[];for(const index of [...new Set(entries.concat(repairEntries).map(e=>e[0]))].sort((a,b)=>a-b)){const last=ranges.at(-1);if(last&&index*3<=last.start+last.count+24)last.count=index*3+3-last.start;else ranges.push({start:index*3,count:3});}
+  function dirty(){for(const attribute of [position,normal]){attribute.clearUpdateRanges();for(const range of ranges)attribute.addUpdateRange(range.start,range.count);attribute.needsUpdate=true;}}
+  const joint=name=>new T.Vector3(...rig.joints[name]),shoulder=joint('shoulder'),elbow=joint('elbow'),wrist=joint('wrist'),palm=joint('palm'),newPalm=rig.handReplacement?.palmPoint?new T.Vector3(...rig.handReplacement.palmPoint):null,newPalmNormal=rig.handReplacement?.palmNormal?new T.Vector3(...rig.handReplacement.palmNormal):null;
+  const upperMatrix=new T.Matrix4(),foreMatrix=new T.Matrix4(),handMatrix=new T.Matrix4(),pivotMatrix=new T.Matrix4(),rotation=new T.Matrix4(),translation=new T.Matrix4();
+  const upperNormal=new T.Matrix3(),foreNormal=new T.Matrix3(),handNormal=new T.Matrix3(),p=new T.Vector3(),n=new T.Vector3(),v=new T.Vector3(),sum=new T.Vector3(),targetPoint=new T.Vector3(),palmWorld=new T.Vector3(),direction=new T.Vector3(),up=new T.Vector3(0,1,0);
+  const smooth=x=>x*x*(3-2*x),clamp=x=>Math.max(0,Math.min(1,x));
+  let target=null,progress=0,hold=0,lastPose=-1,phase='idle',disposed=false,lightTime=0;
+  const fx=new T.Group();fx.name='Achievement blessing gold light';fx.visible=false;world.scene.add(fx);
+  const canvas=document.createElement('canvas');canvas.width=canvas.height=128;const ctx=canvas.getContext('2d'),gradient=ctx.createRadialGradient(64,64,0,64,64,64);
+  gradient.addColorStop(0,'rgba(255,235,150,1)');gradient.addColorStop(.25,'rgba(255,208,84,.65)');gradient.addColorStop(1,'rgba(255,195,55,0)');ctx.fillStyle=gradient;ctx.fillRect(0,0,128,128);
+  const glowTexture=new T.CanvasTexture(canvas);glowTexture.colorSpace=T.SRGBColorSpace;
+  const shaft=document.createElement('canvas');shaft.width=64;shaft.height=256;const sx=shaft.getContext('2d'),cross=sx.createLinearGradient(0,0,64,0);cross.addColorStop(0,'rgba(255,214,116,0)');cross.addColorStop(.5,'rgba(255,233,165,.62)');cross.addColorStop(1,'rgba(255,214,116,0)');sx.fillStyle=cross;sx.fillRect(0,0,64,256);sx.globalCompositeOperation='destination-in';const ends=sx.createLinearGradient(0,0,0,256);ends.addColorStop(0,'rgba(255,255,255,0)');ends.addColorStop(.16,'white');ends.addColorStop(.8,'white');ends.addColorStop(1,'rgba(255,255,255,0)');sx.fillStyle=ends;sx.fillRect(0,0,64,256);const shaftTexture=new T.CanvasTexture(shaft);shaftTexture.colorSpace=T.SRGBColorSpace;
+  const beam=new T.Mesh(new T.PlaneGeometry(1.5,1),new T.MeshBasicMaterial({map:shaftTexture,color:0xffd36b,transparent:true,opacity:0,depthWrite:false,side:T.DoubleSide,blending:T.AdditiveBlending,toneMapped:false}));
+  beam.name='Buddha palm blessing beam';beam.frustumCulled=false;fx.add(beam);
+  const view=new T.Vector3(),side=new T.Vector3(),face=new T.Vector3(),beamBasis=new T.Matrix4();beam.onBeforeRender=(_renderer,_scene,camera)=>{camera.getWorldPosition(view);view.sub(beam.position).normalize();side.crossVectors(direction,view);if(side.lengthSq()<1e-6)side.set(1,0,0);else side.normalize();face.crossVectors(side,direction).normalize();beamBasis.makeBasis(side,direction,face);beam.quaternion.setFromRotationMatrix(beamBasis);beam.updateMatrixWorld();};
+  const glow=new T.Mesh(new T.PlaneGeometry(3.2,3.2),new T.MeshBasicMaterial({map:glowTexture,color:0xffd879,transparent:true,opacity:0,depthWrite:false,blending:T.AdditiveBlending,toneMapped:false}));
+  glow.name='Player blessing soft ground light';glow.rotation.x=-Math.PI/2;fx.add(glow);
+  // A single static point buffer; only uniforms advance the flowing sparks.
+  const seeds=new Float32Array(96*4);for(let i=0;i<96;i++){seeds[i*4]=(i*.61803398875)%1;seeds[i*4+1]=(i*.754877666)%1;seeds[i*4+2]=(i*.56984029)%1;seeds[i*4+3]=i%13===0?1:0;}
+  const sparkGeometry=new T.BufferGeometry();sparkGeometry.setAttribute('position',new T.BufferAttribute(new Float32Array(96*3),3));sparkGeometry.setAttribute('aSeed',new T.BufferAttribute(seeds,4));
+  const sparkMaterial=new T.ShaderMaterial({transparent:true,depthWrite:false,blending:T.AdditiveBlending,toneMapped:false,uniforms:{uStart:{value:new T.Vector3()},uEnd:{value:new T.Vector3()},uTime:{value:0},uStrength:{value:0}},vertexShader:`attribute vec4 aSeed;uniform vec3 uStart;uniform vec3 uEnd;uniform float uTime;uniform float uStrength;varying float vAlpha;varying float vStar;void main(){float t=fract(aSeed.x+uTime*(.22+.11*aSeed.y));vec3 axis=normalize(uEnd-uStart);vec3 right=normalize(cross(axis,abs(axis.y)>.96?vec3(1.,0.,0.):vec3(0.,1.,0.)));vec3 up=cross(right,axis);float angle=6.2831853*aSeed.y+uTime*(.25+aSeed.z*.18);float radius=(.06+.42*t)*sqrt(aSeed.z);vec3 p=mix(uStart,uEnd,t)+radius*(cos(angle)*right+sin(angle)*up);vec4 mv=viewMatrix*vec4(p,1.);gl_Position=projectionMatrix*mv;vStar=aSeed.w;float pulse=.35+.65*pow(.5+.5*sin(uTime*(3.+aSeed.z*3.)+aSeed.x*31.),3.);vAlpha=uStrength*pow(sin(3.14159265*t),.7)*pulse;gl_PointSize=clamp((aSeed.w>.5?17.:7.)*28./max(1.,-mv.z),2.,24.);}`,fragmentShader:`varying float vAlpha;varying float vStar;void main(){vec2 q=gl_PointCoord*2.-1.;float r=length(q);float core=exp(-r*r*6.);float rays=pow(max(0.,1.-abs(q.x*q.y)*24.),3.)*pow(max(0.,1.-r),1.6);float alpha=vAlpha*(core*.65+vStar*rays*.75);if(alpha<.008)discard;gl_FragColor=vec4(mix(vec3(1.,.63,.14),vec3(1.,.95,.68),core),alpha);
+#include <colorspace_fragment>
+}`});
+  const sparks=new T.Points(sparkGeometry,sparkMaterial);sparks.name='Flowing golden blessing stars';sparks.frustumCulled=false;fx.add(sparks);
+  // Bounds include the reach. The untouched pedestal/head keep their exact source vertices.
+  geometry.boundingSphere.radius+=1.5;
+  function pivot(out,point,angle){out.makeTranslation(point.x,point.y,point.z);rotation.makeRotationX(angle);out.multiply(rotation);translation.makeTranslation(-point.x,-point.y,-point.z);out.multiply(translation);}
+  function applyPose(value){
+   if(value===lastPose)return;lastPose=value;
+   if(value===0){mesh.geometry=sourceGeometry;mesh.material=sourceMaterial;upperMatrix.identity();foreMatrix.identity();handMatrix.identity();return;}mesh.geometry=geometry;mesh.material=activeMaterial;
+   const strength=smooth(value);handBlend.value=strength;pivot(upperMatrix,shoulder,-.55*strength);pivot(pivotMatrix,elbow,-.75*strength);foreMatrix.copy(upperMatrix).multiply(pivotMatrix);pivot(pivotMatrix,wrist,(rig.handReplacement?.wristAngle||0)*strength);handMatrix.copy(foreMatrix).multiply(pivotMatrix);
+   upperNormal.setFromMatrix4(upperMatrix);foreNormal.setFromMatrix4(foreMatrix);handNormal.setFromMatrix4(handMatrix);
+   for(const [index,a,b,c]of entries){
+    const offset=index*3,base=1-a-b-c,morph=handMorph.get(index)||bodyMorph.get(index);p.fromArray(restPositions,offset);if(morph)p.lerp(morph.position,strength);sum.copy(p).multiplyScalar(base);sum.addScaledVector(v.copy(p).applyMatrix4(upperMatrix),a);sum.addScaledVector(v.copy(p).applyMatrix4(foreMatrix),b);sum.addScaledVector(v.copy(p).applyMatrix4(handMatrix),c);sum.toArray(position.array,offset);
+    n.set(restNormals[offset]/127,restNormals[offset+1]/127,restNormals[offset+2]/127);if(morph)n.lerp(morph.normal,strength).normalize();sum.copy(n).multiplyScalar(base);sum.addScaledVector(v.copy(n).applyMatrix3(upperNormal),a);sum.addScaledVector(v.copy(n).applyMatrix3(foreNormal),b);sum.addScaledVector(v.copy(n).applyMatrix3(handNormal),c);sum.normalize();normal.array[offset]=Math.round(sum.x*127);normal.array[offset+1]=Math.round(sum.y*127);normal.array[offset+2]=Math.round(sum.z*127);
+   }
+   for(const[index,y,nx,ny,nz]of repairEntries){const offset=index*3;position.array[offset+1]=restPositions[offset+1]+(y-restPositions[offset+1])*strength;sum.set(restNormals[offset]/127,restNormals[offset+1]/127,restNormals[offset+2]/127).lerp(v.set(nx,ny,nz),strength).normalize();normal.array[offset]=Math.round(sum.x*127);normal.array[offset+1]=Math.round(sum.y*127);normal.array[offset+2]=Math.round(sum.z*127);}
+   dirty();
+  }
+  function palmPosition(out=palmWorld){mesh.updateWorldMatrix(true,false);out.copy(palm);if(newPalm)out.lerp(newPalm,smooth(progress));return out.applyMatrix4(handMatrix).applyMatrix4(mesh.matrixWorld);}
+  function palmNormal(out=new T.Vector3()){mesh.updateWorldMatrix(true,false);out.fromArray(rig.palmNormal);if(newPalmNormal)out.lerp(newPalmNormal,smooth(progress)).normalize();return out.transformDirection(handMatrix).transformDirection(mesh.matrixWorld);}
+  function begin(object){if(disposed||!object?.getWorldPosition)return false;target=object;hold=2.2;phase='raise';return true;}
+  function end(){hold=0;if(progress>0)phase='return';else{phase='idle';target=null;fx.visible=false;}}
+  function update(dt){
+   if(disposed||phase==='idle')return;
+   dt=Math.max(0,Math.min(Number(dt)||0,.1));
+   lightTime+=dt;
+   if(phase==='raise'){progress=Math.min(1,progress+dt/1.4);if(progress===1)phase='hold';}
+   else if(phase==='hold'){hold-=dt;if(hold<=0)phase='return';}
+   else{progress=Math.max(0,progress-dt/1.4);if(progress===0){phase='idle';target=null;}}
+   applyPose(progress);
+   const strength=smooth(clamp((progress-.5)*2));fx.visible=strength>0&&!!target;
+   if(!fx.visible)return;
+   palmPosition();target.updateWorldMatrix(true,false);target.getWorldPosition(targetPoint);glow.position.copy(targetPoint);glow.position.y+=.018;targetPoint.y+=.86;
+   direction.subVectors(palmWorld,targetPoint);const length=direction.length();if(length<.01||!Number.isFinite(length)){fx.visible=false;return;}
+   beam.position.copy(palmWorld).add(targetPoint).multiplyScalar(.5);beam.scale.set(1,length,1);beam.quaternion.setFromUnitVectors(up,direction.divideScalar(length));beam.material.opacity=.16*strength;glow.material.opacity=.30*strength;sparkMaterial.uniforms.uStart.value.copy(palmWorld);sparkMaterial.uniforms.uEnd.value.copy(targetPoint);sparkMaterial.uniforms.uTime.value=lightTime;sparkMaterial.uniforms.uStrength.value=strength;
+  }
+  function dispose(){if(disposed)return;disposed=true;applyPose(0);geometry.dispose();activeMaterial.dispose();fx.removeFromParent();beam.geometry.dispose();beam.material.dispose();shaftTexture.dispose();glow.geometry.dispose();glow.material.dispose();glowTexture.dispose();sparkGeometry.dispose();sparkMaterial.dispose();target=null;}
+  return{begin,update,end,dispose,palmPosition,palmNormal,get state(){return{phase,progress,hold,weightedVertices:entries.length,uploadRanges:ranges.length,uploadBytes:ranges.reduce((n,r)=>n+r.count*5,0),repairedContactLoops:rig.caps?.length||0,disposed};}};
+ }
  window.TempleStatue={create(T,world){
   const state={ready:false,error:null,triangles:0,gold:true,guanyinReady:false,guanyinError:null,leftStatueReady:false,leftStatueError:null,placements:{}},original=[...world.statue.children];
   const layout=window.TempleNavigation.templeSceneLayout,approved=layout.design.altar.statues;
@@ -106277,9 +106450,12 @@ window.TempleNavigation={PLAYER_MOTION,templeJumpHeight,templeRestFits,islandLan
    glow.name='Soft golden Buddha radiance';glow.position.set(0,8.5,-3.7);world.statue.add(glow);
    const warm=new T.PointLight(0xffcf6b,30,25,2);warm.position.set(0,11,-5.5);parent.add(warm);
   }
-  const ready=load('buddha-statue').then(({g,texture,m})=>{
+  let blessing=null,blessingTarget=null,blessingDisposed=false;
+  const ready=load('buddha-statue').then(async({g,texture,m})=>{
    const material=new T.MeshStandardMaterial({map:texture,color:0xffedbb,metalness:.72,roughness:.27,envMap:reflection,envMapIntensity:1.7,emissive:0xc18a24,emissiveIntensity:.14,side:T.DoubleSide});
-   const mesh=fit(new T.Mesh(g,material),0,0,0,'center');mesh.name='Uploaded seated Buddha';world.statue.add(mesh);original.forEach(o=>o.visible=false);aura();state.triangles=m.triangleCount;state.ready=true;return mesh;
+   const mesh=fit(new T.Mesh(g,material),0,0,0,'center');mesh.name='Uploaded seated Buddha';world.statue.add(mesh);original.forEach(o=>o.visible=false);aura();state.triangles=m.triangleCount;state.ready=true;
+   try{const response=await TempleAssets.fetch('assets/buddha-blessing-rig.json');if(!response.ok)throw Error('Buddha blessing rig unavailable');const rig=await response.json();if(!blessingDisposed){blessing=blessingRig(T,mesh,world,rig);state.blessingReady=true;if(blessingTarget)blessing.begin(blessingTarget);}}catch(error){state.blessingError=String(error.message||error);}
+   return mesh;
   }).catch(e=>{state.error=String(e.message||e);console.error('Statue:',e);});
   const guanyinReady=ready.then(()=>TempleAssets.yieldFrame()).then(()=>load('guanyin-statue')).then(({g,texture,m})=>{
    const mesh=fit(new T.Mesh(g,new T.MeshStandardMaterial({map:texture,metalness:.15,roughness:.47,envMap:reflection,envMapIntensity:.45,side:T.DoubleSide})),...right.position,'guanyin');
@@ -106289,7 +106465,7 @@ window.TempleNavigation={PLAYER_MOTION,templeJumpHeight,templeRestFits,islandLan
    const mesh=fit(new T.Mesh(g,new T.MeshStandardMaterial({map:texture,metalness:.15,roughness:.47,envMap:reflection,envMapIntensity:.45,side:T.DoubleSide})),...left.position,'left');
    mesh.name='Uploaded crowned statue at left altar';parent.add(mesh);state.leftStatueReady=true;state.leftStatueTriangles=m.triangleCount;return mesh;
   }).catch(e=>{state.leftStatueError=String(e.message||e);console.error('Left altar statue:',e);});
-  return{state,ready,guanyinReady,leftStatueReady};
+  return{state,ready,guanyinReady,leftStatueReady,beginBlessing(target){if(blessingDisposed||state.error||state.blessingError||!target?.getWorldPosition)return false;blessingTarget=target;return blessing?blessing.begin(target):true;},updateBlessing(dt){blessing?.update(dt);if(blessing)state.blessing=blessing.state;},endBlessing(){blessingTarget=null;blessing?.end();},getPalmWorldPosition(out){return blessing?.palmPosition(out)||null;},getPalmWorldNormal(out){return blessing?.palmNormal(out)||null;},disposeBlessing(){blessingDisposed=true;blessingTarget=null;blessing?.dispose();state.blessingReady=false;}};
  }};
 })();
 ;
@@ -106313,6 +106489,26 @@ window.TempleNavigation={PLAYER_MOTION,templeJumpHeight,templeRestFits,islandLan
    (exterior?world.scene:world.interiorRoot).add(mesh);if(exterior)mesh.layers.set(1);
    state.placements[name]={position:mesh.position.toArray(),supportY,height,width:(bounds.max.x-bounds.min.x)*scale,depth:(bounds.max.z-bounds.min.z)*scale,contactInset:inset};return mesh;
   }
+  let ashGeometry,ashMaterial;
+  function fillIncenseAsh(mesh,anchor,target,site){
+   // Measured against the original packed burner: the handles reach y=1.0,
+   // but its open rim is y~.819. At y=.809 the inner wall radius is .2981-.3056.
+   // This opaque fill overlaps the inner wall slightly, safely below the lip.
+   const top=.809,radius=.3075,depth=.018;
+   if(!ashGeometry){
+    ashGeometry=new T.CylinderGeometry(radius,radius,depth,64);
+    const pixels=new Uint8Array(64*64*4);let seed=731;
+    for(let i=0;i<pixels.length;i+=4){seed=(Math.imul(seed,1664525)+1013904223)>>>0;const grain=222+(seed%28);pixels.set([grain,grain,grain,255],i);}
+    const grain=new T.DataTexture(pixels,64,64);grain.colorSpace=T.SRGBColorSpace;grain.magFilter=grain.minFilter=T.LinearFilter;grain.needsUpdate=true;
+    ashMaterial=new T.MeshStandardMaterial({color:0xb5afa0,map:grain,roughness:1});
+   }
+   const ash=new T.Mesh(ashGeometry,ashMaterial);ash.name='Filled incense ash '+site;ash.position.y=top-depth/2;ash.receiveShadow=true;mesh.add(ash);anchor.ash=ash;
+   mesh.updateWorldMatrix(true,true);const centre=mesh.localToWorld(new T.Vector3(0,top,0));
+   // Keep the authoritative ritual approach unchanged; only its visual surface
+   // is updated. Existing incense follows this same mutable surface reference.
+   target.ashY=centre.y;target.ashRadius=radius*mesh.scale.x;
+   state.ash??={};state.ash[site]={sourceY:top,sourceRadius:radius,worldY:centre.y,worldRadius:target.ashRadius,triangles:ashGeometry.index.count/3};
+  }
   function enlargeOilFlame(asset){
    const g=asset.geometry,p=g.attributes.position,n=g.attributes.normal,index=g.index,parents=Array.from({length:p.count},(_,i)=>i);
    function find(i){while(parents[i]!==i){parents[i]=parents[parents[i]];i=parents[i];}return i;}
@@ -106334,7 +106530,7 @@ window.TempleNavigation={PLAYER_MOTION,templeJumpHeight,templeRestFits,islandLan
   const tasks=[
    coreReady.then(()=>TempleAssets.yieldFrame()).then(()=>load('caishen',.12,.56)).then(asset=>place(asset,'财神',L.props.caishen.position,L.props.caishen.height)),
    coreReady.then(()=>TempleAssets.yieldFrame()).then(()=>load('wishing-tree',0,.92)).then(asset=>{const spec=L.props.wishingTree,[x,,z]=spec.position;return place(asset,'祈愿树',[x,nav.templeStoneHeight(x,z)+.025,z],spec.height,true);}),
-   coreReady.then(()=>load('incense-burner',.35,.52)).then(asset=>{const anchor=world.propAnchors.burner;place(asset,'上传的香炉',anchor.position,L.props.burner.height);anchor.fallback.visible=false;const wealth=world.propAnchors.wealthBurner;place(asset,'财神殿香炉',wealth.position,L.props.wealthBurner.height);wealth.fallback.visible=false;}),
+   coreReady.then(()=>load('incense-burner',.35,.52)).then(asset=>{const anchor=world.propAnchors.burner,main=place(asset,'上传的香炉',anchor.position,L.props.burner.height);fillIncenseAsh(main,anchor,world.rituals.incense.burner,'hall');anchor.fallback.visible=false;const wealth=world.propAnchors.wealthBurner,second=place(asset,'财神殿香炉',wealth.position,L.props.wealthBurner.height);fillIncenseAsh(second,wealth,world.rituals.wealthIncense.burner,'wealth');wealth.fallback.visible=false;}),
    coreReady.then(()=>load('oil-lamp',.25,.57)).then(asset=>{
     const flame=enlargeOilFlame(asset);
     asset.material.onBeforeCompile=shader=>{shader.vertexShader='varying float vOilLampHeight;\n'+shader.vertexShader;shader.vertexShader=shader.vertexShader.replace('#include <begin_vertex>','#include <begin_vertex>\nvOilLampHeight=position.y;');shader.fragmentShader='varying float vOilLampHeight;\n'+shader.fragmentShader;shader.fragmentShader=shader.fragmentShader.replace('#include <emissivemap_fragment>','#include <emissivemap_fragment>\ntotalEmissiveRadiance+=vec3(1.4,.75,.18)*smoothstep(.85,.88,vOilLampHeight);');};asset.material.customProgramCacheKey=()=> 'uploaded-oil-flame-v2';
@@ -107708,6 +107904,7 @@ window.TempleNavigation={PLAYER_MOTION,templeJumpHeight,templeRestFits,islandLan
     const beadReward=window.TempleBeadReward.create(T,world.scene,player.root,camera);
     document.addEventListener('temple-gold-beads-earned',()=>beadReward.show(performance.now()));
     profilePanel=window.TempleProfile?.create({THREE:T,scene:world.scene,statue:world.statue,player,t,
+      onRewardBlessing:()=>replacementStatue?.beginBlessing?.(player.root),
       onEquip:id=>network?.equip(id),onGear:(slot,item)=>network?.setGear(slot,item),onGoldBeads:on=>network?.setGoldBeads(on),onRename:name=>network?.rename(name),onAcknowledge:thresholds=>network?.acknowledgeBlessings(thresholds),
       onOpenChange:open=>{if(open){stopPrayer();releaseLook();}profileOpen=open;keys.clear();dragging=null;isMoving=false;}
     })||null;
@@ -108130,6 +108327,7 @@ window.TempleNavigation={PLAYER_MOTION,templeJumpHeight,templeRestFits,islandLan
         companions.updateRide(dt,clock,player,isMoving,isMoving,(x,z)=>(!onlineMode||network?.canRoam)&&!blocked(x,z));
       }
       if (!paused || !started) world.update && world.update(started ? clock : now / 1000, dt, started ? player.root.position : null);
+      if(started&&!paused){rituals.updateIncense?.(dt);replacementStatue?.updateBlessing?.(dt);}
       playerRing.position.x = player.root.position.x; playerRing.position.z = player.root.position.z;
       playerRing.position.y = player.root.position.y+.017;
       playerRing.material.opacity = prayer ? .18 : .45;
@@ -108208,6 +108406,7 @@ window.TempleNavigation={PLAYER_MOTION,templeJumpHeight,templeRestFits,islandLan
       }
     }
     updateStats(); updateCamera(0, true); updatePrompt(); updateSoundButton();
+    addEventListener('pagehide',event=>{if(!event.persisted){rituals.dispose?.();replacementStatue?.disposeBlessing?.();}});
     // Read-only diagnostics for reproducible acceptance checks; never alters game state.
     window.templeDiagnostics = () => ({
       motion:motion?.diagnostics(),version:layout.version,groundSource:"shared-mesh-and-structure",
