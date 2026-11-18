@@ -1,0 +1,42 @@
+.room-actions{position:fixed;z-index:14;left:50%;bottom:132px;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;max-width:calc(100vw - 24px);color:#ead8b6;font-family:inherit;pointer-events:none}.room-actions[hidden],.scripture-reader[hidden],.room-actions button[hidden]{display:none!important}.room-actions .room-action-title{margin:0;padding:6px 13px;border-radius:18px;background:rgba(38,31,24,.88);border:1px solid rgba(196,164,107,.32);font-size:12px;max-width:90vw;text-align:center}.room-action-buttons{display:flex;justify-content:center;flex-wrap:wrap;gap:6px;pointer-events:auto}.room-action-buttons button{min-height:39px;padding:8px 13px;border:1px solid rgba(202,177,126,.6);border-radius:20px;background:rgba(49,40,29,.94);color:#f1dfba;cursor:pointer;font:inherit;font-size:13px}.room-action-buttons button:focus-visible,.scripture-reader button:focus-visible,.scripture-reader a:focus-visible{outline:2px solid #e7bd74;outline-offset:3px}.room-action-buttons button:disabled{opacity:.5;cursor:default}.scripture-reader{position:fixed;inset:0;z-index:55;background:rgba(18,16,13,.66);display:flex;align-items:center;justify-content:center;padding:18px;color:#3d352a;font-family:inherit;pointer-events:auto}.scripture-reader-card{width:min(650px,100%);max-height:min(84vh,780px);display:flex;flex-direction:column;background:#eee3cb;border:1px solid #aa9165;border-radius:12px;box-shadow:0 20px 80px rgba(0,0,0,.35);padding:22px 26px}.scripture-reader-header{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}.scripture-reader h2{font-size:24px;line-height:1.4;font-weight:500;margin:0 0 7px;color:#59452a}.scripture-reader .scripture-section{font-size:13px;margin:0 0 12px;color:#79674b;line-height:1.6}.scripture-reader .scripture-pages{font-size:12px;flex:none;text-align:right;color:#79674b;padding-top:8px;white-space:nowrap}.scripture-reader article{min-height:160px;overflow:auto;overscroll-behavior:contain;white-space:pre-wrap;font-family:"Noto Serif SC","Songti SC","SimSun",serif;font-size:20px;line-height:2;letter-spacing:.04em;padding:15px 2px 18px;outline:none;border-top:1px solid rgba(139,111,65,.25);border-bottom:1px solid rgba(139,111,65,.25);scrollbar-width:thin}.scripture-reader .scripture-credit{font-size:11px;line-height:1.7;color:#827251;margin:10px 0;flex:none}.scripture-reader .scripture-credit a{color:#745b32;text-underline-offset:3px}.scripture-reader .scripture-buttons{display:flex;gap:7px;flex-wrap:wrap;align-items:center;justify-content:flex-end;flex:none}.scripture-reader button{border:1px solid #b69b69;background:transparent;color:#59452a;border-radius:16px;padding:8px 13px;min-height:37px;cursor:pointer;font:inherit;font-size:12px}.scripture-reader button:disabled{opacity:.4;cursor:default}.scripture-reader .scripture-close{background:#675338;color:#fff1d4}.scripture-reader .scripture-note{font-size:11px;line-height:1.6;color:#827251;margin:8px 0 0}@media(max-width:700px){.room-actions{bottom:140px;width:calc(100vw - 24px)}.room-action-buttons button{font-size:12px;padding:8px 11px}.scripture-reader{padding:10px}.scripture-reader-card{padding:17px 18px;max-height:88vh}.scripture-reader h2{font-size:20px}.scripture-reader article{font-size:18px;line-height:1.95;min-height:140px}.scripture-reader .scripture-section{font-size:11px}.scripture-reader .scripture-buttons{justify-content:center}.scripture-reader .scripture-pages{font-size:11px}}@media(max-height:560px){.scripture-reader-card{max-height:95vh;padding:12px 18px}.scripture-reader article{min-height:85px;font-size:17px}.scripture-reader .scripture-note{display:none}.room-actions{bottom:98px}}
+#game.room-activities-visible .interaction{display:none}
+
+#fortune-dialog {
+  box-sizing: border-box;
+  width: min(28rem, calc(100vw - 2rem));
+  max-height: calc(100dvh - 2rem);
+  overflow: auto;
+  padding: 1.65rem;
+  border: 1px solid #b99152;
+  border-radius: 12px;
+  color: #523a27;
+  background: #f7ead0;
+  background-image: linear-gradient(140deg, #fcf4e3, #ecd5ae);
+  box-shadow: 0 0 0 4px #5b4028, 0 16px 55px #21160f85;
+}
+#fortune-dialog::backdrop { background: #20181261; }
+#fortune-dialog h2 { margin: 0 0 .6rem; color: #714a2b; font-size: 1.45rem; }
+#fortune-dialog p { margin: 0; line-height: 1.55; }
+#fortune-dialog .fortune-slip:has(strong:not(:empty)) {
+  margin-top: 1rem;
+  padding: .9rem;
+  border: 1px solid #ba925967;
+  border-radius: 6px;
+  background: #fff5dfb3;
+}
+#fortune-dialog .fortune-slip span { color: #8a512c; font-size: .85rem; }
+#fortune-dialog .fortune-slip strong { display: block; margin: .38rem 0; color: #5f4028; }
+#fortune-dialog .fortune-slip strong:empty { margin: 0; }
+#fortune-dialog .fortune-buttons { display: flex; flex-wrap: wrap; gap: .7rem; margin-top: 1rem; }
+#fortune-dialog button {
+  min-height: 44px;
+  padding: .55rem 1rem;
+  border: 1px solid #88643c;
+  border-radius: 7px;
+  color: #5a3d24;
+  background: #f4e1be;
+  font: inherit;
+  cursor: pointer;
+}
+#fortune-dialog .fortune-draw { color: #fff4da; background: #754823; }
+#fortune-dialog button:focus-visible { outline: 2px solid #674520; outline-offset: 2px; }
