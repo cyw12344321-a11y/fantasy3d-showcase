@@ -106118,6 +106118,11 @@ window.TempleNavigation={PLAYER_MOTION,templeJumpHeight,templeRestFits,islandLan
 (function () {
   'use strict';
 
+  const rainMix = {
+    outdoors: { level: 0.068, cutoff: 2450 },
+    indoors: { level: 0.022, cutoff: 900 }
+  };
+
   // Context creation is deliberately deferred until the user's first gesture.
   class TempleAudio {
     constructor() {
@@ -106404,7 +106409,7 @@ window.TempleNavigation={PLAYER_MOTION,templeJumpHeight,templeRestFits,islandLan
         created.push(source,high,low,gain);
         source.buffer=buffer;source.loop=true;source.loopStart=0;source.loopEnd=buffer.duration;
         high.type='highpass';high.frequency.value=180;high.Q.value=.45;
-        low.type='lowpass';low.frequency.value=5400;low.Q.value=.45;
+        low.type='lowpass';low.frequency.value=rainMix.outdoors.cutoff;low.Q.value=.45;
         gain.gain.value=0;source.connect(high);high.connect(low);low.connect(gain);gain.connect(this.master);
         this._rain={source,high,low,gain};this._rainLevel=null;
         source.start(context.currentTime,1.3);this._fadeRain();
@@ -106417,11 +106422,12 @@ window.TempleNavigation={PLAYER_MOTION,templeJumpHeight,templeRestFits,islandLan
     _fadeRain() {
       if(!this._rain||!this.context||this.context.state==='closed')return;
       const indoors=this._environmentIndoors||this._hallAmbience;
-      const level=!this.muted&&this._environmentActive&&this._weather==='rain'?(indoors?.045:.16):0;
+      const blend=indoors?rainMix.indoors:rainMix.outdoors;
+      const level=!this.muted&&this._environmentActive&&this._weather==='rain'?blend.level:0;
       if(this._rainLevel===level)return;
       this._rainLevel=level;
-      this._rain.gain.gain.setTargetAtTime(level,this.context.currentTime,.45);
-      this._rain.low.frequency.setTargetAtTime(indoors?1100:5400,this.context.currentTime,.35);
+      this._rain.gain.gain.setTargetAtTime(level,this.context.currentTime,.55);
+      this._rain.low.frequency.setTargetAtTime(blend.cutoff,this.context.currentTime,.45);
     }
 
     thunder(strength = 1) {
@@ -106434,12 +106440,12 @@ window.TempleNavigation={PLAYER_MOTION,templeJumpHeight,templeRestFits,islandLan
         const buffer=this._weatherNoise(),source=context.createBufferSource(),filter=context.createBiquadFilter(),gain=context.createGain();
         created.push(source,filter,gain);
         source.buffer=buffer;source.loop=true;source.playbackRate.value=.42;
-        filter.type='lowpass';filter.frequency.value=indoors?120:240;filter.Q.value=.55;
-        const duration=2.4+amount*1.4,peak=.42*amount*(indoors?.34:1);
+        filter.type='lowpass';filter.frequency.value=indoors?90:180;filter.Q.value=.55;
+        const duration=2.4+amount*1.4,peak=.096*amount*(indoors?.34:1);
+        // Let the distant rumble swell gradually behind the steady rain.
         gain.gain.setValueAtTime(.00001,now);
-        gain.gain.exponentialRampToValueAtTime(peak,now+.06);
-        gain.gain.exponentialRampToValueAtTime(peak*.48,now+.50);
-        gain.gain.exponentialRampToValueAtTime(peak*.62,now+.85);
+        gain.gain.exponentialRampToValueAtTime(peak,now+.25);
+        gain.gain.exponentialRampToValueAtTime(peak*.45,now+1);
         gain.gain.exponentialRampToValueAtTime(.00001,now+duration);
         source.connect(filter);filter.connect(gain);gain.connect(this.master);
         voice={source,filter,gain};this._thunders.add(voice);
