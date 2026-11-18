@@ -103888,6 +103888,106 @@ window.TempleNavigation={PLAYER_MOTION,templeJumpHeight,templeRestFits,islandLan
   window.TempleEnvironment={interior,forecourt};
 })();
 ;
+/* Small optional assets: shared geometry, lazy requests, no shadow casting. */
+(function(){
+ 'use strict';
+ const sources={cap:'assets/monk-cap-game.glb',gourd:'assets/gourd-game.glb',bracket:'assets/temple-bracket-game.glb'};
+ const pending=new Map();
+ function load(id){
+  if(!pending.has(id))pending.set(id,window.TempleGLB.load(sources[id]).then(gltf=>{
+   gltf.scene.updateMatrixWorld(true);
+   const parts=[];
+   gltf.scene.traverse(o=>{if(!o.isMesh)return;const geometry=o.geometry.clone();geometry.applyMatrix4(o.matrixWorld);parts.push({geometry,material:o.material});});
+   if(!parts.length)throw Error('Empty decorative asset: '+id);
+   return parts;
+  }).catch(error=>{pending.delete(id);throw error;}));
+  return pending.get(id);
+ }
+ function model(T,id){
+  const group=new T.Group();group.name='Game accessory '+id;group.userData.asset=id;
+  let loading=false;
+  group.userData.retry=()=>{
+   if(loading||group.userData.loaded||group.userData.disposed)return group.userData.ready||Promise.resolve();
+   loading=true;group.userData.error=null;
+   // An actor retains its accessory group between wardrobe choices. Reusing a
+   // failed group must be able to recover after the connection comes back.
+   group.userData.ready=Promise.resolve().then(()=>load(id)).then(parts=>{
+    if(group.userData.disposed)return;
+    for(const part of parts){const material=Array.isArray(part.material)?part.material.map(m=>m.clone()):part.material.clone();const child=new T.Mesh(part.geometry,material);child.userData.sharedDecorGeometry=true;child.castShadow=false;child.receiveShadow=false;group.add(child);}
+    group.userData.loaded=true;
+   }).catch(error=>{if(!group.userData.disposed)group.userData.error=String(error.message||error);}).finally(()=>{loading=false;});
+   return group.userData.ready;
+  };
+  group.userData.retry();
+  return group;
+ }
+ function createGear(T,slot,id){
+  if(slot==='head'&&id==='cap')return model(T,id);
+  if(slot==='waist'&&id==='gourd'){
+   const group=model(T,id);
+   // Tie the uploaded bottle's red loop to the belt; a rigid bottle alone floated.
+   const start=new T.Vector3(.030,.090,0),end=new T.Vector3(0,.220,-.015),direction=end.clone().sub(start);
+   const tie=new T.Mesh(new T.CylinderGeometry(.003,.003,direction.length(),6),new T.MeshStandardMaterial({color:0x913d31,roughness:.94}));
+   tie.name='Gourd belt tie';tie.position.copy(start).add(end).multiplyScalar(.5);tie.quaternion.setFromUnitVectors(new T.Vector3(0,1,0),direction.normalize());group.add(tie);
+   return group;
+  }
+  if(slot==='aura'&&id==='halo'){
+   const material=new T.MeshBasicMaterial({color:0xeac574,transparent:true,opacity:.62,depthWrite:false});
+   const halo=new T.Mesh(new T.TorusGeometry(.40,.009,5,64),material);
+   halo.name='Quiet golden halo';halo.rotation.x=Math.PI/2;return halo;
+  }
+  if(slot==='waist'&&id==='muyu'){
+   const group=new T.Group();group.name='Wooden fish belt charm';
+   const wood=new T.MeshStandardMaterial({color:0x986134,roughness:.67}),cord=new T.MeshStandardMaterial({color:0x8b372b,roughness:.9});
+   const fish=new T.Mesh(new T.SphereGeometry(1,16,10),wood);fish.scale.set(.065,.043,.049);group.add(fish);
+   const slit=new T.Mesh(new T.BoxGeometry(.003,.014,.070),new T.MeshStandardMaterial({color:0x3b281d,roughness:1}));slit.position.set(0,.035,.004);group.add(slit);
+   const loop=new T.Mesh(new T.TorusGeometry(.022,.003,5,20),cord);loop.position.y=.064;group.add(loop);
+   return group;
+  }
+  return null;
+ }
+ function architecture(T,world){
+  const root=new T.Group();root.name='Shared carved dougong accents';world.interiorRoot.add(root);
+  const state={ready:false,loading:false,attempts:0,disposed:false,instances:0,drawCalls:0,optional:true,error:null};
+  const inactive=Promise.resolve(false);let attempt=null;
+  const eligible=context=>context?.coreReady===true&&context.entered===true&&context.near===true;
+  function request(context){
+   // The owner supplies real core/entry/proximity signals. No clock or render
+   // loop may start optional downloads while the player is still entering.
+   if(state.disposed||!eligible(context))return inactive;
+   if(state.ready||state.loading||state.error)return attempt||inactive;
+   state.loading=true;state.attempts++;
+   attempt=Promise.resolve().then(()=>state.disposed?null:load('bracket')).then(parts=>{
+    if(state.disposed||!parts)return false;
+    const stations=world.architecture.decorStations||[];
+    const transform=new T.Object3D(),local=new T.Matrix4();
+    for(const part of parts){
+     const batch=new T.InstancedMesh(part.geometry,part.material,stations.length);
+     batch.name='Instanced red and gold bracket';batch.castShadow=false;batch.receiveShadow=false;
+     stations.forEach((s,i)=>{transform.position.set(s.x,s.y,s.z);transform.rotation.y=s.rotation||0;transform.scale.setScalar(s.scale||1);transform.updateMatrix();local.copy(transform.matrix);batch.setMatrixAt(i,local);});
+     batch.computeBoundingSphere();root.add(batch);
+    }
+    state.ready=true;state.instances=stations.length;state.drawCalls=parts.length;return true;
+   }).catch(error=>{if(!state.disposed)state.error=String(error.message||error);return false;}).finally(()=>{state.loading=false;});
+   return attempt;
+  }
+  function retry(context){
+   // A reconnect while away may arm a later retry; it still cannot download
+   // until all three gates are true again.
+   if(!state.disposed&&!state.loading)state.error=null;
+   return request(context);
+  }
+  function dispose(){
+   if(state.disposed)return;state.disposed=true;
+   // Geometry and materials belong to the shared parsed-asset cache.
+   for(const batch of root.children)batch.dispose();root.clear();root.removeFromParent();
+  }
+  world.architecture.state.carvedBrackets=state;
+  return{root,state,request,retry,dispose,get ready(){return attempt||inactive;}};
+ }
+ window.TempleDecor={createGear,architecture,load,sources};
+})();
+;
 /* Compass-drawn inlays on the inward faces of the wealth pavilion. */
 (function(){
   'use strict';
@@ -108976,6 +109076,7 @@ window.TempleNavigation={PLAYER_MOTION,templeJumpHeight,templeRestFits,islandLan
     caisson?.ready.then(()=>{$('game').dataset.caisson=caisson.state.plaqueLoaded?'ready':'model';})
       .catch(()=>{$('game').dataset.caisson='model';});
     world.architecture.loadSurfaces?.().then(results=>{artState.surfaceFinishes=results.filter(Boolean).length;});
+    const decorCoreReady=Promise.all([world.roofReady,exterior?.ready,replacementStatue?.ready,replacementStatue?.guanyinReady,replacementStatue?.leftStatueReady]);
     const uploadedProps=window.TempleUploadedProps?.create(T,world,Promise.all([exterior?.ready,replacementStatue?.ready]))||null;
     const ambience=window.TempleAmbience?.create(T,world,exterior)||null;
     const navigation=window.TempleNavigation;
@@ -109016,6 +109117,7 @@ window.TempleNavigation={PLAYER_MOTION,templeJumpHeight,templeRestFits,islandLan
     const PRAYER_DURATION = 6.4;
     const PRAYER_ALIGN_DURATION = .64;
     let started = false, paused = true, entryPending = false, prayer = null, nearest = null, isMoving = false;
+    let decorCoreLoaded=false;
     let clock = 0, lastTime = performance.now(), footsteps = 0, muted = false, toastUntil = 0;
     let yaw = 0, pitch = layout.camera.pitch??.08, distance = layout.camera.distance, dragging = null;
     let speech = null, audioStarted = false, pageVisible = true;
@@ -109387,7 +109489,13 @@ window.TempleNavigation={PLAYER_MOTION,templeJumpHeight,templeRestFits,islandLan
     function atWishTree(){
       return started&&!paused&&!profileOpen&&!prayer&&!rituals.active&&!motion?.busy&&!roomActivities?.isBusy&&!companions.mountSubject&&wishes.near(player.root.position);
     }
+    function requestHallDecor(retry=false,inHall=insideRitualHall()){
+      const decor=world.architecture?.decor;if(!decor||decor.state.ready||decor.state.disposed)return;
+      const context={coreReady:decorCoreLoaded&&player.root.userData.outfitReady===true,entered:started&&!paused&&pageVisible,near:inHall};
+      if(retry)decor.retry(context);else decor.request(context);
+    }
     function updatePrompt() {
+      requestHallDecor();
       nearest = locateMat();
       const busy=!!prayer||!!rituals.active||!!roomActivities?.isBusy||!!network?.status.pendingComplete;
       roomActivities?.setEnabled(!companions.mountSubject&&started&&!paused&&!profileOpen&&!motion?.busy&&!prayer&&!rituals.active&&!network?.status.pendingComplete&&(!nearest||roomActivities.isBusy));
@@ -109874,7 +109982,14 @@ window.TempleNavigation={PLAYER_MOTION,templeJumpHeight,templeRestFits,islandLan
       }
     }
     updateStats(); updateCamera(0, true); updatePrompt(); updateSoundButton();
-    addEventListener('pagehide',event=>{if(!event.persisted){rituals.dispose?.();replacementStatue?.disposeBlessing?.();pets.dispose();}});
+    // Some loaders settle their Promise after reporting an error. Inspect their
+    // real states instead of treating a settled Promise as successful loading.
+    decorCoreReady.then(()=>{
+      decorCoreLoaded=world.architecture.state.ready===true&&exterior?.state.ready===true&&replacementStatue?.state.ready===true&&replacementStatue.state.guanyinReady===true&&replacementStatue.state.leftStatueReady===true;
+      requestHallDecor();
+    }).catch(()=>{});
+    addEventListener('online',()=>requestHallDecor(true));
+    addEventListener('pagehide',event=>{if(!event.persisted){world.architecture?.decor?.dispose();rituals.dispose?.();replacementStatue?.disposeBlessing?.();pets.dispose();}});
     // Read-only diagnostics for reproducible acceptance checks; never alters game state.
     window.templeDiagnostics = () => ({
       motion:motion?.diagnostics(),version:layout.version,groundSource:"shared-mesh-and-structure",
