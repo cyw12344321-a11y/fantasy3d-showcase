@@ -98,3 +98,7 @@ html[lang=ja] .clean-hud>.ritual-actions .ritual-button b,html[lang=ko] .clean-h
  .clean-hud .prayer-status{bottom:43%;width:180px}
 }
 @media(orientation:landscape) and (max-height:500px){#game.clean-hud{--stick-size:112px;--stick-left:max(7vw,64px);--stick-bottom:10vh;--action-bottom:14px}.clean-hud .topbar{top:12px}.clean-hud>.ritual-actions{top:max(12px,env(safe-area-inset-top));left:max(12px,env(safe-area-inset-left))}.clean-hud .room-actions{top:66px}.clean-hud #motion-controls{height:200px}.clean-hud #toast{top:64px}}
+
+#ceiling-exit{display:none;position:absolute;z-index:22;left:50%;transform:translateX(-50%);bottom:max(18px,env(safe-area-inset-bottom));min-height:40px;padding:8px 18px;border:1px solid #d7be8980;border-radius:22px;background:#30271bde;color:#fff2d6;font:13px/1.2 system-ui;white-space:nowrap}
+.clean-hud.hud-ready[data-view=ceiling] #ceiling-exit{display:block}
+.clean-hud[data-view=ceiling] :is(.ritual-actions,#motion-controls,.interaction,#touch-controls,#chat-toggle,#first-visit,#room-preview){display:none!important}
