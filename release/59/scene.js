@@ -1715,7 +1715,7 @@
   architecture.shell=window.TempleInteriorShell.create(T,{parent:interiorRoot,materials:{plaster,wood,redwood,darkwood,bronze,roof:finish?.roof??wood},cameraBox,obstacle});
   // The fitted leaves fold back along the room-side frontage, clear of the sill.
   const leafWidth=entryHalf-.042,leafDepth=.15;
-  const leafBottom=entry.thresholdY-L.character.groundInset+.039,leafTop=entry.clearHeight-.033;
+  const leafBottom=entry.thresholdY-L.character.groundInset+.006,leafTop=entry.clearHeight-.033;
   const leafHeight=leafTop-leafBottom,leafCentreY=(leafBottom+leafTop)/2;
   const frame=architecture.entryFrame,jambEdge=frame?.roomSideOuterHalfWidth??entryHalf+.58;
   const casingZ=frame?.roomSideFaceZ??architecture.shell.spec.portal.fromZ;
@@ -2101,7 +2101,7 @@
     for(let i=0;i<=bays;i++)box(.095,fh,depth,oakEdge,-span/2+i*bay,fh/2,0,group);
     for(let i=0;i<bays;i++){
      const mid=-span/2+(i+.5)*bay,split=mid+(i%2?.30:-.30);
-     const heights=i%2?[.48,1.48,2.59,3.98,4.94]:[.48,1.67,3.06,4.03,5.01];
+     const heights=i%2?[.48,1.55,2.78,4.01,5.24,6.47]:[.48,1.72,2.96,4.20,5.44,6.68];
      for(const [row,y] of heights.entries()){
       box(bay,.065,depth,paleOak,mid,y,0,group);
       box(bay-.08,.023,.037,warmGold,mid,y-.008,depth/2+.009,group);
