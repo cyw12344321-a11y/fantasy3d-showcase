@@ -3108,13 +3108,17 @@
     toggle.addEventListener('click',()=>setOpen(panel.hidden));ui.querySelector('#ambience-close').addEventListener('click',()=>setOpen(false));
     document.addEventListener('temple-hud-hidden',()=>setOpen(false));
     document.addEventListener('temple-ui-open',event=>{if(event.detail==='pets')setOpen(false);});
-    ui.addEventListener('keydown',e=>{if(e.key==='Escape'){setOpen(false);e.preventDefault();}e.stopPropagation();});
+    const movementKeys=new Set(['KeyW','KeyA','KeyS','KeyD','ArrowUp','ArrowDown','ArrowLeft','ArrowRight']);
+    ui.addEventListener('keydown',e=>{
+      if(e.key==='Escape'&&!panel.hidden){setOpen(false);e.preventDefault();e.stopPropagation();return;}
+      if(e.key!=='Escape'&&!movementKeys.has(e.code))e.stopPropagation();
+    });
     ui.addEventListener('pointerdown',e=>e.stopPropagation());
     document.addEventListener('pointerdown',e=>{if(!ui.contains(e.target)&&!panel.hidden)setOpen(false);});
     const buttons=[];
     function save(){try{localStorage.setItem('quiet-temple-ambience',JSON.stringify({time:state.time,season:state.season,weather:state.weather}));}catch(_){}}
     function setWeather(value){if(!['clear','rain','snow'].includes(value))return;state.weather=value;weather?.setMode(value);world.landscape?.setWeather(value);applyTime();save();refresh();}
-    for(const [kind,values] of [['time',['day','sunset','night']],['season',['spring','summer','autumn','winter']],['weather',['clear','rain','snow']]])for(const value of values){const b=document.createElement('button');b.type='button';b.dataset.skyLabel=value;b.dataset[kind]=value;b.addEventListener('click',()=>{if(kind==='weather'){setWeather(value);return;}state[kind]=value;if(kind==='time')applyTime();else{flowerMat.map=textures[value];flowerMat.needsUpdate=true;}save();refresh();});ui.querySelector(kind==='time'?'.ambience-times':kind==='season'?'.ambience-seasons':'.ambience-weather').appendChild(b);buttons.push({b,kind,value});}
+    for(const [kind,values] of [['time',['day','sunset','night']],['season',['spring','summer','autumn','winter']],['weather',['clear','rain','snow']]])for(const value of values){const b=document.createElement('button');b.type='button';b.dataset.skyLabel=value;b.dataset[kind]=value;b.addEventListener('click',()=>{if(kind==='weather'){setOpen(false);setWeather(value);return;}state[kind]=value;if(kind==='time')applyTime();else{flowerMat.map=textures[value];flowerMat.needsUpdate=true;}save();refresh();});ui.querySelector(kind==='time'?'.ambience-times':kind==='season'?'.ambience-seasons':'.ambience-weather').appendChild(b);buttons.push({b,kind,value});}
     function refresh(){const l=labels[window.TempleI18n?.locale]||labels['zh-CN'];for(const e of ui.querySelectorAll('[data-sky-label]'))e.textContent=l[e.dataset.skyLabel];panel.setAttribute('aria-label',l.title);toggle.querySelector('span').textContent=l.weather;toggle.setAttribute('aria-label',l.weather);ui.querySelector('#ambience-close').setAttribute('aria-label',l.close);for(const {b,kind,value}of buttons)b.setAttribute('aria-pressed',String(state[kind]===value));}
     window.TempleI18n?.onChange(refresh);refresh();applyTime();
     function update(dt,clock,player,cameraPosition){
