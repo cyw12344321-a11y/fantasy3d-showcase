@@ -156,9 +156,9 @@ function applySideHalls(L){
   shiftX(seat.bodyEnvelope?.boundsXZ,offset,[0,1]);
  }
  for(const shelf of[
-  {id:'scripture-west-to-ceiling',position:[la+.66,0,(lc+.15+ld-.55)/2],size:[1.08,6.16,ld-lc-.7],front:'+X'},
-  {id:'scripture-east-to-ceiling',position:[lb-.66,0,(lc+.15+ld-.55)/2],size:[1.08,6.16,ld-lc-.7],front:'-X'},
-  {id:'scripture-rear-to-ceiling',position:[library.x,0,lc+.69],size:[lb-la-2.4,6.16,1.08],front:'+Z'}
+  {id:'scripture-west-to-ceiling',position:[la+.66,0,(lc+.15+ld-.55)/2],size:[1.08,7.30,ld-lc-.7],front:'+X'},
+  {id:'scripture-east-to-ceiling',position:[lb-.66,0,(lc+.15+ld-.55)/2],size:[1.08,7.30,ld-lc-.7],front:'-X'},
+  {id:'scripture-rear-to-ceiling',position:[library.x,0,lc+.69],size:[lb-la-2.4,7.30,1.08],front:'+Z'}
  ])L.design.furniture.push({...shelf,type:'scripture-bookcase',room:'scripture',clickableBookSpines:true});
  for(let i=0;i<3;i++)L.mats.push({id:'wealth-mat-'+i,x:41.7+i*2.3,z:14.15,npc:false,room:'tea'});
  // Source stone is retired below these measured, solid replacement plinths.
