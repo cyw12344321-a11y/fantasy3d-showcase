@@ -3628,6 +3628,29 @@
       slot.waiting = 0;
       if (wasFollowing && !disposed) notify();
     }
+    let petShadowMaterial;
+    function makePetShadow(T, anchor, model, id) {
+      if (!petShadowMaterial) {
+        const canvas = document.createElement('canvas'); canvas.width = canvas.height = 48;
+        const context = canvas.getContext('2d');
+        const gradient = context.createRadialGradient(24,24,0,24,24,24);
+        gradient.addColorStop(0,'rgba(28,22,16,.34)');
+        gradient.addColorStop(.48,'rgba(28,22,16,.16)');
+        gradient.addColorStop(1,'rgba(28,22,16,0)');
+        context.fillStyle = gradient; context.fillRect(0,0,48,48);
+        const texture = new T.CanvasTexture(canvas); texture.colorSpace = T.SRGBColorSpace;
+        petShadowMaterial = new T.MeshBasicMaterial({map:texture,transparent:true,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-1});
+      }
+      model.updateWorldMatrix(true,true);
+      const bounds = new T.Box3().setFromObject(model), size = bounds.getSize(new T.Vector3());
+      const width = Math.max(.42, Math.min(1.15, size.x*.92));
+      const depth = Math.max(.34, Math.min(.92, size.z*.92));
+      const contact = new T.Mesh(new T.PlaneGeometry(width,depth),petShadowMaterial);
+      contact.name = 'Pet grounded contact shadow: '+id;
+      contact.rotation.x = -Math.PI/2; contact.position.y = .009;
+      contact.renderOrder = 1; contact.layers.set(1); anchor.add(contact);
+      return contact;
+    }
     function load(slot) {
       if (slot.actor || slot.loading || disposed) return;
       slot.loading = Promise.resolve().then(() => window.TempleGLB.load('assets/companions/'+slot.spec.file+'.glb.gz'))
@@ -3641,6 +3664,7 @@
             if (node.isMesh) { node.castShadow = false; node.receiveShadow = true; }
           });
           anchor.add(model);
+          makePetShadow(T, anchor, model, slot.id);
           const mixer = new T.AnimationMixer(model);
           const actions = new Map(animations.map(clip => [clip.name, mixer.clipAction(clip)]));
           slot.actor = {anchor, model, mixer, actions};
